@@ -90,17 +90,14 @@ if n == 6
     P4_n6 = solns.P4
     P5_n6 = solns.P5
     P6_n6 = solns.P6
+    
+    save('sym_prob.mat','P1_n6','P2_n6','P3_n6','P4_n6','P5_n6','P6_n6','-append')
+
 end
 
 %%
 
-k51 = 0;
-k15 = 0;
-P1_n5
-P2_n5
-P3_n5
-P4_n5
-P5_n5
+
 
 %%
 
@@ -115,7 +112,5 @@ P5_n5
 
 %this combines the n6 results from downstairs with the n<6 calculations
 %done here.
-save('sym_prob.mat','P1_n6','P2_n6','P3_n6','P4_n6','P5_n6','P6_n6','-append')
-
 
 
