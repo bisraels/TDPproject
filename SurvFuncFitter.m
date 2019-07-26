@@ -1,4 +1,3 @@
-
 % function SurvFuncFitter(xIN,yIN,res)
 %__________________________________________________________________________
 % AUTHOR: Brett Israels & Claire Albrecht
