@@ -13,15 +13,28 @@
 % OUTPUT: 1) The time constant that charachterizes the rate
 %
 % MODIFICATION LOG:
+clf
+fileNameKeyword = 'survProb_';
+fileNames = dir([fileNameKeyword '*']);
+for fileName_idx = 1:numel(fileNames)
+    load(fileNames(fileName_idx).name)
+    P = surv_prob_12_norm;
+    time = timeVector_12;
+end  
 
 functionName = 'SurvFuncFitter';
+rate_ID = 'k12';
 %----------------------------------------------------------------------
 %  Set  paramaters
 %----------------------------------------------------------------------
-rateName = 'kij';
+
 res = 0.03;
-time = 0:res:max(xIN);
 saveMode = 1;
+saveFigMode = 0;
+verboseMode = 0;
+showProgressMode = 1;
+findBestFit_mode = 1;
+labelPlotWithFit_mode = 1;
 %----------------------------------------------------------------------
 %  Prepare for output
 %----------------------------------------------------------------------
@@ -37,11 +50,9 @@ end
 %  Fit the Survival Function to a single exponential
 %----------------------------------------------------------------------
 % Set up fittype and options.
-[xData, yData] = prepareCurveData( xIN,yIN );
+[xData, yData] = prepareCurveData( time,P );
 fitFunction = 'exp(-x/t1)';
-if saveMode
-    fprintf(fid,'Fitting a function to the raw data: y(x) = %s\r\n',fitFunction);
-end
+
 fprintf('Fitting a function to the raw data: y(x) = %s\r\n',fitFunction);
 
 ft = fittype( fitFunction, 'independent', 'x', 'dependent', 'y' );
@@ -50,9 +61,6 @@ ft = fittype( fitFunction, 'independent', 'x', 'dependent', 'y' );
 chosen_method = 'NonlinearLeastSquares';
 opts = fitoptions( 'Method', chosen_method );
 opts.Display = 'off';
-if saveMode
-    fprintf(fid,'\t Fit options: %s\r\n',chosen_method);
-end
 fprintf('\t Fit options: %s\n',chosen_method);
 
 %--------------------------------------------------------------------------
@@ -69,10 +77,10 @@ opts.Lower =      [t1_LB];
 opts.Upper =      [t1_UB];
 
 % Fit model to data.
-
-randmult = 1;
+randMultiplier = 1;
+maxTrials = 10;
 for i = 1:maxTrials
-    t1_SPm = t1_SP + t1_SP*randn*randmult;
+    t1_SPm = t1_SP + t1_SP*randn*randMultiplier;
     
     opts.StartPoint = [t1_SPm];
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -112,7 +120,7 @@ for i = 1:maxTrials
             if exist(filepath_fit,'file') ~= 2
                 disp('Did not find the file. Saving the initial fit');
                 iterNumber = 1;
-                save(filepath_fit,'fitresult','gof','A1','t1','yoff','time','y','rsquare','iterNumber');
+                save(filepath_fit,'fitresult','gof','t1','time','y','rsquare','iterNumber');
             else
                 load(filepath_fit,'rsquare','iterNumber');
                 iterNumber = iterNumber + 1 ;
@@ -120,7 +128,7 @@ for i = 1:maxTrials
                 if rsquareNew > rsquare
                     disp(['*** Found a better fit: ' num2str(rsquareNew) ' > ' num2str(rsquare) '. Saving.']);
                     rsquare = rsquareNew;
-                    save(filepath_fit,'fitresult','gof','A1','t1','yoff','time','y','rsquare','iterNumber');
+                    save(filepath_fit,'fitresult','gof','t1','time','y','rsquare','iterNumber');
                 else
                     %                         disp(['     appending the iteration number to' filepath]);
                     save(filepath_fit,'iterNumber','-append')
@@ -143,19 +151,8 @@ fig.Name = '1exp Fit';
 
 plot(xData,yData,'b.','MarkerSize',10,'DisplayName','C^{(2)}(\tau)')
 hold on;
-if plot_current_fit_mode
-    plot(time,y,'color','green','LineWidth',2,'DisplayName',['Current Fit R^2 = ' num2str(gof.rsquare,'%.3f')]);
-    hold on;
-    if labelPlotWithFit_mode
-        if t1 < 1e-3
-            text(t1,fitresult(t1),['{\bf\leftarrow}' num2str(t1 *1e6,'%2.1f') ' \musec'],'Color','green','FontSize',14);
-        else
-            text(t1,fitresult(t1),['{\bf\leftarrow}' num2str(t1*1e3,'%2.1f') ' msec'],'Color','green','FontSize',14);
-        end
-        
-    end
-end
-load(filepath_fit,'fitresult','gof','A1','t1','yoff','time','y','rsquare','iterNumber');
+
+load(filepath_fit,'fitresult','gof','t1','time','y','rsquare','iterNumber');
 plot(time,y,'color','red','LineWidth',2,'DisplayName',['Best Fit R^2 = ' num2str(gof.rsquare,'%.3f')]);
 hold on;
 
@@ -164,26 +161,27 @@ lgd = legend;
 lgd.Location = 'NorthEast';
 lgd.FontSize = 12;
 
-
-title_str = [sample_description '{\color{Black}  N = ' num2str(Nfiles) '  }{\color{red}Res = ' num2str(num2str(usres)) '\musec}'...
+% [sample_description,save_prefix] = sample_descriptionGetter()
+sample_description = '3^{\prime}p(dT)_{15}';
+title_str = [sample_description '{\color{blue}  rate ' rate_ID '}{ \color{red}Res = ' num2str(res) 'sec}'...
     10 'y = ' fitFunction];
 title(title_str,'FontSize',16);
-xlabel('\tau (sec)','fontsize',16);
+xlabel('time (sec)','fontsize',16);
 ylabel('C^{(2)}(\tau)','fontsize',16);
 
 
 % axis tight;
-whitebg;
+set(gcf,'Color',[1 1 1]);
 grid on;
-set(gca,'yscale','log');
-set(gca,'xscale','log');
+set(gca,'yscale','lin');
+set(gca,'xscale','lin');
 set(gca,'FontSize',14);
 axis tight;
 axis square
 
 if labelPlotWithFit_mode
     
-    text(t1,fitresult(t1),['{\bf\leftarrow}' num2str(t1,'%2.1f') ' sec'],'Color','red','FontSize',14);
+    text(t1,fitresult(t1),['{\bf\leftarrow}' num2str(t1,'%2.3f') ' sec'],'Color','red','FontSize',14);
 end
 
 drawnow();
