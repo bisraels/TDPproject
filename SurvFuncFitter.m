@@ -11,28 +11,29 @@
 %        2) y: The survival probability (1 --> 0)
 %
 % OUTPUT: 1) The time constant that charachterizes the rate
+%         2) A figure which shows the data and the best fit
+%         3) 
 %
 % MODIFICATION LOG:
 clf
 fileNameKeyword = 'survProb_';
 fileNames = dir([fileNameKeyword '*']);
 for fileName_idx = 1:numel(fileNames)
-    load(fileNames(fileName_idx).name)
-    P = surv_prob_12_norm;
-    time = timeVector_12;
-end  
+    clf;    %Clear the current Figure
+    load(fileNames(fileName_idx).name,'time','prob','rate_ID')
+ 
 
 functionName = 'SurvFuncFitter';
-rate_ID = 'k12';
+
 %----------------------------------------------------------------------
 %  Set  paramaters
 %----------------------------------------------------------------------
 
 res = 0.03;
 saveMode = 1;
-saveFigMode = 0;
+saveFigMode = 1;
 verboseMode = 0;
-showProgressMode = 1;
+showProgressMode = 0;
 findBestFit_mode = 1;
 labelPlotWithFit_mode = 1;
 %----------------------------------------------------------------------
@@ -50,7 +51,7 @@ end
 %  Fit the Survival Function to a single exponential
 %----------------------------------------------------------------------
 % Set up fittype and options.
-[xData, yData] = prepareCurveData( time,P );
+[xData, yData] = prepareCurveData( time, prob );
 fitFunction = 'exp(-x/t1)';
 
 fprintf('Fitting a function to the raw data: y(x) = %s\r\n',fitFunction);
@@ -110,17 +111,18 @@ for i = 1:maxTrials
     %-------------------------------------------------------------------------
     
     t1 = fitresult.t1;
-    y = exp(-time/t1);
+    t = 0:res:max(time);
+    y = exp(-t/t1);
     
     if saveMode
         fitFunctionName = '1exp_fitresult';
-        foutName_prefix = [rateName '_' fitFunctionName];
+        foutName_prefix = [rate_ID '_' fitFunctionName];
         filepath_fit = [outputFolderName filesep() foutName_prefix '.mat'];
         if findBestFit_mode
             if exist(filepath_fit,'file') ~= 2
                 disp('Did not find the file. Saving the initial fit');
                 iterNumber = 1;
-                save(filepath_fit,'fitresult','gof','t1','time','y','rsquare','iterNumber');
+                save(filepath_fit,'fitresult','gof','xData','yData','t1','t','y','rsquare','iterNumber');
             else
                 load(filepath_fit,'rsquare','iterNumber');
                 iterNumber = iterNumber + 1 ;
@@ -128,7 +130,7 @@ for i = 1:maxTrials
                 if rsquareNew > rsquare
                     disp(['*** Found a better fit: ' num2str(rsquareNew) ' > ' num2str(rsquare) '. Saving.']);
                     rsquare = rsquareNew;
-                    save(filepath_fit,'fitresult','gof','t1','time','y','rsquare','iterNumber');
+                    save(filepath_fit,'fitresult','gof','xData','yData','t1','t','y','rsquare','iterNumber');
                 else
                     %                         disp(['     appending the iteration number to' filepath]);
                     save(filepath_fit,'iterNumber','-append')
@@ -136,24 +138,29 @@ for i = 1:maxTrials
             end
         else
             disp(['     Saving the fit results as ' foutName_prefix '.mat in ' outputFolderName]);
-            save(filepath_fit,'fitresult','gof','xData','yData','t1','time','y','rsquare','iterNumber');
+            save(filepath_fit,'fitresult','gof','xData','yData','t1','t','y','rsquare','iterNumber');
         end
     end
     fprintf('%d/%d fitresult #%d:  t1 = %f\n',i,maxTrials,iterNumber,t1);
 end
 %     save(filepath_fit,'xData','yData','opts','-append');
 %-------------------------------------------------------------------------
-% Plot the Fit with Data
+% Plot the [Best] Fit with Data
 %-------------------------------------------------------------------------
+load(filepath_fit,'fitresult','gof','xData','yData','t1','t','y','rsquare','iterNumber');
 
+t1 = fitresult.t1;
+    t = 0:res:max(xData);
+    y = exp(-t/t1);
+    
 fig = figure(1);
 fig.Name = '1exp Fit';
 
 plot(xData,yData,'b.','MarkerSize',10,'DisplayName','C^{(2)}(\tau)')
 hold on;
 
-load(filepath_fit,'fitresult','gof','t1','time','y','rsquare','iterNumber');
-plot(time,y,'color','red','LineWidth',2,'DisplayName',['Best Fit R^2 = ' num2str(gof.rsquare,'%.3f')]);
+load(filepath_fit,'fitresult','gof','t1','y','rsquare','iterNumber');
+plot(t,y,'color','red','LineWidth',2,'DisplayName',['Best Fit R^2 = ' num2str(gof.rsquare,'%.3f')]);
 hold on;
 
 legend('show');
@@ -191,14 +198,16 @@ drawnow();
 %-------------------------------------------------------------------------
 if saveFigMode
     fitFunctionName = '1exp_fitresult';
-    foutName_prefix = [save_prefix foutName '_' fitFunctionName];
+    
+    foutName_prefix = [rate_ID '_' fitFunctionName];
+        
     fig = gcf;
     fig.PaperPositionMode = 'auto';
     extension = 'png';
     disp(['     Saving figure as ' foutName_prefix '.' extension ' in ' outputFolderName]);
     print(fig,[outputFolderName filesep() foutName_prefix],['-d' extension],'-r0');
     saveas(gcf,[outputFolderName filesep() foutName_prefix],['fig']);
-    
+end
 end
 
 %     plot_error_mode = 0;
