@@ -20,7 +20,7 @@ clc
 % CREATED:  July 2019
 % MODIFIED:
 %
-%__________________________________________________________________________
+% -------------------------------------------------------------------------
 
 % Find dwell files
 
@@ -39,6 +39,27 @@ FRET_data = [FRET_initial, FRET_final, dwell_time];
 
 FRET_states = unique(FRET_initial);
 
+% Define the FRET state transitions as they will appear in the data set.
+FRET_12 = [FRET_states(1), FRET_states(2)];
+FRET_13 = [FRET_states(1), FRET_states(3)];
+FRET_14 = [FRET_states(1), FRET_states(4)];
+FRET_15 = [FRET_states(1), FRET_states(5)];
+FRET_21 = [FRET_states(2), FRET_states(1)];
+FRET_23 = [FRET_states(2), FRET_states(3)];
+FRET_24 = [FRET_states(2), FRET_states(4)];
+FRET_25 = [FRET_states(2), FRET_states(5)];
+FRET_31 = [FRET_states(3), FRET_states(1)];
+FRET_32 = [FRET_states(3), FRET_states(2)];
+FRET_34 = [FRET_states(3), FRET_states(4)];
+FRET_35 = [FRET_states(3), FRET_states(5)];
+FRET_41 = [FRET_states(4), FRET_states(1)];
+FRET_42 = [FRET_states(4), FRET_states(2)];
+FRET_43 = [FRET_states(4), FRET_states(3)];
+FRET_45 = [FRET_states(4), FRET_states(5)];
+FRET_51 = [FRET_states(5), FRET_states(1)];
+FRET_52 = [FRET_states(5), FRET_states(2)];
+FRET_53 = [FRET_states(5), FRET_states(3)];
+FRET_54 = [FRET_states(5), FRET_states(4)];
 
 %%
 %--------------------------------------------------------------------------
@@ -54,7 +75,6 @@ if sum( FRET_data(:,1) == FRET_states(1) & FRET_data(:,2) == FRET_states(2)) > 0
     time_LB = 0;
     time_UB = max(dwellTimes_12);
     NBins = max(dwellTimes_12)/res + 1; 
-    % Use these to define the edges of the histogram bins
     timeBarEdges  = [time_LB:(time_UB - time_LB)/(NBins -1):time_UB];
     
     % Make histogram of dwell times corresponding to transition 1 --> 2.
@@ -80,17 +100,17 @@ if sum( FRET_data(:,1) == FRET_states(1) & FRET_data(:,2) == FRET_states(2)) > 0
         temp = counts_12(i);
         temp_tot = temp_tot + temp;
         
-        if counts_12(i) == 0    % If this is satisfied, we do not want to collect the point.
-            i = i + 1;          % Continue does not automatically increase i, so need this or else stuck in infinite loop.
-            continue            % This tells the program to continue to next step of loop.
-        end                     % This section of code eliminates straight lines between points - need scatter plot.
+        if counts_12(i) == 0 % If this is satisfied, we do not want to collect the point.
+            i = i + 1;       % Continue does not automatically increase i, so need this or else stuck in infinite loop.
+            continue         % This tells the program to continue to next step of loop.
+        end                  % THis
         
         surv_prob_12 = vertcat(surv_prob_12, (1 - (temp_tot / N_tot)));
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_12 > 0 );       % This will select the times for which the condition is met.
-    prob = surv_prob_12 / max(surv_prob_12);    % Normalize the probability.
+    time = timeBarEdges( counts_12 > 0 );
+    prob = surv_prob_12 / max(surv_prob_12);
     
     subplot(1,2,2)
     scatter(time, prob);
@@ -100,7 +120,7 @@ if sum( FRET_data(:,1) == FRET_states(1) & FRET_data(:,2) == FRET_states(2)) > 0
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);              % This is just for saving convenience, want columns not rows.
+    time = transpose(timePlot_12);
     
     save('survProb_12.mat','time','prob','rate_ID')
     
@@ -166,7 +186,7 @@ if sum(FRET_data(:,1) == FRET_states(1) & FRET_data(:,2) == FRET_states(3)) > 0
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_13);
     
     save('survProb_13.mat','time','prob','rate_ID')
     
@@ -298,7 +318,7 @@ if sum(FRET_data(:,1) == FRET_states(1) & FRET_data(:,2) == FRET_states(5)) > 0
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_15);
     
     save('survProb_15.mat','time','prob','rate_ID')
     
@@ -364,7 +384,7 @@ if sum( FRET_data(:,1) == FRET_states(2) & FRET_data(:,2) == FRET_states(1) ) > 
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_21);
     
     save('survProb_21.mat','time','prob','rate_ID')
     
@@ -430,7 +450,7 @@ if sum( FRET_data(:,1) == FRET_states(2) & FRET_data(:,2) == FRET_states(3) ) > 
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_23);
     
     save('survProb_23.mat','time','prob','rate_ID')
     
@@ -496,7 +516,7 @@ if sum( FRET_data(:,1) == FRET_states(2) & FRET_data(:,2) == FRET_states(4) ) > 
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_24);
     
     save('survProb_24.mat','time','prob','rate_ID')
     
@@ -562,7 +582,7 @@ if sum( FRET_data(:,1) == FRET_states(2) & FRET_data(:,2) == FRET_states(5) ) > 
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_25);
     
     save('survProb_25.mat','time','prob', 'rate_ID')
     
@@ -628,7 +648,7 @@ if sum ( FRET_data(:,1) == FRET_states(3) & FRET_data(:,2) == FRET_states(1) ) >
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_31);
     
     save('survProb_31.mat','time','prob','rate_ID')
     
@@ -694,7 +714,7 @@ if sum( FRET_data(:,1) == FRET_states(3) & FRET_data(:,2) == FRET_states(2) ) > 
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_32);
     
     save('survProb_32.mat','time','prob','rate_ID')
     
@@ -760,7 +780,7 @@ if sum( FRET_data(:,1) == FRET_states(3) & FRET_data(:,2) == FRET_states(4) ) > 
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_34);
     
     save('survProb_34.mat','time','prob','rate_ID')
     
@@ -826,7 +846,7 @@ if sum( FRET_data(:,1) == FRET_states(3) & FRET_data(:,2) == FRET_states(5) ) > 
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_35);
     
     save('survProb_35.mat','time','prob','rate_ID')
     
@@ -892,7 +912,7 @@ if sum( FRET_data(:,1) == FRET_states(4) & FRET_data(:,2) == FRET_states(1) ) > 
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_41);
     
     save('survProb_41.mat','time','prob','rate_ID')
     
@@ -958,7 +978,7 @@ if sum( FRET_data(:,1) == FRET_states(4) & FRET_data(:,2) == FRET_states(2) ) > 
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_42);
     
     save('survProb_42.mat','time','prob','rate_ID')
     
@@ -1024,7 +1044,7 @@ if sum(FRET_data(:,1) == FRET_states(4) & FRET_data(:,2) == FRET_states(3)) > 0
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_43);
     
     save('survProb_43.mat','time','prob','rate_ID')
     
@@ -1090,7 +1110,7 @@ if sum(FRET_data(:,1) == FRET_states(4) & FRET_data(:,2) == FRET_states(5)) > 0
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_45);
     
     save('survProb_45.mat','time','prob','rate_ID')
     
@@ -1156,7 +1176,7 @@ if sum(FRET_data(:,1) == FRET_states(5) & FRET_data(:,2) == FRET_states(1)) > 0
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_51);
     
     save('survProb_51.mat','time','prob','rate_ID')
     
@@ -1222,7 +1242,7 @@ if sum(FRET_data(:,1) == FRET_states(5) & FRET_data(:,2) == FRET_states(2)) > 0
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_52);
     
     save('survProb_52.mat','time','prob','rate_ID')
     
@@ -1288,7 +1308,7 @@ if sum(FRET_data(:,1) == FRET_states(5) & FRET_data(:,2) == FRET_states(3)) > 0
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_53);
     
     save('survProb_53.mat','time','prob','rate_ID')
     
@@ -1354,7 +1374,7 @@ if sum(FRET_data(:,1) == FRET_states(5) & FRET_data(:,2) == FRET_states(4)) > 0
     xlim([0,max(timeBarEdges)+0.1])
     hold off
     
-    time = transpose(time);
+    time = transpose(timePlot_54);
     
     save('survProb_54.mat','time','prob','rate_ID')
     
