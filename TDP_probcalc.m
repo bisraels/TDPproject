@@ -17,7 +17,8 @@
 % Number of states
 n = 5;
 
-syms k12 k13 k14 k15 k16 k21 k23 k24 k25 k26 k31 k32 k34 k35 k36 k41 k42 k43 k45 k46 k51 k52 k53 k54 k56 k61 k62 k63 k64 k65 P1 P2 P3 P4 P5 P6
+syms k12 k13 k14 k15 k16 k21 k23 k24 k25 k26 k31 k32 k34 k35 k36 k41 k42 k43 k45 k46 k51 k52 k53 k54 k56 k61 k62 k63 k64 k65 
+syms P1 P2 P3 P4 P5 P6
 
 if n == 2
     K = [- k12 k21; k12 -k21]
