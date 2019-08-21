@@ -81,6 +81,6 @@ P31(t) = vpa(Psol_3.P1);
 P32(t) = vpa(Psol_3.P2);
 P33(t) = vpa(Psol_3.P3);
 
-save('symCondProb_4state0123_fixed.mat','P00','P01','P02','P03','P10','P11','P12','P13','P20','P21','P23','P30','P31','P32','P33')
+save('symCondProb_4state0123_fixed.mat','P00','P01','P02','P03','P10','P11','P12','P13','P20','P21','P22','P23','P30','P31','P32','P33')
 
 

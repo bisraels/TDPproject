@@ -74,7 +74,10 @@ syms A0 A1 A2 A3
 % This is a vector for the FRET values - assign values
 A = [A0, A1, A2, A3];
 % Matrix of conditional probabilities
-cP = [P00, P01, P02, P03; P10, P11, P12, P13; P20, P21, P22, P23; P30, P31, P32, P33];
+cP = [P00, P01, P02, P03;...
+    P10, P11, P12, P13;...
+    P20, P21, P22, P23;...
+    P30, P31, P32, P33];
 
 
 
