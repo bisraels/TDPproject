@@ -29,7 +29,7 @@ functionName = 'SurvFuncFitter';
 %  Set  paramaters
 %----------------------------------------------------------------------
 
-res = 0.03;
+res = 5*10^(-6);
 saveMode = 1;
 saveFigMode = 1;
 verboseMode = 0;
@@ -174,7 +174,7 @@ title_str = [sample_description '{\color{blue}  rate ' rate_ID '}{ \color{red}Re
     10 'y = ' fitFunction];
 title(title_str,'FontSize',16);
 xlabel('time (sec)','fontsize',16);
-ylabel('C^{(2)}(\tau)','fontsize',16);
+ylabel('P(\tau)','fontsize',16);
 
 
 % axis tight;

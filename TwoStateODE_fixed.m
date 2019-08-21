@@ -1,0 +1,53 @@
+% AUTHOR: Claire Albrecht & Brett Israels
+%
+% CREATED: August 2019
+%
+% PURPOSE: Calculate the two state ODE  for  the master equation
+%
+% MODIFICATIONS:
+%
+% NOTE: This is updated to use the same method as the 4 state system, but
+% the other two data model code does work too. It is easier to understand
+% the math from the first two state model code.
+%--------------------------------------------------------------------------
+
+
+syms k12 k21 P1(t) P2(t)
+
+% Define rate matrix and population vector (as a function of time)
+K = [-k12, k21; k12, -k21];
+P(t) = [P1(t); P2(t)];
+
+[Vec, lambda] = eig(K);
+
+eval1 = lambda(1,1);
+eval2 = lambda(2,2);
+
+evec1 = Vec(:,1);
+evec2 = Vec(:,2);
+
+% Define the DE we want to solve
+eqn = diff(P(t),t)== K * P(t);
+
+% Solve the equations and give an output
+% Condition 1: when all the population starts in state 1
+Psol_1 = dsolve(eqn, P1(0) == 1, P2(0)==0);
+
+% Rename output as conditional probability Pi-->j where i is the initial
+% condition,
+P11(t) = Psol_1.P1;
+P12(t) = Psol_1.P2;
+
+
+% Condition 2: when all the population starts in state 2
+Psol_2 = dsolve(eqn, P1(0) == 0, P2(0)==1);
+
+% Rename output as conditional probability Pi-->j where i is the initial
+% condition,
+P21(t) = Psol_2.P1;
+P22(t) = Psol_2.P2;
+
+
+save('symCondProb_2state.mat','P11','P12','P21','P22')
+
+
