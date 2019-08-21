@@ -71,9 +71,8 @@ P33(t) = vpa(subs(P33));
 % Two point TCF:
 syms A0 A1 A2 A3
 
-% This is a vector for the FRET values - assign values
+% This is a vector for th
 A = [A0, A1, A2, A3];
-% Matrix of conditional probabilities
 cP = [P00, P01, P02, P03; P10, P11, P12, P13; P20, P21, P22, P23; P30, P31, P32, P33];
 
 

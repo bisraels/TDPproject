@@ -17,10 +17,10 @@ clc
 
 syms k01 k02 k03 k10 k12 k13 k20 k21 k23 k30 k31 k32 positive 
 syms P0(t) P1(t) P2(t) P3(t)
-assume(P0(t),'real')
-assume(P1(t),'real')
-assume(P2(t),'real')
-assume(P3(t),'real')
+% assume(P0(t),'real')
+% assume(P1(t),'real')
+% assume(P2(t),'real')
+% assume(P3(t),'real')
 
 % Define rate matrix and population vector (as a function of time)
 % K = [-(k01 + k02 + k03), k10, k20, k30;...

@@ -6,6 +6,9 @@
 %
 % MODIFICATIONS:
 
+clear all
+clc
+
 syms k12 k21 P1(t) P2(t)
 
 % Define rate matrix and population vector (as a function of time)
