@@ -24,21 +24,46 @@ clc
 
 % Find dwell files
 
-dwellFileName = '3p15mer_3.000000e-02trace_stitched_dwell.dat';
+%dwellFileName = '3p15mer_3.000000e-02trace_stitched_dwell.dat';
+dwellFileName = '3p15mer_5.000000e-03trace_stitched_dwell.dat';
 
-res = 0.03;
+%res = 0.03;
+%--------------------------------------------------------------------------
+% Find resolution based on the filename (1-24-19)
+%--------------------------------------------------------------------------
+usres_str = dwellFileName(9:16);
+%usres_str = datafiles(1).name(14:19);
+usres = str2double(usres_str);
+msres = usres*10^-3;%('i.e. 1000 usec = 1 msec')
+res = usres*10^-6;%(i.e. 1 million useconds turn into 1 second)
+disp(['Setting the resolution equal to ' num2str(usres) ' microseconds (' num2str(msres) ' msec) (' num2str(res) ' sec)']);
 
-dwelltimes = dlmread(dwellFileName);
-FRET_initial = dwelltimes(:,1);
-FRET_final = dwelltimes(:,2);
-dwell_time_frames = dwelltimes(:,3);
+%--------------------------------------------------------------------------
+% From dwell file
+
+% dwelltimes = dlmread(dwellFileName);
+% FRET_initial = dwelltimes(:,1);
+% FRET_final = dwelltimes(:,2);
+% dwell_time_frames = dwelltimes(:,3);
+% 
+% dwell_time = dwell_time_frames * res;
+% 
+% FRET_data = [FRET_initial, FRET_final, dwell_time];
+% 
+% FRET_states = unique(FRET_initial);
+%--------------------------------------------------------------------------
+
+% From chopped dwell file - variable
+load('dwellInfoChopped.mat')
+FRET_initial = dwellInfoChopped(:,1);
+FRET_final = dwellInfoChopped(:,2);
+dwell_time_frames = dwellInfoChopped(:,3);
 
 dwell_time = dwell_time_frames * res;
 
 FRET_data = [FRET_initial, FRET_final, dwell_time];
 
-FRET_states = unique(FRET_initial);
-
+FRET_states = nonzeros(unique(FRET_initial));
 
 %%
 %--------------------------------------------------------------------------
@@ -89,7 +114,14 @@ if sum( FRET_data(:,1) == FRET_states(1) & FRET_data(:,2) == FRET_states(2)) > 0
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_12 > 0 );       % This will select the times for which the condition is met.
+%     time = [];
+%     for i = 1:numel(counts_12)
+%     time = [time, timeBarEdges(counts_12(i) > 0)];       % This will select the times for which the condition is met.
+%     end
+    %time = timeBarEdges(counts_12 > 0);
+    
+    time_counts_12 = find(counts_12 > 0);
+    time = timeBarEdges(time_counts_12);
     prob = surv_prob_12 / max(surv_prob_12);    % Normalize the probability.
     
     subplot(1,2,2)
@@ -97,7 +129,7 @@ if sum( FRET_data(:,1) == FRET_states(1) & FRET_data(:,2) == FRET_states(2)) > 0
     title("Survival probability: 1 --> 2")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);              % This is just for saving convenience, want columns not rows.
@@ -155,7 +187,9 @@ if sum(FRET_data(:,1) == FRET_states(1) & FRET_data(:,2) == FRET_states(3)) > 0
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_13 > 0 );
+    %time = timeBarEdges( counts_13 > 0 );
+    time_counts_13 = find(counts_13 > 0);
+    time = timeBarEdges(time_counts_13);
     prob = surv_prob_13 / max(surv_prob_13);
     
     subplot(1,2,2)
@@ -163,7 +197,7 @@ if sum(FRET_data(:,1) == FRET_states(1) & FRET_data(:,2) == FRET_states(3)) > 0
     title("Survival probability: 1 --> 3")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -221,7 +255,9 @@ if sum(FRET_data(:,1) == FRET_states(1) & FRET_data(:,2) == FRET_states(4)) > 0
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_14 > 0 );
+  %  time = timeBarEdges( counts_14 > 0 );
+    time_counts_14 = find(counts_14 > 0);
+    time = timeBarEdges(time_counts_14);  
     prob = surv_prob_14 / max(surv_prob_14);
 
     subplot(1,2,2)
@@ -229,7 +265,7 @@ if sum(FRET_data(:,1) == FRET_states(1) & FRET_data(:,2) == FRET_states(4)) > 0
     title("Survival probability: 1 --> 4")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
   
     time = transpose(time);
@@ -287,7 +323,9 @@ if sum(FRET_data(:,1) == FRET_states(1) & FRET_data(:,2) == FRET_states(5)) > 0
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_15 > 0 );
+%    time = timeBarEdges( counts_15 > 0 );
+    time_counts_15 = find(counts_15 > 0);
+    time = timeBarEdges(time_counts_15);
     prob = surv_prob_15 / max(surv_prob_15);
     
     subplot(1,2,2)
@@ -295,7 +333,7 @@ if sum(FRET_data(:,1) == FRET_states(1) & FRET_data(:,2) == FRET_states(5)) > 0
     title("Survival probability: 1 --> 5")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -353,7 +391,9 @@ if sum( FRET_data(:,1) == FRET_states(2) & FRET_data(:,2) == FRET_states(1) ) > 
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_21 > 0 );
+  %  time = timeBarEdges( counts_21 > 0 );
+    time_counts_21 = find(counts_21 > 0);
+    time = timeBarEdges(time_counts_21);
     prob = surv_prob_21 / max(surv_prob_21);
     
     subplot(1,2,2)
@@ -361,7 +401,7 @@ if sum( FRET_data(:,1) == FRET_states(2) & FRET_data(:,2) == FRET_states(1) ) > 
     title("Survival probability: 2 --> 1")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -419,7 +459,9 @@ if sum( FRET_data(:,1) == FRET_states(2) & FRET_data(:,2) == FRET_states(3) ) > 
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_23 > 0 );
+  %  time = timeBarEdges( counts_23 > 0 );
+    time_counts_23 = find(counts_23 > 0);
+    time = timeBarEdges(time_counts_23);
     prob = surv_prob_23 / max(surv_prob_23);
     
     subplot(1,2,2)
@@ -427,7 +469,7 @@ if sum( FRET_data(:,1) == FRET_states(2) & FRET_data(:,2) == FRET_states(3) ) > 
     title("Survival probability: 2 --> 3")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -485,7 +527,9 @@ if sum( FRET_data(:,1) == FRET_states(2) & FRET_data(:,2) == FRET_states(4) ) > 
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_24 > 0 );
+  %  time = timeBarEdges( counts_24 > 0 );
+    time_counts_24 = find(counts_24 > 0);
+    time = timeBarEdges(time_counts_24);
     prob = surv_prob_24 / max(surv_prob_24);
     
     subplot(1,2,2)
@@ -493,7 +537,7 @@ if sum( FRET_data(:,1) == FRET_states(2) & FRET_data(:,2) == FRET_states(4) ) > 
     title("Survival probability: 2 --> 4")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -551,7 +595,9 @@ if sum( FRET_data(:,1) == FRET_states(2) & FRET_data(:,2) == FRET_states(5) ) > 
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_25 > 0 );
+ %   time = timeBarEdges( counts_25 > 0 );
+    time_counts_25 = find(counts_25 > 0);
+    time = timeBarEdges(time_counts_25);
     prob = surv_prob_25 / max(surv_prob_25);
     
     subplot(1,2,2)
@@ -559,7 +605,7 @@ if sum( FRET_data(:,1) == FRET_states(2) & FRET_data(:,2) == FRET_states(5) ) > 
     title("Survival probability: 2 --> 5")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -617,7 +663,9 @@ if sum ( FRET_data(:,1) == FRET_states(3) & FRET_data(:,2) == FRET_states(1) ) >
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_31 > 0 );
+%    time = timeBarEdges( counts_31 > 0 );
+    time_counts_31 = find(counts_31 > 0);
+    time = timeBarEdges(time_counts_31);
     prob = surv_prob_31 / max(surv_prob_31);
     
     subplot(1,2,2)
@@ -625,7 +673,7 @@ if sum ( FRET_data(:,1) == FRET_states(3) & FRET_data(:,2) == FRET_states(1) ) >
     title("Survival probability: 3 --> 1")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -683,7 +731,9 @@ if sum( FRET_data(:,1) == FRET_states(3) & FRET_data(:,2) == FRET_states(2) ) > 
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_32 > 0 );
+%    time = timeBarEdges( counts_32 > 0 );
+    time_counts_32 = find(counts_32 > 0);
+    time = timeBarEdges(time_counts_32);
     prob = surv_prob_32 / max(surv_prob_32);
     
     subplot(1,2,2)
@@ -691,7 +741,7 @@ if sum( FRET_data(:,1) == FRET_states(3) & FRET_data(:,2) == FRET_states(2) ) > 
     title("Survival probability: 3 --> 2")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -749,7 +799,9 @@ if sum( FRET_data(:,1) == FRET_states(3) & FRET_data(:,2) == FRET_states(4) ) > 
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_34 > 0 );
+  %  time = timeBarEdges( counts_34 > 0 );
+    time_counts_34 = find(counts_34 > 0);
+    time = timeBarEdges(time_counts_34);
     prob = surv_prob_34 / max(surv_prob_34);
     
     subplot(1,2,2)
@@ -757,7 +809,7 @@ if sum( FRET_data(:,1) == FRET_states(3) & FRET_data(:,2) == FRET_states(4) ) > 
     title("Survival probability: 3 --> 4")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -815,7 +867,9 @@ if sum( FRET_data(:,1) == FRET_states(3) & FRET_data(:,2) == FRET_states(5) ) > 
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_35 > 0 );
+   % time = timeBarEdges( counts_35 > 0 );
+    time_counts_35 = find(counts_35 > 0);
+    time = timeBarEdges(time_counts_35);
     prob = surv_prob_35 / max(surv_prob_35);
     
     subplot(1,2,2)
@@ -823,7 +877,7 @@ if sum( FRET_data(:,1) == FRET_states(3) & FRET_data(:,2) == FRET_states(5) ) > 
     title("Survival probability: 3 --> 5")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -881,7 +935,9 @@ if sum( FRET_data(:,1) == FRET_states(4) & FRET_data(:,2) == FRET_states(1) ) > 
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_41 > 0 );
+  %  time = timeBarEdges( counts_41 > 0 );
+    time_counts_41 = find(counts_41 > 0);
+    time = timeBarEdges(time_counts_41);
     prob = surv_prob_41 / max(surv_prob_41);
     
     subplot(1,2,2)
@@ -889,7 +945,7 @@ if sum( FRET_data(:,1) == FRET_states(4) & FRET_data(:,2) == FRET_states(1) ) > 
     title("Survival probability: 4 --> 1")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -947,7 +1003,9 @@ if sum( FRET_data(:,1) == FRET_states(4) & FRET_data(:,2) == FRET_states(2) ) > 
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_42 > 0 );
+ %   time = timeBarEdges( counts_42 > 0 );
+    time_counts_42 = find(counts_42 > 0);
+    time = timeBarEdges(time_counts_42);
     prob = surv_prob_42 / max(surv_prob_42);
     
     subplot(1,2,2)
@@ -955,7 +1013,7 @@ if sum( FRET_data(:,1) == FRET_states(4) & FRET_data(:,2) == FRET_states(2) ) > 
     title("Survival probability: 4 --> 2")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -1013,7 +1071,9 @@ if sum(FRET_data(:,1) == FRET_states(4) & FRET_data(:,2) == FRET_states(3)) > 0
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_43 > 0 );
+  %  time = timeBarEdges( counts_43 > 0 );
+    time_counts_43 = find(counts_43 > 0);
+    time = timeBarEdges(time_counts_43);
     prob = surv_prob_43 / max(surv_prob_43);
     
     subplot(1,2,2)
@@ -1021,7 +1081,7 @@ if sum(FRET_data(:,1) == FRET_states(4) & FRET_data(:,2) == FRET_states(3)) > 0
     title("Survival probability: 4 --> 3")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -1079,7 +1139,9 @@ if sum(FRET_data(:,1) == FRET_states(4) & FRET_data(:,2) == FRET_states(5)) > 0
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_45 > 0 );
+   % time = timeBarEdges( counts_45 > 0 );
+    time_counts_45 = find(counts_45 > 0);
+    time = timeBarEdges(time_counts_45);
     prob = surv_prob_45 / max(surv_prob_45);
     
     subplot(1,2,2)
@@ -1087,7 +1149,7 @@ if sum(FRET_data(:,1) == FRET_states(4) & FRET_data(:,2) == FRET_states(5)) > 0
     title("Survival probability: 4 --> 5")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -1145,7 +1207,9 @@ if sum(FRET_data(:,1) == FRET_states(5) & FRET_data(:,2) == FRET_states(1)) > 0
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_51 > 0 );
+ %   time = timeBarEdges( counts_51 > 0 );
+    time_counts_51 = find(counts_51 > 0);
+    time = timeBarEdges(time_counts_51);
     prob = surv_prob_51 / max(surv_prob_51);
     
     subplot(1,2,2)
@@ -1153,7 +1217,7 @@ if sum(FRET_data(:,1) == FRET_states(5) & FRET_data(:,2) == FRET_states(1)) > 0
     title("Survival probability: 5 --> 1")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -1211,7 +1275,9 @@ if sum(FRET_data(:,1) == FRET_states(5) & FRET_data(:,2) == FRET_states(2)) > 0
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_52 > 0 );
+   % time = timeBarEdges( counts_52 > 0 );
+    time_counts_52 = find(counts_52 > 0);
+    time = timeBarEdges(time_counts_52);
     prob = surv_prob_52 / max(surv_prob_52);
     
     subplot(1,2,2)
@@ -1219,7 +1285,7 @@ if sum(FRET_data(:,1) == FRET_states(5) & FRET_data(:,2) == FRET_states(2)) > 0
     title("Survival probability: 5 --> 2")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -1277,7 +1343,9 @@ if sum(FRET_data(:,1) == FRET_states(5) & FRET_data(:,2) == FRET_states(3)) > 0
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_53 > 0 );
+   % time = timeBarEdges( counts_53 > 0 );
+    time_counts_53 = find(counts_53 > 0);
+    time = timeBarEdges(time_counts_53);
     prob = surv_prob_53 / max(surv_prob_53);
     
     subplot(1,2,2)
@@ -1285,7 +1353,7 @@ if sum(FRET_data(:,1) == FRET_states(5) & FRET_data(:,2) == FRET_states(3)) > 0
     title("Survival probability: 5 --> 3")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
@@ -1343,7 +1411,9 @@ if sum(FRET_data(:,1) == FRET_states(5) & FRET_data(:,2) == FRET_states(4)) > 0
         i = i + 1;
     end
     
-    time = timeBarEdges( counts_54 > 0 );
+  % time = timeBarEdges( counts_54 > 0 );
+    time_counts_54 = find(counts_54 > 0);
+    time = timeBarEdges(time_counts_54);
     prob = surv_prob_54 / max(surv_prob_54);
     
     subplot(1,2,2)
@@ -1351,7 +1421,7 @@ if sum(FRET_data(:,1) == FRET_states(5) & FRET_data(:,2) == FRET_states(4)) > 0
     title("Survival probability: 5 --> 4")
     xlabel("Times (s)")
     ylabel("Probability")
-    xlim([0,max(timeBarEdges)+0.1])
+    xlim([0,max(timeBarEdges)+res])
     hold off
     
     time = transpose(time);
