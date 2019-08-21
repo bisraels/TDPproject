@@ -25,7 +25,7 @@
 
 
 % Number of states
-n = 3;
+n = 4.1;
 
 syms k12 k13 k14 k15 k16 k21 k23 k24 k25 k26 k31 k32 k34 k35 k36 k41 k42 k43 k45 k46 k51 k52 k53 k54 k56 k61 k62 k63 k64 k65 
 syms P1 P2 P3 P4 P5 P6
@@ -71,7 +71,8 @@ if n == 4
     P3_n4 = solns.P3
     P4_n4 = solns.P4
     
-    save('sym_prob.mat','P1_n4','P2_n4','P3_n4','P4_n4','V_n4','D_n4','-append')
+   % save('sym_prob.mat','P1_n4','P2_n4','P3_n4','P4_n4','V_n4','D_n4','-append')
+   save('sym_prob.mat','P1_n4','P2_n4','P3_n4','P4_n4','V_n4','D_n4')
 end
 
 
@@ -93,14 +94,14 @@ K = [-(k01 + k02 + 0), k10, k20, 0;...
     eqns = [mtimes(K,P) == 0; P0 + P1 + P2 + P3 == 1];
     
     solns = solve(eqns,[P0 P1 P2 P3]);
-    P0_Cn4 = solns.P0
-    P1_Cn4 = solns.P1
-    P2_Cn4 = solns.P1
-    P3_Cn4 = solns.P1
+    P0_Cn4 = solns.P0;
+    P1_Cn4 = solns.P1;
+    P2_Cn4 = solns.P1;
+    P3_Cn4 = solns.P1;
     
     save('sym_prob.mat','P0_Cn4','P1_Cn4','P2_Cn4','P3_Cn4','-append')
 end
-
+%--------------------------------------------------------------------------
 
 
 
