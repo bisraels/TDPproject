@@ -174,7 +174,7 @@ title_str = [sample_description '{\color{blue}  rate ' rate_ID '}{ \color{red}Re
     10 'y = ' fitFunction];
 title(title_str,'FontSize',16);
 xlabel('time (sec)','fontsize',16);
-ylabel('C^{(2)}(\tau)','fontsize',16);
+ylabel('P(\tau)','fontsize',16);
 
 
 % axis tight;
