@@ -68,11 +68,14 @@ P33(t) = vpa(subs(P33));
 %       - Pi_eq equilibruim populations (from TDP_probcalc)
 %       - Ai values of FRET states
 
+%--------------------------------------------------------------------------
 % Two point TCF:
+%--------------------------------------------------------------------------
 % syms A0 A1 A2 A3
+syms t
 
 % This is a vector for the FRET values - assign values
-A0 = 0.34;
+A0 = 0.34;  % These are just guesses for now
 A1 = 0.42;
 A2 = 0.51;
 A3 = 0.67;
@@ -104,5 +107,36 @@ for i = 1:numel(A)
         C2(t) = C2(t) + C2temp(t);
     end
 end
+
+%%
+%--------------------------------------------------------------------------
+% Four point TCF:
+%--------------------------------------------------------------------------
+
+
+% All same info from above
+
+C4(t) = 0;
+
+for l = 1:numel(A)
+    for k = 1:numel(A)
+        for j = 1:numel(A)
+            for i = 1:numel(A)
+                
+                C4temp(t) = A(l) * cP(l,k) * A(k) * cP(k,j) * A(j) * cP(j,i) * A(i) * Peq(i);
+                C4(t) = C4(t) + C4temp(t);
+            end
+        end
+    end
+end
+
+%%
+% Plot TCF's
+figure
+subplot(2,2,1)
+fplot(C2(t),[0,1])
+hold on
+subplot(2,2,2)
+fplot(C4(t),[0,1])
 
 
