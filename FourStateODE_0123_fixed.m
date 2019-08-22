@@ -89,6 +89,6 @@ P33(t) = vpa(Psol_3.P3);
 
 % P3eq = P33(inf);
 
-save('symCondProb_4state0123_fixed.mat','P00','P01','P02','P03','P10','P11','P12','P13','P20','P21','P22','P23','P30','P31','P32','P33','P0eq','P1eq','P2eq','P3eq')
+save('symCondProb_4state0123_fixed.mat','P00','P01','P02','P03','P10','P11','P12','P13','P20','P21','P22','P23','P30','P31','P32','P33')
 
 
