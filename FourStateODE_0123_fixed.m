@@ -60,12 +60,16 @@ P01(t) = vpa(Psol_0.P1);
 P02(t) = vpa(Psol_0.P2);
 P03(t) = vpa(Psol_0.P3);
 
+% P0eq = P00(inf);
+
 % Condition 1: P(t) = [P0(t) = 0, P1(t) = 1, P2(t) = 0, P3(t) = 0]
 Psol_1 = dsolve(eqn,[P0(0) == 0 P1(0)==1 P2(0)==0 P3(0)==0]);
 P10(t) = vpa(Psol_1.P0);
 P11(t) = vpa(Psol_1.P1);
 P12(t) = vpa(Psol_1.P2);
 P13(t) = vpa(Psol_1.P3);
+
+% P1eq = P11(inf);
 
 % Condition 2: P(t) = [P0(t) = 0, P1(t) = 0, P2(t) = 1, P3(t) = 0]
 Psol_2 = dsolve(eqn,[P0(0) == 0 P1(0)==0 P2(0)==1 P3(0)==0]);
@@ -74,6 +78,8 @@ P21(t) = vpa(Psol_2.P1);
 P22(t) = vpa(Psol_2.P2);
 P23(t) = vpa(Psol_2.P3);
 
+% P2eq = P22(inf);
+
 % Condition 3: P(t) = [P0(t) = 0, P1(t) = 0, P2(t) = 0, P3(t) = 3]
 Psol_3 = dsolve(eqn,[P0(0) == 0 P1(0)==0 P2(0)==0 P3(0)==1]);
 P30(t) = vpa(Psol_3.P0);
@@ -81,6 +87,8 @@ P31(t) = vpa(Psol_3.P1);
 P32(t) = vpa(Psol_3.P2);
 P33(t) = vpa(Psol_3.P3);
 
-save('symCondProb_4state0123_fixed.mat','P00','P01','P02','P03','P10','P11','P12','P13','P20','P21','P22','P23','P30','P31','P32','P33')
+% P3eq = P33(inf);
+
+save('symCondProb_4state0123_fixed.mat','P00','P01','P02','P03','P10','P11','P12','P13','P20','P21','P22','P23','P30','P31','P32','P33','P0eq','P1eq','P2eq','P3eq')
 
 

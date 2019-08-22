@@ -81,8 +81,12 @@ end
 %--------------------------------------------------------------------------
 if n == 4.1
     syms P0 k01 k02 k03 k10 k20 k30
-K = [-(k01 + k02 + 0), k10, k20, 0;...
-    k01, -(k10 + k12 + 0), k21, 0;...
+% K = [-(k01 + k02 + 0), k10, k20, 0;...
+%     k01, -(k10 + k12 + 0), k21, 0;...
+%     k02, k12, -(k20 + k21 + k23), k32;...
+%     0, 0, k23, -(0 + 0 + k32);];
+K = [-(k01 + k02 + 0),      k10,        k20, 0;...
+         k01,          -(k10 + k12 + 0), k21, 0;...
     k02, k12, -(k20 + k21 + k23), k32;...
     0, 0, k23, -(0 + 0 + k32);];
 %  [V_n4, D_n4] = eig(K);
@@ -91,15 +95,22 @@ K = [-(k01 + k02 + 0), k10, k20, 0;...
     assume(P1,'real')
     assume(P2,'real')
     assume(P3,'real')
-    eqns = [mtimes(K,P) == 0; P0 + P1 + P2 + P3 == 1];
-    
+    % eqns = [mtimes(K,P) == 0; P0 + P1 + P2 + P3 == 1];
+    eqns = [K * P == 0; P0 + P1 + P2 + P3 == 1];
     solns = solve(eqns,[P0 P1 P2 P3]);
     P0_Cn4 = solns.P0;
     P1_Cn4 = solns.P1;
     P2_Cn4 = solns.P1;
     P3_Cn4 = solns.P1;
     
-    save('sym_prob.mat','P0_Cn4','P1_Cn4','P2_Cn4','P3_Cn4','-append')
+    if (P0_Cn4 + P1_Cn4 + P2_Cn4 + P3_Cn4) == 1
+        disp('Equilibrium probabilities sum to 1!')
+    else
+        disp('Equilibrium probabilities DO NOT sum to 1.')
+    end
+    
+    % save('sym_prob.mat','P0_Cn4','P1_Cn4','P2_Cn4','P3_Cn4','-append')
+     save('sym_prob.mat','P0_Cn4','P1_Cn4','P2_Cn4','P3_Cn4')
 end
 %--------------------------------------------------------------------------
 

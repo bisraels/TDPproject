@@ -25,7 +25,7 @@
 
 
 % Number of states
-n = 4.1;
+n = 2;
 
 syms k12 k13 k14 k15 k16 k21 k23 k24 k25 k26 k31 k32 k34 k35 k36 k41 k42 k43 k45 k46 k51 k52 k53 k54 k56 k61 k62 k63 k64 k65 
 syms P1 P2 P3 P4 P5 P6
@@ -40,7 +40,7 @@ if n == 2
     P1_n2 = solns.P1
     P2_n2 = solns.P2
 
-    save('sym_prob.mat','P1_n2','P2_n2','V_n2','D_n2')
+    save('sym_prob.mat','P1_n2','P2_n2')
     
 end
 
@@ -81,18 +81,26 @@ end
 %--------------------------------------------------------------------------
 if n == 4.1
     syms P0 k01 k02 k03 k10 k20 k30
+% K = [-(k01 + k02 + 0), k10, k20, 0;...
+%     k01, -(k10 + k12 + 0), k21, 0;...
+%     k02, k12, -(k20 + k21 + k23), k32;...
+%     0, 0, k23, -(0 + 0 + k32);];
 K = [-(k01 + k02 + 0), k10, k20, 0;...
-    k01, -(k10 + k12 + 0), k21, 0;...
-    k02, k12, -(k20 + k21 + k23), k32;...
-    0, 0, k23, -(0 + 0 + k32);];
+       k01, -(k10 + k12 + 0), k21, 0;...
+       k02, k12, -(k20 + k21 + k23), k32;...
+       0, 0, k23, -(0 + 0 + k32);];
 %  [V_n4, D_n4] = eig(K);
     P = [P0; P1; P2; P3];
     assume(P0,'real')
     assume(P1,'real')
     assume(P2,'real')
     assume(P3,'real')
-    eqns = [mtimes(K,P) == 0; P0 + P1 + P2 + P3 == 1];
     
+    % Detailed balance
+    k02 = (k01 * k12 * k20)/(k10 * k21);
+    
+    % eqns = [mtimes(K,P) == 0; P0 + P1 + P2 + P3 == 1];
+    eqns = [K * P == 0; P0 + P1 + P2 + P3 == 1];
     solns = solve(eqns,[P0 P1 P2 P3]);
     P0_Cn4 = solns.P0;
     P1_Cn4 = solns.P1;
