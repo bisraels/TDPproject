@@ -235,17 +235,18 @@ tau3vec = logspace(0,3,50);
 C4mat = zeros(length(tau1vec));
 
 % Loop over values for tau 1 and tau 3
-for g = 1:length(tau1vec)
-    tau1 = tau1vec(g);
-    for h = 1:length(tau3vec)
-        tau3 = tau3vec(h);
+% for  g = 1:length(tau1vec)
+%     tau1 = tau1vec(g);
+% for h = 1:length(tau3vec)
+%         tau3 = tau3vec(h);
+
 % Or define tau1 and tau3 symbolically and plot the functions
 % tau1 = sym('tau1');
 % tau2 = sym('tau2');
 
-        t1 = tau1;
+        t1 = tau1vec;
         t2 = tau2;
-        t3 = tau3;
+        t3 = tau3vec';
         
         % global cP_t1 cP_t2 cP_t3
 %         cP_t1 =[P00(t1), P10(t1), P20(t1), P30(t1);...
@@ -261,46 +262,128 @@ for g = 1:length(tau1vec)
 %             P02(t3), P12(t3), P22(t3), P32(t3);...
 %             P03(t3), P13(t3), P23(t3), P33(t3)];
 
-        % Define each element as a double - makes calculation much faster
-        cP_t1 =[double(P00(t1)), double(P10(t1)), double(P20(t1)), double(P30(t1));...
-                double(P01(t1)), double(P11(t1)), double(P21(t1)), double(P31(t1));...
-                double(P02(t1)), double(P12(t1)), double(P22(t1)), double(P32(t1));...
-                double(P03(t1)), double(P13(t1)), double(P23(t1)), double(P33(t1))];
+% Initialize size of 3D array for conditional probability for t1:
+cP_t1 = zeros(4,4,length(t1));
+% Define the vector in each position
+cP_t1(1,1,:) = double(P00(t1));
+cP_t1(2,1,:) = double(P01(t1));
+cP_t1(3,1,:) = double(P02(t1));
+cP_t1(4,1,:) = double(P03(t1));
+
+cP_t1(1,2,:) = double(P10(t1));
+cP_t1(2,2,:) = double(P11(t1));
+cP_t1(3,2,:) = double(P12(t1));
+cP_t1(4,2,:) = double(P13(t1));
+
+cP_t1(1,3,:) = double(P20(t1));
+cP_t1(2,3,:) = double(P21(t1));
+cP_t1(3,3,:) = double(P22(t1));
+cP_t1(4,3,:) = double(P23(t1));
+
+cP_t1(1,4,:) = double(P30(t1));
+cP_t1(2,4,:) = double(P31(t1));
+cP_t1(3,4,:) = double(P32(t1));
+cP_t1(4,4,:) = double(P33(t1));
+
+
+%         % Define each element as a double - makes calculation much faster
+%         cP_t1 =[double(P00(t1)), double(P10(t1)), double(P20(t1)), double(P30(t1));...
+%                 double(P01(t1)), double(P11(t1)), double(P21(t1)), double(P31(t1));...
+%                 double(P02(t1)), double(P12(t1)), double(P22(t1)), double(P32(t1));...
+%                 double(P03(t1)), double(P13(t1)), double(P23(t1)), double(P33(t1))];
+
+% Initialize size of 3D array for conditional probability for t2:
+cP_t2 = zeros(4,4,length(t2));
+% Define the vector in each position
+cP_t2(1,1,:) = double(P00(t2));
+cP_t2(2,1,:) = double(P01(t2));
+cP_t2(3,1,:) = double(P02(t2));
+cP_t2(4,1,:) = double(P03(t2));
+
+cP_t2(1,2,:) = double(P10(t2));
+cP_t2(2,2,:) = double(P11(t2));
+cP_t2(3,2,:) = double(P12(t2));
+cP_t2(4,2,:) = double(P13(t2));
+
+cP_t2(1,3,:) = double(P20(t2));
+cP_t2(2,3,:) = double(P21(t2));
+cP_t2(3,3,:) = double(P22(t2));
+cP_t2(4,3,:) = double(P23(t2));
+
+cP_t2(1,4,:) = double(P30(t2));
+cP_t2(2,4,:) = double(P31(t2));
+cP_t2(3,4,:) = double(P32(t2));
+cP_t2(4,4,:) = double(P33(t2));
+
+%         cP_t2 =[double(P00(t2)), double(P10(t2)), double(P20(t2)), double(P30(t2));...
+%                 double(P01(t2)), double(P11(t2)), double(P21(t2)), double(P31(t2));...
+%                 double(P02(t2)), double(P12(t2)), double(P22(t2)), double(P32(t2));...
+%                 double(P03(t2)), double(P13(t2)), double(P23(t2)), double(P33(t2))];
             
-        cP_t2 =[double(P00(t2)), double(P10(t2)), double(P20(t2)), double(P30(t2));...
-                double(P01(t2)), double(P11(t2)), double(P21(t2)), double(P31(t2));...
-                double(P02(t2)), double(P12(t2)), double(P22(t2)), double(P32(t2));...
-                double(P03(t2)), double(P13(t2)), double(P23(t2)), double(P33(t2))];
-            
-        cP_t3 =[double(P00(t3)), double(P10(t3)), double(P20(t3)), double(P30(t3));...
-                double(P01(t3)), double(P11(t3)), double(P21(t3)), double(P31(t3));...
-                double(P02(t3)), double(P12(t3)), double(P22(t3)), double(P32(t3));...
-                double(P03(t3)), double(P13(t3)), double(P23(t3)), double(P33(t3))];
-        
-        
-        %C4 = @(tau1, tau2, tau3) 0 * tau1 * tau2 * tau3;
-        C4vec = [];
-        for i = 1:numel(A)
-            for j = 1:numel(A)
-                for k = 1:numel(A)
-                    for l = 1:numel(A)
-                        % C4temp = @(tau1, tau2, tau3) A(l) * cP_t3(l,k) * A(k) * cP_t2(k,j) * A(j) * cP_t1(j,i) * A(i) * Peq(i);
-                        %C4 = @(tau1, tau2, tau3) C4 + C4temp;
-                        % C4term_val = C4term(tau1, tau2, tau3, i, j, k, l);
-                        % C4term_val = C4term(tau1, tau2, tau3, A, cP_t1, cP_t2, cP_t3, Peq, i, j, k, l);
-                        C4term_val =  A(l) * cP_t3(l,k) * A(k) * cP_t2(k,j) * A(j) * cP_t1(j,i) * A(i) * Peq(i);
-                        % C4vec = vertcat(C4vec, C4term_val);
-                        C4vec = [C4vec; C4term_val];
-                    end
-                end
-            end
-        end
-        
-        C4 = double(sum(C4vec));    % for numerical values of (tau1, tau3)
-        % C4 = sum(C4vec);          % for defining (tau1, tau3) symbolically
-        C4mat(g,h) = C4;            % g indexes tau1, h indexes over tau2
-    end
-end
+% Initialize size of 3D array for conditional probability for t3:
+cP_t3 = zeros(4,4,length(t3));
+% Define the vector in each position
+cP_t3(1,1,:) = double(P00(t3));
+cP_t3(2,1,:) = double(P01(t3));
+cP_t3(3,1,:) = double(P02(t3));
+cP_t3(4,1,:) = double(P03(t3));
+
+cP_t3(1,2,:) = double(P10(t3));
+cP_t3(2,2,:) = double(P11(t3));
+cP_t3(3,2,:) = double(P12(t3));
+cP_t3(4,2,:) = double(P13(t3));
+
+cP_t3(1,3,:) = double(P20(t3));
+cP_t3(2,3,:) = double(P21(t3));
+cP_t3(3,3,:) = double(P22(t3));
+cP_t3(4,3,:) = double(P23(t3));
+
+cP_t3(1,4,:) = double(P30(t3));
+cP_t3(2,4,:) = double(P31(t3));
+cP_t3(3,4,:) = double(P32(t3));
+cP_t3(4,4,:) = double(P33(t3));
+
+%         cP_t3 =[double(P00(t3)), double(P10(t3)), double(P20(t3)), double(P30(t3));...
+%                 double(P01(t3)), double(P11(t3)), double(P21(t3)), double(P31(t3));...
+%                 double(P02(t3)), double(P12(t3)), double(P22(t3)), double(P32(t3));...
+%                 double(P03(t3)), double(P13(t3)), double(P23(t3)), double(P33(t3))];
+ toc       
+            %%
+ tic       
+ %C4 = @(tau1, tau2, tau3) 0 * tau1 * tau2 * tau3;
+ C4vec = [];
+ C4mat = zeros(length(A),length(A),length(t1));
+ for i = 1:numel(A)
+     for j = 1:numel(A)
+         for k = 1:numel(A)
+             for l = 1:numel(A)
+               %  for m = 1:length(t1)
+                 % C4temp = @(tau1, tau2, tau3) A(l) * cP_t3(l,k) * A(k) * cP_t2(k,j) * A(j) * cP_t1(j,i) * A(i) * Peq(i);
+                 %C4 = @(tau1, tau2, tau3) C4 + C4temp;
+                 % C4term_val = C4term(tau1, tau2, tau3, i, j, k, l);
+                 % C4term_val = C4term(tau1, tau2, tau3, A, cP_t1, cP_t2, cP_t3, Peq, i, j, k, l);
+                 C4term_val =  A(l) .* cP_t3(l,k,:) .* A(k) .* cP_t2(k,j) .* A(j) .* cP_t1(j,i,:) .* A(i) .* Peq(i);
+                 % C4vec = vertcat(C4vec, C4term_val);
+                 
+                 C4vec = vertcat(C4vec, C4term_val);
+                 
+              %   end
+             end
+         end
+     end
+ end
+ 
+ C4 = double(sum(C4vec,1));    % for numerical values of (tau1, tau3)
+ 
+%  for g = 1:length(tau1vec)
+%      for h = 1:length(tau3vec)
+%          C4mat(g,h,:) = C4(g,h,;
+%      end
+%  end
+ 
+ % C4 = sum(C4vec);          % for defining (tau1, tau3) symbolically
+ %C4mat = C4;            % g indexes tau1, h indexes over tau2
+
 
 % Plot C4 with tau1 vs tau2 - symbolically
 % figure
@@ -313,7 +396,7 @@ toc
 %%
 % Plot surface of C4
 figure
-TCF4point = surf(tau1vec, tau3vec, C4mat);
+TCF4point = surf(tau1vec, tau3vec, C4mat(:,:,2));
 title('Four point TCF')
 ax = gca;
 ax.XScale = 'log';
