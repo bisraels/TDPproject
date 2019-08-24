@@ -352,28 +352,119 @@ cP_t3(4,4,:) = double(P33(t3));
  tic       
  %C4 = @(tau1, tau2, tau3) 0 * tau1 * tau2 * tau3;
  C4vec = [];
- C4mat = zeros(length(A),length(A),length(t1),length(t2));
- for i = 1:numel(A)
-     for j = 1:numel(A)
-         for k = 1:numel(A)
-             for l = 1:numel(A)
-               %  for m = 1:length(t1)
-                 % C4temp = @(tau1, tau2, tau3) A(l) * cP_t3(l,k) * A(k) * cP_t2(k,j) * A(j) * cP_t1(j,i) * A(i) * Peq(i);
-                 %C4 = @(tau1, tau2, tau3) C4 + C4temp;
-                 % C4term_val = C4term(tau1, tau2, tau3, i, j, k, l);
-                 % C4term_val = C4term(tau1, tau2, tau3, A, cP_t1, cP_t2, cP_t3, Peq, i, j, k, l);
-                 C4term_val =  A(l) .* cP_t3(l,k,:) .* A(k) .* cP_t2(k,j) .* A(j) .* cP_t1(j,i,:) .* A(i) .* Peq(i);
-                 % C4vec = vertcat(C4vec, C4term_val);
-                 
-                 C4vec = vertcat(C4vec, C4term_val);
-                 
-              %   end
+ % C4term_val = [];
+ % C4mat = zeros(length(A),length(A),length(t1),length(t2));
+
+ for timeStep = 1:length(t1)
+     for i = 1:numel(A)
+         for j = 1:numel(A)
+             for k = 1:numel(A)
+                 for l = 1:numel(A)
+                     
+                     % C4temp = @(tau1, tau2, tau3) A(l) * cP_t3(l,k) * A(k) * cP_t2(k,j) * A(j) * cP_t1(j,i) * A(i) * Peq(i);
+                     %C4 = @(tau1, tau2, tau3) C4 + C4temp;
+                     % C4term_val = C4term(tau1, tau2, tau3, i, j, k, l);
+                      C4term_val = C4term(t1, t2, t3, A, cP_t1, cP_t2, cP_t3, Peq, i, j, k, l, timeStep);
+                     % C4term_val =  A(l) .* cP_t3(l,k,:) .* A(k) .* cP_t2(k,j) .* A(j) .* cP_t1(j,i,timeStep) .* A(i) .* Peq(i);
+                     % C4vec = vertcat(C4vec, C4term_val);
+                     
+                     %C4vec_temp(:,m) = vertcat(C4term_val, C4term_val);
+
+                     C4vec = [C4vec; C4term_val];
+                 end
              end
          end
      end
  end
+  
+ C4vec_h = reshape(C4vec,[256,50,50]);
+ C4 = sum(C4vec_h, 1);
  
- C4 = double(sum(C4vec,1));    % for numerical values of (tau1, tau3)
+ C4 = squeeze(C4);
+ 
+ % itSize = length(A)^4;
+ 
+
+ % Concatenate C4vec into columns of each t1 value (should end up being 256x50x50)
+%  for i = 1:itSize
+%      
+%      C4vec_h(i,n(1),:) = C4vec(i,1,:);
+%      
+%      for j = i+1:(n(2)*itSize)    
+%          C4vec_h(i,n(2),:) = C4vec(j,1,:);
+%      end
+%      
+%      for k = (j+1):(n(3)*itSize) 
+%          C4vec_h(i,n(3),:) = C4vec(k,1,:);
+%      end
+%      
+%      for h = (k+1):(n(4)*itSize)
+%          C4vec_h(i,n(4),:) = C4vec(h,1,:);
+%      end
+%      
+%      for g = (h+1):(n(5)*itSize)
+%          C4vec_h(i,n(5),:) = C4vec(g,1,:);
+%      end
+%      
+%  end
+ 
+% C4 = double(sum(C4vec_h,1));
+ 
+ 
+%  % Attempt 2
+%  tic
+%  m =[1, n * itSize];
+%  n = 1:length(t1);
+%  % i = 1:(length(m)-1);
+%  % j = 2:length(m);
+%   for q = 1:itSize
+%        for i = 1:(length(m)-1) 
+%           for j = 2:length(m)
+%               for k = m(i):m(j)
+%                   
+%                   C4vec_horz(q,n(i),1:50) = C4vec(k,1,1:50);
+%                   
+%               end
+%           end
+%       end
+%   end
+%   toc  
+        
+
+
+% l = 257;
+%  while m(1) < l <= m(2)
+%      C4vec_h(i,n(2),1:50) = C4vec(l,1,1:50);
+%      l = l+1;
+%  end
+% end
+ 
+ 
+%  C4 = double(sum(C4vec(i),1));    % for numerical values of (tau1, tau3)
+
+ 
+%  
+%  for i = (length(t1)+1):(2 * length(t1))
+%       C4temp = double(sum(C4vec(i),1));    % for numerical values of (tau1, tau3)
+%       C4 = horzcat(C4, C4temp);
+%  end
+%  
+%  C4_t1 = C4;
+%  C4_t3 = C4;
+ 
+ % Let's build C4mat from the C4vec
+%  for i = 1:length(tau1vec)
+%      C4mat(i,1) = C4(1,1,i);
+%  end
+%  
+%  for i = 1:length(tau1vec)
+%      for j = 1:length(tau3vec)
+%          C4mat(i,j) = C4(1,1,j);
+%      end
+%  end
+ 
+%  C4mat(1,2) = C4(1,1,2);
+%  C4mat(2,2) = C4(1,1,2);
  
 %  for g = 1:length(tau1vec)
 %      for h = 1:length(tau3vec)
@@ -393,21 +484,21 @@ cP_t3(4,4,:) = double(P33(t3));
 % ylim([-1,1])
 
 toc
-%%
+
 % Plot surface of C4
 figure
-TCF4point = surf(tau1vec, tau3vec, C4mat(:,:,2));
+TCF4point = surf(tau1vec, tau3vec, C4);
 title('Four point TCF')
 ax = gca;
 ax.XScale = 'log';
 ax.YScale = 'log';
 
-%%
-% function C4term_val = C4term(tau1, tau2, tau3, A, cP_t1, cP_t2, cP_t3, Peq, i, j, k, l)
-% %function C4term_val = C4term(tau1, tau2, tau3, A, cP_t1(j,i), cP_t2(k,j), cP_t3(l,k), Peq(i),i,j,k,l)
-% % global A Peq cP_t1 cP_t2 cP_t3
-% C4term_val =  A(l) * cP_t3(l,k) * A(k) * cP_t2(k,j) * A(j) * cP_t1(j,i) * A(i) * Peq(i);
-% end
+
+function C4term_val = C4term(t1, t2, t3, A, cP_t1, cP_t2, cP_t3, Peq, i, j, k, l, timeStep)
+%function C4term_val = C4term(tau1, tau2, tau3, A, cP_t1(j,i), cP_t2(k,j), cP_t3(l,k), Peq(i),i,j,k,l)
+% global A Peq cP_t1 cP_t2 cP_t3
+C4term_val =  A(l) .* cP_t3(l,k,:) .* A(k) .* cP_t2(k,j) .* A(j) .* cP_t1(j,i,timeStep) .* A(i) .* Peq(i);
+end
 
 
 
