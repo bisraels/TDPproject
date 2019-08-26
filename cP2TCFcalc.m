@@ -10,7 +10,12 @@
 %           
 %
 % MODIFICATIONS:  August 2019 - Added code to calculate two point and four point TCFs
+%
+% TO FIX: (1) Time step needs to be replaced with the value
+%
 %--------------------------------------------------------------------------
+
+%Output created by FourStateODE_0123_fixed.m
 
 %load('symCondProb_4state0123.mat')        % This is from the old code
 load('symCondProb_4state0123_fixed.mat')   % This is the output of the fixed code.
@@ -38,6 +43,7 @@ k02 = (k01 * k12 * k20)/(k10 * k21);
 
 % Evaluate conditional probabilties by substituting in values from above
 % and using vpa() to force the simplest form of the output.
+
 P00(t) = vpa(subs(P00));    
 P01(t) = vpa(subs(P01));
 P02(t) = vpa(subs(P02));
@@ -168,7 +174,9 @@ close all
 
 figure
 TCF2pt = fplot(C2(t),[0,1]);
-title('Two point TCF')
+title('Analytical Two point TCF','FontSize',18)
+xlabel('Time (\tau_1)','FontSize',14);
+ylabel('C^{(2)}(\tau) (\tau)','FontSize',14);
 % ax = gca;
 % ax.XScale = 'log';
 
@@ -179,7 +187,7 @@ title('Two point TCF')
 % Four point TCF:
 %--------------------------------------------------------------------------
 
-tic 
+ 
 
 % syms A0 A1 A2 A3
 % sym t
@@ -228,15 +236,16 @@ sqm = (sum(A.*Peq))^2;      % mean square value <A>^2
 tau2 = 1;
 
 % Create a vector of tau1 and tau3 values
-tau1vec = logspace(0,3,50); % logspace(starting exponent, final exponent, number of bins)
-tau3vec = logspace(0,3,50);
+Npts = 50;
+tau1vec = logspace(0,3,Npts); % logspace(starting exponent, final exponent, number of bins)
+tau3vec = logspace(0,3,Npts);
 %tau1vec = [1, 2, 3, 4]; 
 %tau3vec = [1, 2, 3, 4];
 
 
 % Create a matrix to hold the C4's calculated for each (tau1,tau3) pair for
 % a set tau 2
-C4mat = zeros(length(tau1vec));
+C4mat = zeros(length(tau1vec),length(tau3vec));
 
 % Loop over values for tau 1 and tau 3
 % for  g = 1:length(tau1vec)
@@ -253,8 +262,11 @@ t2 = tau2;
 t3 = tau3vec';
         
 
+tic
+disp('... Calculating the Conditional Probabilities');
 % Initialize size of 3D array for conditional probability for t1:
 cP_t1 = zeros(4,4,length(t1));
+
 % Define the vector in each position
 cP_t1(1,1,:) = double(P00(t1));
 cP_t1(2,1,:) = double(P01(t1));
@@ -324,39 +336,68 @@ cP_t3(1,4,:) = double(P30(t3));
 cP_t3(2,4,:) = double(P31(t3));
 cP_t3(3,4,:) = double(P32(t3));
 cP_t3(4,4,:) = double(P33(t3));  
-            
        
+disp('Time to calculate Conditional Probabilities:');
+      toc 
+      
  %C4 = @(tau1, tau2, tau3) 0 * tau1 * tau2 * tau3;
  C4vec = [];
+ 
  % C4term_val = [];
  % C4mat = zeros(length(A),length(A),length(t1),length(t2));
 
- for timeStep = 1:length(t1)
+disp('... Calculating the 4 point TCF');
+tic
+%-------------------------------------------------------------------------
+ % Loop1: Iterate over the time dimension
+ %-------------------------------------------------------------------------
+%  for timeStep = 1:length(t1)
+% 
+%      for i = 1:numel(A)
+%          for j = 1:numel(A)
+%              for k = 1:numel(A)
+%                  for l = 1:numel(A)
+%                      
+%                      % C4temp = @(tau1, tau2, tau3) A(l) * cP_t3(l,k) * A(k) * cP_t2(k,j) * A(j) * cP_t1(j,i) * A(i) * Peq(i);
+%                      %C4 = @(tau1, tau2, tau3) C4 + C4temp;
+%                      % C4term_val = C4term(tau1, tau2, tau3, i, j, k, l);
+% % C4term_val = C4term(t1, t2, t3, A, cP_t1, cP_t2, cP_t3, Peq, i, j, k, l, timeStep);
+%                      C4term_val =  A(l) .* cP_t3(l,k,:) .* A(k) .* cP_t2(k,j) .* A(j) .* cP_t1(j,i,timeStep) .* A(i) .* Peq(i);
+%                      % C4vec = vertcat(C4vec, C4term_val);
+%                      
+%                      %C4vec_temp(:,m) = vertcat(C4term_val, C4term_val);
+% 
+%                      C4vec = [C4vec; C4term_val];
+%                      
+%                  end
+%              end
+%          end
+%      end
+%     
+%  end
+
+ %-------------------------------------------------------------------------
+ % Attempting to do above loop without the timestep
+ %-------------------------------------------------------------------------
      for i = 1:numel(A)
          for j = 1:numel(A)
              for k = 1:numel(A)
                  for l = 1:numel(A)
                      
-                     % C4temp = @(tau1, tau2, tau3) A(l) * cP_t3(l,k) * A(k) * cP_t2(k,j) * A(j) * cP_t1(j,i) * A(i) * Peq(i);
-                     %C4 = @(tau1, tau2, tau3) C4 + C4temp;
-                     % C4term_val = C4term(tau1, tau2, tau3, i, j, k, l);
-                      C4term_val = C4term(t1, t2, t3, A, cP_t1, cP_t2, cP_t3, Peq, i, j, k, l, timeStep);
-                     % C4term_val =  A(l) .* cP_t3(l,k,:) .* A(k) .* cP_t2(k,j) .* A(j) .* cP_t1(j,i,timeStep) .* A(i) .* Peq(i);
-                     % C4vec = vertcat(C4vec, C4term_val);
-                     
-                     %C4vec_temp(:,m) = vertcat(C4term_val, C4term_val);
+                     C4term_val =  A(l) *squeeze(cP_t3(l,k,:)) * A(k) * cP_t2(k,j) * A(j) * squeeze(cP_t1(j,i,:))'* A(i) * Peq(i);
+                  C4mat = C4mat + C4term_val;
 
-                     C4vec = [C4vec; C4term_val];
+%                      C4vec = [C4vec; C4term_val];
                  end
              end
          end
      end
- end
-  
- C4mat = reshape(C4vec,[256,50,50]);
- C4 = sum(C4mat, 1);
  
- C4 = squeeze(C4);
+ C4 = C4mat;
+%  C4mat = reshape(C4vec,[256,50,50]);
+%  C4 = sum(C4mat, 1);
+ 
+%  C4 = squeeze(C4);
 
 % Plot C4 with tau1 vs tau2 - symbolically
 % figure
@@ -365,6 +406,7 @@ cP_t3(4,4,:) = double(P33(t3));
 % xlim([-1 1])
 % ylim([-1,1])
 
+disp('Time to calculate the four point TCF (C4):');
 toc
 
 

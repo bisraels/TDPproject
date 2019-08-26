@@ -431,7 +431,7 @@ cP_t3 = [cP00_t1', cP01_t1', cP02_t1', cP03_t1', cP10_t1', cP11_t1', cP12_t1', c
  
  %%
   
- % C4mat = reshape(C4vec,[256,50,50]);
+ C4mat = reshape(C4vec,[256,50,50]);
  C4 = sum(C4mat, 1);
  
  C4 = squeeze(C4);
