@@ -41,6 +41,13 @@ k32 = 87;
 % k20 = (k10 * k02 * k21)/(k10 * k12);
 k02 = (k01 * k12 * k20)/(k10 * k21);
 
+% Evaluate the eigenvalues in terms of the rates defined above - produce as
+% doubles
+eval0 = double(vpa(subs(eval0)));
+eval1 = double(vpa(subs(eval1)));
+eval2 = double(vpa(subs(eval2)));
+eval3 = double(vpa(subs(eval3)));
+
 % Evaluate conditional probabilties by substituting in values from above
 % and using vpa() to force the simplest form of the output.
 
