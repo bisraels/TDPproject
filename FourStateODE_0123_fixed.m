@@ -15,7 +15,7 @@
 clear all
 clc
 
-syms k01 k02 k03 k10 k12 k13 k20 k21 k23 k30 k31 k32 positive 
+syms k01 k02 k03 k10 k12 k13 k20 k21 k23 k30 k31 k32  
 syms P0(t) P1(t) P2(t) P3(t)
 % assume(P0(t),'real')
 % assume(P1(t),'real')
