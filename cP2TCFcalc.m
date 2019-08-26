@@ -16,10 +16,14 @@
 %--------------------------------------------------------------------------
 
 %Output created by FourStateODE_0123_fixed.m
-
+disp('Loading the conditional Probabilities as a function of rates');
+tic
 %load('symCondProb_4state0123.mat')        % This is from the old code
 load('symCondProb_4state0123_fixed.mat')   % This is the output of the fixed code.
+toc
 
+disp('
+tic
 % syms t
 t = sym('t');
 
@@ -170,8 +174,8 @@ end
 %--------------------------------------------------------------------------
 % Plot two point TCF
 %--------------------------------------------------------------------------
-close all
 
+close all
 figure
 TCF2pt = fplot(C2(t),[0,1]);
 title('Analytical Two point TCF','FontSize',18)
@@ -377,7 +381,7 @@ tic
 %  end
 
  %-------------------------------------------------------------------------
- % Attempting to do above loop without the timestep
+ % Iterate over all the Combinations of FRET States
  %-------------------------------------------------------------------------
      for i = 1:numel(A)
          for j = 1:numel(A)
@@ -387,25 +391,11 @@ tic
                      C4term_val =  A(l) *squeeze(cP_t3(l,k,:)) * A(k) * cP_t2(k,j) * A(j) * squeeze(cP_t1(j,i,:))'* A(i) * Peq(i);
                   C4mat = C4mat + C4term_val;
 
-%                      C4vec = [C4vec; C4term_val];
                  end
              end
          end
      end
- 
  C4 = C4mat;
-%  C4mat = reshape(C4vec,[256,50,50]);
-%  C4 = sum(C4mat, 1);
- 
-%  C4 = squeeze(C4);
-
-% Plot C4 with tau1 vs tau2 - symbolically
-% figure
-% TCF4pt = fcontour(C4);
-% title('Four point TCF')
-% xlim([-1 1])
-% ylim([-1,1])
-
 disp('Time to calculate the four point TCF (C4):');
 toc
 
@@ -413,7 +403,11 @@ toc
 % Plot surface of C4
 figure
 TCF4point = surf(tau1vec, tau3vec, C4);
-title('Four point TCF')
+title('Analytical Four-point TCF: C^{(4)}','FontSize',18)
+xlabel('Time (\tau_1)','FontSize',14);
+ylabel('Time (\tau_3)','FontSize',14);
+zlabel('C^{(4)}(\tau_1,\tau_2,\tau_3)','FontSize',14);
+
 ax = gca;
 ax.XScale = 'log';
 ax.YScale = 'log';
