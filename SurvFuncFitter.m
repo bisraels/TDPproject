@@ -29,7 +29,8 @@ functionName = 'SurvFuncFitter';
 %  Set  paramaters
 %----------------------------------------------------------------------
 
-res = 5*10^(-6);
+%res = 5*10^(-6);
+res = 1*10^-3;
 saveMode = 1;
 saveFigMode = 1;
 verboseMode = 0;

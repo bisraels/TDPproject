@@ -26,7 +26,6 @@ clc
 % Find dwell files - full dwell files
 %--------------------------------------------------------------------------
 
-<<<<<<< Updated upstream
 %dwellFileName = '3p15mer_3.000000e-02trace_stitched_dwell.dat';
 dwellFileName = '3p15mer_5.000000e-03trace_stitched_dwell.dat';
 
@@ -57,11 +56,12 @@ disp(['Setting the resolution equal to ' num2str(usres) ' microseconds (' num2st
 %--------------------------------------------------------------------------
 
 % From chopped dwell file - variable
-load('dwellInfoChopped.mat')
-FRET_initial = dwellInfoChopped(:,1);
-FRET_final = dwellInfoChopped(:,2);
-dwell_time_frames = dwellInfoChopped(:,3);
-======
+load('dwellFileInfo.mat')
+FRET_initial = dwellFileInfo(:,1);
+FRET_final = dwellFileInfo(:,2);
+dwell_time_frames = dwellFileInfo(:,3);
+
+
 % dwellFileName = '3p15mer_3.000000e-02trace_stitched_dwell.dat';
 % 
 % res = 0.03;
@@ -85,6 +85,9 @@ dwell_time_frames = dwellInfoChopped(:,3);
 fileNums = dwellInfoChopped(:,4);
 
 %%
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
 dwell_time = dwell_time_frames * res;
@@ -105,15 +108,24 @@ fileEndLoc = find(FRET_data(:,4)==0);
 FRET_initial(fileEndLoc,1) = 0;    %   Set initial FRET to zero
 FRET_final(fileEndLoc,2) = 0;      %   Set final FRET to zero
 
+
+% At file ends:
+FRET_initial(fileEndLoc,1) = 0;    %   Set initial FRET to zero
+FRET_final(fileEndLoc,2) = 0;      %   Set final FRET to zero
+
 FRET_data(fileEndLoc,[1, 2]) = 0;  % Write this into the FRET_data variable
                                    % so they do not register as transitions for
                                    % the rest of the calculation.
 
-<<<<<<< Updated upstream
-FRET_states = nonzeros(unique(FRET_initial));
-=======
+FRET_data(fileEndLoc,[1, 2]) = 0;  % Write this into the FRET_data variable
+                                   % so they do not register as transitions for
+                                   % the rest of the calculation.
 
->>>>>>> Stashed changes
+
+FRET_states = nonzeros(unique(FRET_initial));
+
+
+
 
 %%
 %--------------------------------------------------------------------------
