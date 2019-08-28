@@ -61,7 +61,7 @@ load('dwellInfoChopped.mat')
 FRET_initial = dwellInfoChopped(:,1);
 FRET_final = dwellInfoChopped(:,2);
 dwell_time_frames = dwellInfoChopped(:,3);
-=======
+======
 % dwellFileName = '3p15mer_3.000000e-02trace_stitched_dwell.dat';
 % 
 % res = 0.03;
