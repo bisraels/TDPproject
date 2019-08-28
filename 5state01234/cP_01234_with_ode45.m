@@ -1,4 +1,28 @@
-% TCF scrap - try to get ode45 to work
+% AUTHOR:   Claire Albrecht & Brett Israels
+%
+% CREATED:  August 2019
+%
+% PURPOSE:  Evaluate the five state (01234) conditional probabilties with a set of 
+%           rates then the  2 point TCF and 4 point TCF for that system
+%
+% METHOD:   Use ode45 to solve for the conditional probabilities
+%               - this is different than the other program in that ode45
+%               calculates the probabilities over a specific range of
+%               times, so we wouldn't need to then define a matrix of
+%               vectors of probability over time, this would create each
+%               probability as a vector of times.
+%               - The down side, is you will need a different way to
+%               calculate the equilibrium probabilities, because the
+%               program can't calculate up to infinite time. 
+%
+% INPUT:    Use function: ODE_01234.m
+%           
+%
+% MODIFICATIONS:
+%
+%__________________________________________________________________________
+
+clear all
 
 t = sym('t');
 
@@ -93,12 +117,6 @@ P44 = Psol_4(:,5);
     
 
 toc
-%%
 
-P00_cell = sym2cell(P00);
-P00_str = string(P00_cell);
-eval0_str = num2str(eval0);
-P00_str_new = strrep(P00_str,eval0,'0');
-P00_new = str2sym(P00_str_new);
 
 

@@ -15,8 +15,7 @@
 %               (1) Two point TCF, C2
 %               (2) Four point TCF, C4
 %
-% INPUT:    conditional probabilities from ODEsolver_5state01234.m 
-%           loaded from: 'symCondProb_5state01234.mat'
+% INPUT:    nothing for now, it is completely self contained.
 %           
 %
 % MODIFICATIONS:
@@ -33,7 +32,10 @@
 % load('symCondProb_5state01234.mat')   % This is the output of the fixed code.
 % toc
 
-clc
+clear all       % CAREFUL: sometimes if the variables are not cleared the eigenvalue 
+clc             % calculated from eig() and while solving the ODE will not match.
+                % Then all of the subsitutions will break, this is probably
+                % what happened if sum(Peq) = 0.
 
 tic
 t = sym('t');
@@ -84,9 +86,9 @@ K = [-(k01+k02+k03+k04), k10,             k20,              k30,              k4
 P(t) = [P0(t); P1(t); P2(t); P3(t); P4(t)];
 
 
-[Vec, lambda] = eig(vpa(K,10));
+[Vec, lambda] = eig(vpa(K,10));     % the vpa() should make the vec and lambda output as doubles.
 
-[lambdaSort, index] = sort(diag(lambda),'descend');
+[lambdaSort, index] = sort(diag(lambda),'descend');   % sort just in case, it the program seems to output, closest to 0 -> most negative  
 lambdaSorted = lambda(index,index);
 VecSorted = Vec(:,index);
 
@@ -108,8 +110,8 @@ eval2 = double(lambdaSorted(3,3));
 eval3 = double(lambdaSorted(4,4));
 eval4 = double(lambdaSorted(5,5));
 
-if eval0<=0 && eval1<=0 && eval2 <=0 && eval3 <=0 && eval4 <=0
-    disp('All eigenvalues are less than zero!')
+if eval0<=0 && eval1<=0 && eval2 <=0 && eval3 <=0 && eval4 <=0      % For the exponentials to decay, need all eigenvalues to be < 0.
+    disp('All eigenvalues are less than zero!')                     % If this is not true, there is a problem.
 else
     disp('PROBLEM: not all eigenvalues are less than zero.')
     disp('Instead they are:')
@@ -119,8 +121,8 @@ end
 %--------------------------------------------------------------------------
 % EIGENVECTORS
 %--------------------------------------------------------------------------
-evec0 = double(VecSorted(:,1));
-evec1 = double(VecSorted(:,2));
+evec0 = double(VecSorted(:,1));         % Assign each eigenvector with the corresponding eigenvalue
+evec1 = double(VecSorted(:,2));         % NOTE: in the end, we have not explicitly used these eigenvectors
 evec2 = double(VecSorted(:,3));
 evec3 = double(VecSorted(:,4));
 evec4 = double(VecSorted(:,5));
@@ -136,18 +138,13 @@ toc
 tic
 disp('...Calculating conditional probabilities')
 
-% t = sym('t');   % For now, the conditional probabilities are a function of t.
-
-% t0 = 1e0;
-% tf = 1e3;
-% tspan = [t0 tf];
-
 % Define the DE we want to solve
 eqn = diff(P(t),t)== K * P(t);
 
 % Solve the equations and give an output
 % Condition 0: P(t=0) = [P0(0) = 1, P1(0) = 0, P2(0) = 0, P3(0) = 0, P4(0) = 0]
 Psol_0 = dsolve(eqn,[P0(0)==1 P1(0)==0 P2(0)==0 P3(0)==0 P4(0)==0]);
+P04(t) = real(vpa(Psol_0.P4));
 P00(t) = real(vpa(Psol_0.P0));
 P01(t) = real(vpa(Psol_0.P1));
 P02(t) = real(vpa(Psol_0.P2));
@@ -471,8 +468,8 @@ ylabel('C^{(2)}(\tau)','FontSize',14);
 
 % Define times:
 Npts = 50;
-tau1vec = logspace(0,3,Npts);   % Vector of times
-tau2 = 1;                       % Tau2 is a constant
+tau1vec = logspace(0,5,Npts);   % Vector of times
+tau2 = 0;                       % Tau2 is a constant
 tau3vec = tau1vec;              % Tau3 is the same vector of time as tau1
 
 t1 = tau1vec;
@@ -607,6 +604,8 @@ C4mat = zeros(length(t1));
  end
 C4 = C4mat;
 
+C4diff =double( C4 - (C2(inf))^2 );
+
 disp('Time to calculate the four point TCF (C4):');
 toc
 %%
@@ -623,4 +622,5 @@ zlabel('C^{(4)}(\tau_1,\tau_2,\tau_3)','FontSize',14);
 ax = gca;
 ax.XScale = 'log';
 ax.YScale = 'log';
+
 
