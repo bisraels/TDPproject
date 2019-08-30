@@ -8,7 +8,7 @@
 % time distributions to a single exponential decay
 %
 % INPUT: 1) x: An array of times
-%        2) y: The survival probability (1 --> 0)
+%        2) y: The survival probability (1 --> 0) (file: survProb_##.mat)
 %
 % OUTPUT: 1) The time constant that charachterizes the rate
 %         2) A figure which shows the data and the best fit
@@ -21,6 +21,7 @@ fileNames = dir([fileNameKeyword '*']);
 for fileName_idx = 1:numel(fileNames)
     clf;    %Clear the current Figure
     load(fileNames(fileName_idx).name,'time','prob','rate_ID')
+    
  
 
 functionName = 'SurvFuncFitter';
@@ -29,13 +30,12 @@ functionName = 'SurvFuncFitter';
 %  Set  paramaters
 %----------------------------------------------------------------------
 
-%res = 5*10^(-6);
-res = 1*10^-3;
+res = 1e-3;
 saveMode = 1;
 saveFigMode = 1;
 verboseMode = 0;
 showProgressMode = 0;
-findBestFit_mode = 1;
+findBestFit_mode = 0;
 labelPlotWithFit_mode = 1;
 %----------------------------------------------------------------------
 %  Prepare for output
@@ -125,6 +125,7 @@ for i = 1:maxTrials
                 iterNumber = 1;
                 save(filepath_fit,'fitresult','gof','xData','yData','t1','t','y','rsquare','iterNumber');
             else
+                
                 load(filepath_fit,'rsquare','iterNumber');
                 iterNumber = iterNumber + 1 ;
                 %                     disp(['Already found a fit. IterNumber = ' num2str(iterNumber)]);
@@ -133,7 +134,7 @@ for i = 1:maxTrials
                     rsquare = rsquareNew;
                     save(filepath_fit,'fitresult','gof','xData','yData','t1','t','y','rsquare','iterNumber');
                 else
-                    %                         disp(['     appending the iteration number to' filepath]);
+%                                               disp(['     appending the iteration number to' filepath]);
                     save(filepath_fit,'iterNumber','-append')
                 end
             end
@@ -157,7 +158,7 @@ t1 = fitresult.t1;
 fig = figure(1);
 fig.Name = '1exp Fit';
 
-plot(xData,yData,'b.','MarkerSize',10,'DisplayName','C^{(2)}(\tau)')
+plot(xData,yData,'b.','MarkerSize',10,'DisplayName','P(\tau)')
 hold on;
 
 load(filepath_fit,'fitresult','gof','t1','y','rsquare','iterNumber');

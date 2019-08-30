@@ -27,12 +27,12 @@ clc
 %--------------------------------------------------------------------------
 
 %dwellFileName = '3p15mer_3.000000e-02trace_stitched_dwell.dat';
-dwellFileName = '3p15mer_1.000000e-03trace_stitched_dwell.dat';
+dwellFileName = '3p15mer_001000ustrace_stitched_dwell.dat';
 
 %--------------------------------------------------------------------------
 % Find resolution based on the filename (1-24-19)
 %--------------------------------------------------------------------------
-usres_str = dwellFileName(9:16);
+usres_str = dwellFileName(9:14);
 %usres_str = datafiles(1).name(14:19);
 usres = str2double(usres_str);
 msres = usres*10^-3;%('i.e. 1000 usec = 1 msec')
