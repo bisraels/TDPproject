@@ -70,4 +70,7 @@ P33(t) = vpa(Psol_1.P3);
 
 save('symCondProb_3state123_linear.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
 
-toc
+elapsedTime = toc;
+task_str = 'Calculate and save the eigenvalues and conditional probabilities';
+disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+

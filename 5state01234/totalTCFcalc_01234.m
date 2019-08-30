@@ -127,8 +127,10 @@ evec2 = double(VecSorted(:,3));
 evec3 = double(VecSorted(:,4));
 evec4 = double(VecSorted(:,5));
 
-disp('Time to calculate eigenvalue problem:')
-toc
+elapsedTime = toc;
+task_str = 'to calculate eigenvalue problem';
+disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+
 %%
 %--------------------------------------------------------------------------
 % CONDITIONAL PROBABILITIES
@@ -324,8 +326,10 @@ else
     P44_str_new = strrep(P44_str,eval0_str,'0*');    
     P44(t) = str2sym(P44_str_new);
     
-    disp('Fixing conditional probabilities took:')
-    toc
+  elapsedTime = toc;
+task_str = 'to fix the conditional probabilities:';
+disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+
 end
   
 
@@ -580,8 +584,10 @@ cP_t3(3,5,:) = double(P42(t3));
 cP_t3(4,5,:) = double(P43(t3));
 cP_t3(5,5,:) = double(P44(t3));
 
-disp('Time to calculate Conditional Probabilities:');
-toc
+elapsedTime = toc;
+task_str = ' to calculate Conditional Probabilities';
+disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+
 
 
 disp('... Calculating the 4 point TCF');
@@ -606,8 +612,10 @@ C4 = C4mat;
 
 C4diff =double( C4 - (C2(inf))^2 );
 
-disp('Time to calculate the four point TCF (C4):');
-toc
+elapsedTime = toc;
+task_str = ' to calculate the four point TCF (C4)';
+disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+
 %%
 %--------------------------------------------------------------------------
 % Plot surface of C4

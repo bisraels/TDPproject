@@ -15,8 +15,11 @@
 %Output created by ODE solver
 disp('Loading the conditional Probabilities as a function of rates');
 tic
-load('symCondProb_3state123_linear.mat')   % This is the output from 
-toc
+load('symCondProb_3state123_linear.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
+elapsedTime = toc;
+task_str = 'load the conditional probabilities';
+disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+
 
 tic
 disp('Calculating conditional probabilities using the rates defined')
@@ -34,7 +37,6 @@ k31 = 0;
 
 % Evaluate the eigenvalues in terms of the rates defined above - produce as
 % doubles
-eval0 = double(vpa(subs(eval0)));
 eval1 = double(vpa(subs(eval1)));
 eval2 = double(vpa(subs(eval2)));
 eval3 = double(vpa(subs(eval3)));
