@@ -164,8 +164,8 @@ end
 % Plot two point TCF
 %--------------------------------------------------------------------------
 
-% close all
-figure(1);
+close all
+figure
 TCF2pt = fplot(C2(t),[0,1]);
 title('Analytical Two point TCF','FontSize',18)
 xlabel('Time (\tau_1)','FontSize',14);
@@ -371,7 +371,7 @@ toc
 
 
 % Plot surface of C4
-figure(2)
+figure
 TCF4point = surf(tau1vec, tau3vec, C4);
 title('Analytical Four-point TCF: C^{(4)}','FontSize',18)
 xlabel('Time (\tau_1)','FontSize',14);
