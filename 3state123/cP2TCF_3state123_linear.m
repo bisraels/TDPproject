@@ -5,8 +5,7 @@
 % PURPOSE:  Evaluate the Four State (0123) conditional probabilties with a set of 
 %           rates then the  2 point TCF and 4 point TCF for that system
 %
-% INPUT:    conditional probabilities from FourStateODE_0123.m 
-%           loaded from: 'symCondProb_4state0123_fixed.mat'
+% INPUT: (1) conditional probabilities from ODE solver: symCondProb_3state123_linear.mat
 %           
 %
 % MODIFICATIONS: Adapted from cP2TCF_0123.m
@@ -16,8 +15,7 @@
 %Output created by ODE solver
 disp('Loading the conditional Probabilities as a function of rates');
 tic
-%load('symCondProb_4state0123.mat')        % This is from the old code
-load('symCondProb_3state123_linear.mat')   % This is the output of the fixed code.
+load('symCondProb_3state123_linear.mat')   % This is the output from 
 toc
 
 tic

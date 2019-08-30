@@ -2,44 +2,34 @@
 %
 % CREATED: August 2019
 %
-% PURPOSE:  Evaluate the Three State (123) conditional probabilties with a set of 
+% PURPOSE:  Evaluate the Four State (0123) conditional probabilties with a set of 
 %           rates then the  2 point TCF and 4 point TCF for that system
 %
 % INPUT:    conditional probabilities from FourStateODE_0123.m 
 %           loaded from: 'symCondProb_4state0123_fixed.mat'
 %           
 %
-% MODIFICATIONS:  August 2019 - Added code to calculate two point and four point TCFs
-%
-% TO FIX: (1) Time step needs to be replaced with the value - FIXED 8/26/19
+% MODIFICATIONS: Adapted from cP2TCF_0123.m
 %
 %--------------------------------------------------------------------------
 
-%Output created by FourStateODE_0123_fixed.m
+%Output created by ODE solver
 disp('Loading the conditional Probabilities as a function of rates');
 tic
 %load('symCondProb_4state0123.mat')        % This is from the old code
-load('symCondProb_4state0123_fixed.mat')   % This is the output of the fixed code.
+load('symCondProb_3state123_linear.mat')   % This is the output of the fixed code.
 toc
 
 tic
 disp('Calculating conditional probabilities using the rates defined')
 t = sym('t');
 
-k01 = 0.001;
-%k02 = 2;
-k03 = 0;
-k10 = 0.000034;
-k12 = 0.44;
+k12 = 1/100;
+k21 = 1/300;
+k23 = 1/50;
+k32 = 1/200;
 k13 = 0;
-k20 = 0.153;
-k21 = 0.0060;
-k23 = 700;
-k30 = 0;
 k31 = 0;
-k32 = 87;
-% NOTE: I put in the rates we know are zero in by hand.
-
 % Detailed balance condition
 k02 = (k01 * k12 * k20)/(k10 * k21);
 
@@ -164,8 +154,8 @@ end
 % Plot two point TCF
 %--------------------------------------------------------------------------
 
-close all
-figure
+% close all
+figure(1);
 TCF2pt = fplot(C2(t),[0,1]);
 title('Analytical Two point TCF','FontSize',18)
 xlabel('Time (\tau_1)','FontSize',14);
@@ -371,7 +361,7 @@ toc
 
 
 % Plot surface of C4
-figure
+figure(2)
 TCF4point = surf(tau1vec, tau3vec, C4);
 title('Analytical Four-point TCF: C^{(4)}','FontSize',18)
 xlabel('Time (\tau_1)','FontSize',14);
