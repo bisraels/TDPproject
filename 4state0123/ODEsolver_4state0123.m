@@ -24,8 +24,7 @@ K = [-(k01 + k02 + 0), k10, k20, 0;...
     0, 0, k23, -(0 + 0 + k32);];
 P(t) = [P0(t);P1(t); P2(t);P3(t)];
 
-% Detailed balance condition
-k02 = (k01 * k12 * k20)/(k10 * k21);
+% Define detailed balance condition when evaluating rates.
 
 [Vec, lambda] = eig(K);
 eval0 = lambda(1,1);        % eval0 should always be zero.
