@@ -4,10 +4,24 @@
 %
 % PURPOSE: Calculate the two state ODE  for  the master equation
 %
+% INPUT: Nothing. Step 1 of a 2 code process
+%
+% OUTPUT: (1) Conditinoal probabilities {Pij(t)}: symCondProb_2state_linear.mat
+%
 % MODIFICATIONS:
+%--------------------------------------------------------------------------
 
 clear all
 clc
+%--------------------------------------------------------------------------
+% User Prefrences
+%--------------------------------------------------------------------------
+verbose_mode = 1;
+
+%--------------------------------------------------------------------------
+% Solve for the conditional probabilities
+%--------------------------------------------------------------------------
+%Declare all the symbolic variables necessary for the ODE Solver
 
 syms k12 k21 P1(t) P2(t)
 
@@ -15,10 +29,17 @@ syms k12 k21 P1(t) P2(t)
 K = [-k12, k21; k12, -k21];
 P(t) = [P1(t); P2(t)];
 
+% Solve the eigenvalue problem for the eigenvector and eigenvalue
+% These will be complex functions of the extant rates in the system
 [Vec, lambda] = eig(K);
 
 eval1 = lambda(1,1);
 eval2 = lambda(2,2);
+
+if verbose_mode
+    fprintf('Eigenvalue 1 = %s\r',eval1);
+    fprintf('Eigenvalue 2 = %s\r',eval2);
+end
 
 evec1 = Vec(:,1);
 evec2 = Vec(:,2);

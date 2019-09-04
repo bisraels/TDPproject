@@ -5,6 +5,8 @@
 % PURPOSE:  Calculate the Linear Three state ODE  for  the master equation
 %           1 <-> 2 <-> 3 
 %
+% INPUT: Nothing. Step 1 of a 2 code process
+%
 % OUTPUT: (1) Conditinoal probabilities {Pij(t)}: symCondProb_3state123_linear.mat
 %
 % MODIFICATIONS: modified from ODEsolver_4state0123.m
@@ -14,6 +16,15 @@ clear all
 clc
 tic
 
+%--------------------------------------------------------------------------
+% User Prefrences
+%--------------------------------------------------------------------------
+verbose_mode = 1;
+
+
+%--------------------------------------------------------------------------
+% Solve for the conditional probabilities
+%--------------------------------------------------------------------------
 %Declare all the symbolic variables necessary for the ODE Solver
 syms k12 k21 k23 k32
 syms P1(t) P2(t) P3(t)
@@ -22,6 +33,10 @@ syms P1(t) P2(t) P3(t)
 K = [-k12, k21, 0;...
     k12, (-k21 - k23 ), k32;...
     0, k23, -k32;];
+if verbose_mode
+    disp('Sovling for the eigenvalues of the rate matrix K');
+    disp(K);
+end
 
 % Make a column vector of the equilibrium Populations
 P(t) = [P1(t); P2(t);P3(t)];
@@ -36,6 +51,19 @@ eval1 = lambda(1,1);        % First Eigenvalue should always be zero.
 eval2 = lambda(2,2);
 eval3 = lambda(3,3);
 
+if verbose_mode
+    fprintf('Eigenvalue 1 = %s\r',eval1);
+    fprintf('Eigenvalue 2 = %s\r',eval2);
+    fprintf('Eigenvalue 3 = %s\r',eval3);
+end
+
+%Display the amount of time a process took. Begins at the last tic.
+elapsedTime = toc;
+task_str = 'calculate the eigenvalues.';
+disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+
+
+%We do not use these eigenvectors as anything
 evec1 = Vec(:,1);
 evec2 = Vec(:,2);
 evec3 = Vec(:,3);
@@ -52,13 +80,14 @@ eqn = diff(P(t),t)== K * P(t);
 % Condition 1: P(t) = [P1(t) = 1, P2(t) = 0, P3(t) = 0]
 Psol_1 = dsolve(eqn,[P1(0) == 1 , P2(0) == 0 , P3(0) == 0]);
 %vpa(x) uses variable-precision floating-point arithmetic (VPA)
+%The solution to the eigenvector problem will be included by dsove
 P11(t) = vpa(Psol_1.P1);
 P12(t) = vpa(Psol_1.P2);
 P13(t) = vpa(Psol_1.P3);
 
 % Condition 2: P(t) = [P1(t) = 0, P2(t) = 1, P3(t) = 0]
 Psol_2 = dsolve(eqn,[P1(0) == 0 , P2(0) == 1 , P3(0) == 0]);
-P21(t) = vpa(Psol_2.P1);
+P21(t) = vpa(Psol_2.P1); 
 P22(t) = vpa(Psol_2.P2);
 P23(t) = vpa(Psol_2.P3);
 
@@ -68,9 +97,18 @@ P31(t) = vpa(Psol_1.P1);
 P32(t) = vpa(Psol_1.P2);
 P33(t) = vpa(Psol_1.P3);
 
-save('symCondProb_3state123_linear.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
-
+%Display the amount of time a process took. Begins at the last tic.
 elapsedTime = toc;
-task_str = 'Calculate and save the eigenvalues and conditional probabilities';
+task_str = 'calculate the conditional probabilities.';
 disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 
+%--------------------------------------------------------------------------
+% Save the output
+%--------------------------------------------------------------------------
+save('symCondProb_3state123_linear.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
+
+
+%Display the amount of time a process took. Begins at the last tic.
+elapsedTime = toc;
+task_str = 'save the conditional probabilities and eigenvalues.';
+disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);

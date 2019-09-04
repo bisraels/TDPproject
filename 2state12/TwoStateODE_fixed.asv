@@ -4,10 +4,6 @@
 %
 % PURPOSE: Calculate the two state ODE  for  the master equation
 %
-% INPUT: Nothing. Step 1 of a 2 code process
-%
-% OUTPUT: (1) Conditional probabilities {Pij(t)}: symCondProb_3state123_linear.mat
-%
 % MODIFICATIONS:
 %
 % NOTE: This is updated to use the same method as the 4 state system, but
@@ -15,8 +11,6 @@
 % the math from the first two state model code.
 %--------------------------------------------------------------------------
 
-%--------------------------------------------------------------------------
-verbose_mode = 1;
 
 syms k12 k21 P1(t) P2(t)
 
