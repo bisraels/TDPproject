@@ -23,7 +23,7 @@ verbose_mode = 1; %Set to 1 to see alot of progress updates and print off.
 %Output created by ODE solver
 disp('Loading the conditional Probabilities as a function of rates');
 tic
-load('symCondProb_3state123_linear.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
+load('symCondProb_3state123_cyclical.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
 
 %Display the amount of time a process took. Begins at the last tic.
 elapsedTime = toc;
@@ -39,11 +39,11 @@ k12 = 1/100;
 k21 = 1/300;
 k23 = 1/50;
 k32 = 1/200;
-k13 = 0;
-k31 = 0;
+k13 = 1/100;
+% k31 = 1/200;
 
-% Detailed balance condition
-%No detailed balnce condition for the 3-state linear model
+% Detailed balance condition: %k31 will be the rate fixed by the others
+k31 = k21*k13*k32/(k12*k23);
 
 % Evaluate the eigenvalues in terms of the rates defined above - produce as doubles
 %subs(s) returns a copy of s, replacing symbolic variables in s, with their
@@ -247,7 +247,7 @@ cP_t1(2,3,:) = double(P32(t1));
 cP_t1(3,3,:) = double(P33(t1));
 
 % Initialize size of 3D array for conditional probability for t2:
-cP_t2 = zeros(4,4,length(t2));
+cP_t2 = zeros(numel(A),numel(A),length(t2));
 
 % Define the vector in each position ******* ***** 
 cP_t2(1,1,:) = double(P11(t2));
@@ -256,40 +256,34 @@ cP_t2(3,1,:) = double(P13(t2));
 
 cP_t2(1,2,:) = double(P21(t2));
 cP_t2(2,2,:) = double(P22(t2));
-cP_t1(3,2,:) = double(P23(t1));
+cP_t2(3,2,:) = double(P23(t2));
 
-cP_t1(1,3,:) = double(P31(t1));
-cP_t1(2,3,:) = double(P32(t1));
-cP_t1(3,3,:) = double(P33(t1));
+cP_t2(1,3,:) = double(P31(t2));
+cP_t2(2,3,:) = double(P32(t2));
+cP_t2(3,3,:) = double(P33(t2));
          
 % Initialize size of 3D array for conditional probability for t3:
-cP_t3 = zeros(4,4,length(t3));
+cP_t3 = zeros(numel(A),numel(A),length(t3));
+
 % Define the vector in each position
-cP_t3(1,1,:) = double(P00(t3));
-cP_t3(2,1,:) = double(P01(t3));
-cP_t3(3,1,:) = double(P02(t3));
-cP_t3(4,1,:) = double(P03(t3));
+cP_t3(1,1,:) = double(P11(t3));
+cP_t3(2,1,:) = double(P12(t3));
+cP_t3(3,1,:) = double(P13(t3));
 
-cP_t3(1,2,:) = double(P10(t3));
-cP_t3(2,2,:) = double(P11(t3));
-cP_t3(3,2,:) = double(P12(t3));
-cP_t3(4,2,:) = double(P13(t3));
+cP_t3(1,2,:) = double(P21(t3));
+cP_t3(2,2,:) = double(P22(t3));
+cP_t3(3,2,:) = double(P23(t3));
 
-cP_t3(1,3,:) = double(P20(t3));
-cP_t3(2,3,:) = double(P21(t3));
-cP_t3(3,3,:) = double(P22(t3));
-cP_t3(4,3,:) = double(P23(t3));
+cP_t3(1,3,:) = double(P31(t3));
+cP_t3(2,3,:) = double(P32(t3));
+cP_t3(3,3,:) = double(P33(t3));
 
-cP_t3(1,4,:) = double(P30(t3));
-cP_t3(2,4,:) = double(P31(t3));
-cP_t3(3,4,:) = double(P32(t3));
-cP_t3(4,4,:) = double(P33(t3));  
-       
-disp('Time to calculate Conditional Probabilities:');
-      toc 
 
- % C4term_val = [];
- % C4mat = zeros(length(A),length(A),length(t1),length(t2));
+%Display the amount of time a process took. Begins at the last tic.
+elapsedTime = toc;
+task_str = 'calculate Conditional Probabilities.';
+disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+
 
 disp('... Calculating the 4 point TCF');
 tic
@@ -310,8 +304,11 @@ C4 = zeros(length(tau1vec),length(tau3vec));
              end
          end
      end
-disp('Time to calculate the four point TCF (C4):');
-toc
+
+%Display the amount of time a process took. Begins at the last tic.
+elapsedTime = toc;
+task_str = 'calculate the four point TCF (C4).';
+disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 
 
 % Plot surface of C4

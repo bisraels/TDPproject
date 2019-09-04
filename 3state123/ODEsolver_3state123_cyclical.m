@@ -2,12 +2,12 @@
 %
 % CREATED:  August 2019
 %
-% PURPOSE:  Calculate the Linear Three state ODE  for  the master equation
-%           1 <-> 2 <-> 3 
+% PURPOSE:  Calculate the CYCLICAL Three state ODE  for  the master equation
+%           1 <-> 2 <-> 3 <-> 1
 %
 % INPUT: Nothing. Step 1 of a 2 code process
 %
-% OUTPUT: (1) Conditinoal probabilities {Pij(t)}: symCondProb_3state123_linear.mat
+% OUTPUT: (1) Conditinoal probabilities {Pij(t)}: symCondProb_3state123_cyclical.mat
 %
 % MODIFICATIONS: modified from ODEsolver_4state0123.m
 %--------------------------------------------------------------------------
@@ -26,13 +26,17 @@ verbose_mode = 1;
 % Solve for the conditional probabilities
 %--------------------------------------------------------------------------
 %Declare all the symbolic variables necessary for the ODE Solver
-syms k12 k21 k23 k32
+syms k12 k21 k23 k32 k13 k31
 syms P1(t) P2(t) P3(t)
 
+
+% Detailed balance condition: %k31 will be the rate fixed by the others
+% k31 = k21*k13*k32/(k12*k23);*
+
 % Define the Rate Matrix K
-K = [-k12, k21, 0;...
+K = [(-k12 - k13), k21, k31;...
     k12, (-k21 - k23 ), k32;...
-    0, k23, -k32;];
+    k13, k23, (-k31-k32);];
 if verbose_mode
     disp('Sovling for the eigenvalues of the rate matrix K');
     disp(K);
@@ -40,9 +44,6 @@ end
 
 % Make a column vector of the equilibrium Populations
 P(t) = [P1(t); P2(t); P3(t)];
-
-% Detailed balance condition
-%Not existant Here: Only use for loops
 
 % Solve the eigenvalue problem for the eigenvector and eigenvalue
 % These will be complex functions of the extant rates in the system
@@ -105,7 +106,7 @@ disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 %--------------------------------------------------------------------------
 % Save the output
 %--------------------------------------------------------------------------
-save('symCondProb_3state123_linear.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
+save('symCondProb_3state123_cyclical.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
 
 
 %Display the amount of time a process took. Begins at the last tic.

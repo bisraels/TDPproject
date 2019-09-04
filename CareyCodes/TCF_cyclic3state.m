@@ -48,4 +48,6 @@ p0_1 = p0_eq + m_1*a*exp(-lam1*time) + n_1*x*exp(-lam2*time);
 p0_0 = p0_eq + m_0*a*exp(-lam1*time) + n_0*x*exp(-lam2*time);
 
 % Calculate TCF
-tcf = p2_eq*A2*(A2*p2_2 + A1*p1_2 + A0*p0_2) + p1_eq*A1*(A2*p2_1 + A1*p1_1 + A0*p0_1) + p0_eq*A0*(A2*p2_0 + A1*p1_0 + A0*p0_0);
+tcf = p2_eq*A2*(A2*p2_2 + A1*p1_2 + A0*p0_2) +...
+    p1_eq*A1*(A2*p2_1 + A1*p1_1 + A0*p0_1) +...
+    p0_eq*A0*(A2*p2_0 + A1*p1_0 + A0*p0_0);
