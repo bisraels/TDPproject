@@ -134,41 +134,59 @@ sqm = (sum(A.*Peq))^2;      % mean square value <A>^2
 %--------------------------------------------------------------------------
 % Calculate Two point TCF:
 %-------------------------------------------------------------------------
-C2(t) = 0*t;
+C2sym(t) = 0*t;
 for i = 1:numel(A)
     for j = 1:numel(A)
         % 
         C2temp(t) = A(j) * cP(j,i) * A(i) * Peq(i);
-        C2(t) = C2(t) + C2temp(t);
+        C2sym(t) = C2sym(t) + C2temp(t);
     end
 end
 
 
-if double(C2(0)) == double(msq)
+if double(C2sym(0)) == double(msq)
     disp('Mean of the square <A^2> matches C2(t=0)!')
 else 
     disp('Problem: mean of the square <A^2> DOES NOT match C2(t=0)')
 end
 
-if double(C2(10^20)) == double(sqm)
+if double(C2sym(10^20)) == double(sqm)
     disp('Square of the mean <A>^2 matches C2(t=inf)!')
 else 
     disp('Problem: square of the mean <A>^2 DOES NOT match C2(t=inf)')
 end
 
 %--------------------------------------------------------------------------
+% Evaluate C2 over a range of t's
+%--------------------------------------------------------------------------
+
+Npts = 150;
+timeArray = [1:9,logspace(1,6.4771212,Npts)];
+C2 = C2sym(timeArray);
+
+%--------------------------------------------------------------------------
 % Plot two point TCF
 %--------------------------------------------------------------------------
 
-% close all
-figure(1);
-TCF2pt = fplot(C2(t),[0,1]);
+%close all
+figure(1)
+
+%subplot(1,2,1)
+%TCF2pt = fplot(C2(t),[1e-3,1],'LineWidth',2);      % fplot() was making it hard to plot on loglog scale, so calculate for specfic time range
+TCF2pt = plot(C2,'LineWidth',2);
+
 title('Analytical Two point TCF','FontSize',18)
 xlabel('Time (\tau_1)','FontSize',14);
-ylabel('C^{(2)}(\tau) (\tau)','FontSize',14);
-% ax = gca;
-% ax.XScale = 'log';
+ylabel('C^{(2)}(\tau)','FontSize',14);
+%xlim([10^-5 10^0])
+% ylim([C2(500) C2(0)])
 
+ax = gca;
+ax.XScale = 'log';
+set(gca,'yscale','log')
+
+saveName = ['C2_','example'];
+saveas(TCF2pt,saveName, 'png')
 
 
 %%
