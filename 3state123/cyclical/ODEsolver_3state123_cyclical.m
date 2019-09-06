@@ -12,7 +12,7 @@
 % MODIFICATIONS: modified from ODEsolver_4state0123.m
 %--------------------------------------------------------------------------
 
-clear all
+% clear all
 clc
 tic
 
@@ -20,7 +20,7 @@ tic
 % User Prefrences
 %--------------------------------------------------------------------------
 verbose_mode = 1;
-
+saveMode = 1;
 
 %--------------------------------------------------------------------------
 % Solve for the conditional probabilities
@@ -106,8 +106,9 @@ disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 %--------------------------------------------------------------------------
 % Save the output
 %--------------------------------------------------------------------------
+if saveMode
 save('symCondProb_3state123_cyclical.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
-
+end
 
 %Display the amount of time a process took. Begins at the last tic.
 elapsedTime = toc;
