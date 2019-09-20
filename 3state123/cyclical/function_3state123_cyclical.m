@@ -1,6 +1,6 @@
 % AUTHOR: Claire Albrecht & Brett Israels
 %
-% CREATED: August 2019 (cP2TCF_3state123_cyclical.m)
+% CREATED: August 2019
 %
 % PURPOSE:  Evaluate the Linear 3-State (123) conditional probabilties with a set of 
 %           rates then the  2 point TCF and 4 point TCF for that system
@@ -10,7 +10,8 @@
 % OUTPUT: (1) Two-point TCF C2
 %         (2) Four-point TCF C4
 %
-% MODIFICATIONS: Adapted from cP2TCF_0123.m
+% MODIFICATIONS: 
+%   (1) Adapted 
 %
 %--------------------------------------------------------------------------
 %--------------------------------------------------------------------------
