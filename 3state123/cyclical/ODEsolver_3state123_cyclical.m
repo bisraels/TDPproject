@@ -1,6 +1,6 @@
 % AUTHOR:   Claire Albrecht & Brett Israels
 %
-% CREATED:  August 2019
+% CREATED:  August 2019 (ODEsolver_3state123_cyclical.m)
 %
 % PURPOSE:  Calculate the CYCLICAL Three state ODE  for  the master equation
 %           1 <-> 2 <-> 3 <-> 1
@@ -11,6 +11,10 @@
 %
 % MODIFICATIONS: modified from ODEsolver_4state0123.m
 %--------------------------------------------------------------------------
+programName = 'ODEsolver_3state123_cyclical.m';
+disp(['Now Running ' programName '.m']);
+close all
+
 
 % clear all
 clc

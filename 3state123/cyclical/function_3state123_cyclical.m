@@ -1,53 +1,49 @@
+%--------------------------------------------------------------------------
 % AUTHOR: Claire Albrecht & Brett Israels
 %
-% CREATED: August 2019
+% CREATED: September 2019 (function_3state123_cyclical.m)
 %
 % PURPOSE:  Evaluate the Linear 3-State (123) conditional probabilties with a set of 
 %           rates then the  2 point TCF and 4 point TCF for that system
 %
-% INPUT: (1) conditional probabilities from ODE solver: symCondProb_3state123_linear.mat
+% INPUT: (1) conditional probabilities from ODE solver: symCondProb_3state123_cyclical.mat
 %
-% OUTPUT: (1) Two-point TCF C2
-%         (2) Four-point TCF C4
+% OUTPUT: (1) FRET Histogram
+%         (2) Two-point TCF C2
+%         (3) Four-point TCF C4
 %
 % MODIFICATIONS: 
-%   (1) Adapted 
+%   (1) Adapted from cP2TCF_3state123_cyclical.m
 %
 %--------------------------------------------------------------------------
+
+function function_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3)
+
+programName = 'function_3state123_cyclical.m';
+disp(['Now Running ' programName '.m']);
+close all
 %--------------------------------------------------------------------------
 % Set the rates 
 %--------------------------------------------------------------------------
-k12 = 1/100;
-k13 = 1/100;
-k21 = 1/300;
-k31 = 1/200;
-k23 = 1/50;
-% k32 = 1/200;
-
+k12 = 1/t12;
+k13 = 1/t13;
+k21 = 1/t21;
+k23 = 1/t23;
+k31 = 1/t31;
 % Detailed balance condition: %k31 will be the rate fixed by the others
-% k31 = k21*k13*k32/(k12*k23);
 k32 = k12*k23*k31/(k13*k21);
 
-%--------------------------------------------------------------------------
-% Set the FRET Values
-%--------------------------------------------------------------------------
-% This is a vector for the FRET values - assign values
-A1 = 0.79;              % These are just guesses for now
-A2 = 0.63;
-A3 = 0.5;
-
-% A1 = val1;
-% A2 = val2;
-% A3 = val3;
 %--------------------------------------------------------------------------
 % User Prefrences
 %--------------------------------------------------------------------------
 verbose_mode = 1; %Set to 1 to see alot of progress updates and print off.
 clockMode = 1;
 
-%Output created by ODE solver
-disp('Loading the conditional Probabilities as a function of rates');
 tic
+%Output created by ODE solver
+if verbose_mode == 1
+disp('Loading the conditional Probabilities as a function of rates');
+end
 load('symCondProb_3state123_cyclical.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
 
 %Display the amount of time a process took. Begins at the last tic.
@@ -101,7 +97,7 @@ elapsedTime = toc;
 task_str = 'Calculate the conditional probabilities as a function of rates {kij}';
 disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
-%%
+%
 %     CALCULATE TCF's     
 
 
@@ -121,7 +117,7 @@ A = [ A1; A2; A3];
         P13(t), P23(t), P33(t)];
 % Row = final state & Column = initial condition
 
-%%
+%
 
 % Define equilibrium populations from the conditional probabiltiies at
 % infinite time.
@@ -131,17 +127,18 @@ P3EQ = P33(inf);
  
 Peq = [P1EQ; P2EQ; P3EQ];
 
+
 if sum(Peq) == 1
     disp('Equilibrium probabilities sum to 1!')
 else
-    disp('Problem: Equilibrium probabilities DO NOT sum to 1.')
+    error('Problem: Equilibrium probabilities DO NOT sum to 1.')
 end
 
-%%
+%
 Amean = sum(A.*Peq);
 A = A - Amean;
 
-msq = sum((A.^2).*Peq);     % square of mean <A^2>
+msq = sum((A.^2).*Peq);     % square of mean <A^2>. 
 sqm = (sum(A.*Peq))^2;      % mean square value <A>^2
 
 
@@ -204,7 +201,7 @@ saveName = ['C2_','example'];
 saveas(TCF2pt,saveName, 'png')
 
 return
-%%
+%
 %--------------------------------------------------------------------------
 % Four point TCF:
 %--------------------------------------------------------------------------
