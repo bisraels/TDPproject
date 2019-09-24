@@ -1,7 +1,7 @@
 %--------------------------------------------------------------------------
 % AUTHOR: Claire Albrecht & Brett Israels
 %
-% CREATED: September 2019 (function_3state123_cyclical.m)
+% CREATED: September 2019 (C2Maker_3state123_cyclical.m)
 %
 % PURPOSE:  Evaluate the Linear 3-State (123) conditional probabilties with a set of
 %           rates then the  2 point TCF and 4 point TCF for that system
@@ -13,11 +13,11 @@
 %         (3) Four-point TCF C4
 %
 % MODIFICATIONS:
-%   (1) Adapted from cP2TCF_3state123_cyclical.m
+%   (1) Adapted from function_3state123_cyclical.m
 %
 %--------------------------------------------------------------------------
 
-function [Peq,C2,C4] = function_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,histMode,C2Mode,C4Mode,timeArray)
+function C2 = C2Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,timeArray)
 switch nargin
     case 0
         t12 = 1e-4;
@@ -29,20 +29,16 @@ switch nargin
         A2 = 0.6161;
         A3 = 0.4811;
         
-        histMode = 1;
-        C2Mode = 1;
-        C4Mode = 1;
+        
         Npts = 150;
         timeArray = [0:9,logspace(1,6.4771212,Npts)]/1e6;
     case 8
-        histMode = 1;
-        C2Mode = 1;
-        C4Mode = 1;
+        
         Npts = 150;
         timeArray = [0:9,logspace(1,6.4771212,Npts)]/1e6;
 end
-programName = 'function_3state123_cyclical';
-disp(['Now Running ' programName '.m']);
+programName = 'C2Maker_3state123_cyclical.m';
+disp(['>>> Running ' programName '.m']);
 
 
 %--------------------------------------------------------------------------
@@ -65,10 +61,10 @@ k32 = k12*k23*k31/(k13*k21);
 %--------------------------------------------------------------------------
 % User Prefrences
 %--------------------------------------------------------------------------
-verboseMode = 1; %Set to 1 to see alot of progress updates and print off.
-clockMode = 1;
+verboseMode = 0; %Set to 1 to see alot of progress updates and print off.
+clockMode = 0;
 saveMode = 0;
-plotMode = 1;
+plotMode = 0;
 
 %--------------------------------------------------------------------------
 % User Prefrences
@@ -121,7 +117,7 @@ end
 %--------------------------------------------------------------------------
 % Evaluate the conditional probabilities
 %--------------------------------------------------------------------------
-tic 
+tic
 % Evaluate conditional probabilties by substituting in values from above
 % and using vpa() to force the simplest form of the output.
 
@@ -139,13 +135,6 @@ P31(t) = vpa(subs(P31));
 P32(t) = vpa(subs(P32));
 P33(t) = vpa(subs(P33));
 
-% NOTE: When using these expressions, when you plug in a value of t, the
-% expression will still be a of class 'sym'.
-% To evaluate these expressions as doubles use the following:
-%       If t = 0:
-%       P00_t1 = double(P00(0))
-% Now P00_t1 will be a double
-
 %Display the amount of time a process took. Begins at the last tic.
 if clockMode == 1
     elapsedTime = toc;
@@ -154,15 +143,8 @@ if clockMode == 1
 end
 %
 %--------------------------------------------------------------------------
-% CALCULATE Histograms's
+% CALCULATE Equilibrium populations
 %--------------------------------------------------------------------------
-tic
-
-% Need:
-%       - Pji(t) calculated above
-%       - Pi_eq equilibruim populations (from TDP_probcalc)
-%           -> do not need TDP_probcalc - can calc Peq from condProb's
-%       - Ai values of FRET states
 
 t = sym('t');   % This allows for a dynamic workspace
 
@@ -171,9 +153,6 @@ cP = [ P11(t), P21(t), P31(t);
     P12(t), P22(t), P32(t);
     P13(t), P23(t), P33(t)];
 % Row = final state & Column = initial condition
-
-%
-
 % Define equilibrium populations from the conditional probabiltiies at
 % infinite time.
 P1EQ = P11(inf);
@@ -182,141 +161,87 @@ P3EQ = P33(inf);
 
 Peq = [P1EQ; P2EQ; P3EQ];
 
-if histMode == 1
-    disp('HistMode set to 1');
-if verboseMode == 1
-    if sum(Peq) == 1
-        disp('Equilibrium probabilities sum to 1!')
-    else
-        error('Problem: Equilibrium probabilities DO NOT sum to 1.')
-    end
-end
-
-if plotMode == 1
-    figure(1);
-    
-    set(gcf,'Color','w');
-    set(gcf,'Name','FRET Histogram');
-    set(gcf,'Position',[1681 437 631 511]);
-    
-    sigma_A1 = 0.15;
-    sigma_A2 = 0.1;
-    sigma_A3 = 0.1;
-    
-    FRET_bins = linspace(0,1,100);
-    hist_sim = P1EQ*exp(-((FRET_bins-A1)/sigma_A1).^2) + P2EQ*exp(-((FRET_bins-A2)/sigma_A2).^2) + P3EQ*exp(-((FRET_bins-A3)/sigma_A3).^2);
-    denom_hist_sim= sum(hist_sim);
-    
-    hist_sim = hist_sim./denom_hist_sim;
-    
-    plot(FRET_bins,hist_sim,'r-','LineWidth',2,'DisplayName','Final Fit');
-    xlabel('FRET Efficiency','FontSize',14);
-    ylabel('Frequency','FontSize',14);
-    title('Simulated Histograms','FontSize',14);
-    
-    
-    hold on;
-    plot(FRET_bins,P1EQ*exp(-((FRET_bins-A1)/sigma_A1).^2)./denom_hist_sim,'c--','LineWidth',1,'DisplayName','P1_{eq}');
-    plot(FRET_bins,P2EQ*exp(-((FRET_bins-A2)/sigma_A2).^2)./denom_hist_sim,'m--','LineWidth',1,'DisplayName','P2_{eq}');
-    plot(FRET_bins,P3EQ*exp(-((FRET_bins-A3)/sigma_A3).^2)./denom_hist_sim,'g--','LineWidth',1,'DisplayName','P3_{eq}');
-    lgd = legend('show');
-    lgd.Location = 'northwest';
-    lgd.FontSize = 14;
-    hold off;
-    
-    set(gca,'FontSize',14);
-end
-%Display the amount of time a process took. Begins at the last tic.
-if clockMode == 1
-    elapsedTime = toc;
-    task_str = 'Calculate histograms as a function of rates {kij}';
-    disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
-end
-end
-
 %--------------------------------------------------------------------------
 % (2) Calculate Two point TCF:
 %-------------------------------------------------------------------------
 Amean = sum(A.*Peq);
 A = A - Amean;
 
-if C2Mode == 1
-    tic 
-    
-    C2sym(t) = 0*t;
-    for i = 1:numel(A)
-        for j = 1:numel(A)
-            %
-            C2temp(t) = A(j) * cP(j,i) * A(i) * Peq(i);
-            C2sym(t) = C2sym(t) + C2temp(t);
-        end
+tic
+C2sym(t) = 0*t;
+for i = 1:numel(A)
+    for j = 1:numel(A)
+        %
+        C2temp(t) = A(j) * cP(j,i) * A(i) * Peq(i);
+        C2sym(t) = C2sym(t) + C2temp(t);
+    end
+end
+
+msq = sum((A.^2).*Peq);     % square of mean <A^2>.
+sqm = (sum(A.*Peq))^2;      % mean square value <A>^2
+
+
+if verboseMode == 1
+    if double(C2sym(0)) == double(msq)
+        disp('Mean of the square <A^2> matches C2(t=0)!')
+    else
+        fprintf('Problem: mean of the square <A^2> (%f) DOES NOT match C2(t=0) (%f)',double(msq),double(C2sym(0)))
     end
     
-    msq = sum((A.^2).*Peq);     % square of mean <A^2>.
-    sqm = (sum(A.*Peq))^2;      % mean square value <A>^2
-    
-    
-    if verboseMode == 1
-        if double(C2sym(0)) == double(msq)
-            disp('Mean of the square <A^2> matches C2(t=0)!')
-        else
-            fprintf('Problem: mean of the square <A^2> (%f) DOES NOT match C2(t=0) (%f)',double(msq),double(C2sym(0)))
-        end
+    if double(C2sym(10^20)) == double(sqm)
+        disp('Square of the mean <A>^2 matches C2(t=inf)!')
+    else
         
-        if double(C2sym(10^20)) == double(sqm)
-            disp('Square of the mean <A>^2 matches C2(t=inf)!')
-        else
-            
-            fprintf('Problem: square of the mean <A>^2 (%f) DOES NOT match C2(t=inf) (%f)',double(sqm),double(C2sym(10^20)))
-        end
+        fprintf('Problem: square of the mean <A>^2 (%f) DOES NOT match C2(t=inf) (%f)',double(sqm),double(C2sym(10^20)))
     end
-    %--------------------------------------------------------------------------
-    % Evaluate C2 over a range of t's
-    %--------------------------------------------------------------------------
-    C2 = C2sym(timeArray);
-    
-    %Display the amount of time a process took. Begins at the last tic.
+end
+%--------------------------------------------------------------------------
+% Evaluate C2 over a range of t's
+%--------------------------------------------------------------------------
+C2 = C2sym(timeArray);
+
+%Display the amount of time a process took. Begins at the last tic.
 if clockMode == 1
     elapsedTime = toc;
     task_str = 'Calculate the 2-point TCF as a function of rates {kij}';
     disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
 
-    %--------------------------------------------------------------------------
-    %  Plot two point TCF
-    %--------------------------------------------------------------------------
+%--------------------------------------------------------------------------
+%  Plot two point TCF
+%--------------------------------------------------------------------------
+
+%close all
+if plotMode == 1
+    figure(2)
     
-    %close all
-    if plotMode == 1
-        figure(2)
-        
-        set(gcf,'Color','w');
-        set(gcf,'Name','C2');
-        %subplot(1,2,1)
-        %TCF2pt = fplot(C2(t),[1e-3,1],'LineWidth',2);      % fplot() was making it hard to plot on loglog scale, so calculate for specfic time range
-        TCF2pt = plot(timeArray,C2,'LineWidth',2);
-        
-        title('Analytical Two point TCF','FontSize',18)
-        xlabel('Time (\tau_1)','FontSize',14);
-        ylabel('C^{(2)}(\tau)','FontSize',14);
-        %xlim([10^-5 10^0])
-        % ylim([C2(500) C2(0)])
-        
-        ax = gca;
-        ax.XScale = 'log';
-        set(gca,'yscale','log')
-        
-        if saveMode == 1
-            saveName = ['C2_','example'];
-            saveas(TCF2pt,saveName, 'png')
-        end
+    set(gcf,'Color','w');
+    set(gcf,'Name','C2');
+    %subplot(1,2,1)
+    %TCF2pt = fplot(C2(t),[1e-3,1],'LineWidth',2);      % fplot() was making it hard to plot on loglog scale, so calculate for specfic time range
+    TCF2pt = plot(timeArray,C2,'LineWidth',2);
+    
+    title('Analytical Two point TCF','FontSize',18)
+    xlabel('Time (\tau_1)','FontSize',14);
+    ylabel('C^{(2)}(\tau)','FontSize',14);
+    %xlim([10^-5 10^0])
+    % ylim([C2(500) C2(0)])
+    
+    ax = gca;
+    ax.XScale = 'log';
+    set(gca,'yscale','log')
+    
+    if saveMode == 1
+        saveName = ['C2_','example'];
+        saveas(TCF2pt,saveName, 'png')
     end
 end
-%
 
+%
+C4Mode = 0;
 if C4Mode == 1
     disp('Will calculate C4');
-    tic            
+    tic
     %--------------------------------------------------------------------------
     % (3) Four point TCF:
     %--------------------------------------------------------------------------
@@ -478,5 +403,4 @@ if C4Mode == 1
         ax.YScale = 'log';
     end
     
-end
 end
