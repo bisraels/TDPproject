@@ -1,6 +1,6 @@
 % AUTHOR: Claire Albrecht & Brett Israels
 %
-% CREATED: August 2019
+% CREATED: August 2019 (function_3state123_cyclical.m)
 %
 % PURPOSE:  Evaluate the Linear 3-State (123) conditional probabilties with a set of 
 %           rates then the  2 point TCF and 4 point TCF for that system
@@ -11,30 +11,28 @@
 %         (2) Four-point TCF C4
 %
 % MODIFICATIONS: 
-%   (1) Adapted 
-%
+%   (1) Adapted from cP2TCF_3state123_cyclical
+%   (2) All rates and FRET values in alphanumeric order
 %--------------------------------------------------------------------------
+function [sim_hist,C2,C4] = function_3state123_cyclical(t12,t13,t21,t23,t31,val1,val2,val3)
 %--------------------------------------------------------------------------
 % Set the rates 
 %--------------------------------------------------------------------------
-k12 = 1/100;
-k13 = 1/100;
-k21 = 1/300;
-k31 = 1/200;
-k23 = 1/50;
-% k32 = 1/200;
-
-% Detailed balance condition: %k31 will be the rate fixed by the others
-% k31 = k21*k13*k32/(k12*k23);
+k12 = 1/t12;
+k13 = 1/t13;
+k21 = 1/t21;
+k23 = 1/t23;
+k31 = 1/t31;
+% Detailed balance condition: 
 k32 = k12*k23*k31/(k13*k21);
 
 %--------------------------------------------------------------------------
 % Set the FRET Values
 %--------------------------------------------------------------------------
 % This is a vector for the FRET values - assign values
-A1 = 0.79;              % These are just guesses for now
-A2 = 0.63;
-A3 = 0.5;
+A1 = val1;              % These are just guesses for now
+A2 = val2;
+A3 = val3;
 
 % A1 = val1;
 % A2 = val2;
@@ -42,11 +40,13 @@ A3 = 0.5;
 %--------------------------------------------------------------------------
 % User Prefrences
 %--------------------------------------------------------------------------
-verbose_mode = 1; %Set to 1 to see alot of progress updates and print off.
+verboseMode = 1; %Set to 1 to see alot of progress updates and print off.
 clockMode = 1;
 
 %Output created by ODE solver
+if verboseMode == 1
 disp('Loading the conditional Probabilities as a function of rates');
+end
 tic
 load('symCondProb_3state123_cyclical.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
 
@@ -157,7 +157,7 @@ for i = 1:numel(A)
     end
 end
 
-
+if verboseMode == 1
 if double(C2sym(0)) == double(msq)
     disp('Mean of the square <A^2> matches C2(t=0)!')
 else 
@@ -169,7 +169,7 @@ if double(C2sym(10^20)) == double(sqm)
 else 
     disp('Problem: square of the mean <A>^2 DOES NOT match C2(t=inf)')
 end
-
+end
 %--------------------------------------------------------------------------
 % Evaluate C2 over a range of t's
 %--------------------------------------------------------------------------
@@ -184,7 +184,7 @@ C2 = C2sym(timeArray);
 %--------------------------------------------------------------------------
 
 %close all
-figure(1)
+figure(2)
 
 %subplot(1,2,1)
 %TCF2pt = fplot(C2(t),[1e-3,1],'LineWidth',2);      % fplot() was making it hard to plot on loglog scale, so calculate for specfic time range
@@ -200,10 +200,11 @@ ax = gca;
 ax.XScale = 'log';
 set(gca,'yscale','log')
 
+if saveMode == 1
 saveName = ['C2_','example'];
 saveas(TCF2pt,saveName, 'png')
+end
 
-return
 %%
 %--------------------------------------------------------------------------
 % Four point TCF:

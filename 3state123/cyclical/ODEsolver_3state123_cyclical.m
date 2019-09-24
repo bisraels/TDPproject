@@ -1,6 +1,6 @@
 % AUTHOR:   Claire Albrecht & Brett Israels
 %
-% CREATED:  August 2019
+% CREATED:  August 2019 (ODEsolver_3state123_cyclical.m)
 %
 % PURPOSE:  Calculate the CYCLICAL Three state ODE  for  the master equation
 %           1 <-> 2 <-> 3 <-> 1
@@ -19,9 +19,9 @@ tic
 %--------------------------------------------------------------------------
 % User Prefrences
 %--------------------------------------------------------------------------
-verbose_mode = 1;
+verboseMode = 1;
 saveMode = 1;
-
+clockMode = 1;
 %--------------------------------------------------------------------------
 % Solve for the conditional probabilities
 %--------------------------------------------------------------------------
@@ -37,7 +37,7 @@ syms P1(t) P2(t) P3(t)
 K = [(-k12 - k13), k21, k31;...
     k12, (-k21 - k23 ), k32;...
     k13, k23, (-k31-k32);];
-if verbose_mode
+if verboseMode == 1
     disp('Sovling for the eigenvalues of the rate matrix K');
     disp(K);
 end
@@ -52,17 +52,18 @@ eval1 = lambda(1,1);        % First Eigenvalue should always be zero.
 eval2 = lambda(2,2);
 eval3 = lambda(3,3);
 
-if verbose_mode
+if verboseMode == 1
     fprintf('Eigenvalue 1 = %s\r',eval1);
     fprintf('Eigenvalue 2 = %s\r',eval2);
     fprintf('Eigenvalue 3 = %s\r',eval3);
 end
 
 %Display the amount of time a process took. Begins at the last tic.
+if clockMode == 1
 elapsedTime = toc;
 task_str = 'calculate the eigenvalues.';
 disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
-
+end
 
 %We do not use these eigenvectors as anything
 evec1 = Vec(:,1);
@@ -99,18 +100,21 @@ P32(t) = vpa(Psol_1.P2);
 P33(t) = vpa(Psol_1.P3);
 
 %Display the amount of time a process took. Begins at the last tic.
+if clockMode == 1
 elapsedTime = toc;
 task_str = 'calculate the conditional probabilities.';
 disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
-
+end
 %--------------------------------------------------------------------------
 % Save the output
 %--------------------------------------------------------------------------
-if saveMode
+if saveMode == 1
 save('symCondProb_3state123_cyclical.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
 end
 
+if clockMode == 1
 %Display the amount of time a process took. Begins at the last tic.
 elapsedTime = toc;
 task_str = 'save the conditional probabilities and eigenvalues.';
 disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+end
