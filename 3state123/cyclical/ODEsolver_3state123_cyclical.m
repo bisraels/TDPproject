@@ -11,6 +11,10 @@
 %
 % MODIFICATIONS: modified from ODEsolver_4state0123.m
 %--------------------------------------------------------------------------
+programName = 'ODEsolver_3state123_cyclical.m';
+disp(['Now Running ' programName '.m']);
+close all
+
 
 % clear all
 clc
