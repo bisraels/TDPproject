@@ -58,7 +58,7 @@ k32 = k12*k23*k31/(k13*k21);
 verboseMode = 0; %Set to 1 to see alot of progress updates and print off.
 clockMode = 0;
 saveMode = 0;
-plotMode = 0;
+plotMode = 1;
 
 %--------------------------------------------------------------------------
 % User Prefrences
@@ -183,8 +183,8 @@ if plotMode == 1
     
     set(gcf,'Color','w');
     set(gcf,'Name','FRET Histogram');
-    set(gcf,'Position',[1681 437 631 511]);
-    
+%     set(gcf,'Position',[1681 437 631 511]);
+%     
     sigma_A1 = 0.15;
     sigma_A2 = 0.1;
     sigma_A3 = 0.1;
