@@ -58,7 +58,7 @@ k32 = k12*k23*k31/(k13*k21);
 verboseMode = 0; %Set to 1 to see alot of progress updates and print off.
 clockMode = 0;
 saveMode = 0;
-plotMode = 1;
+plotMode = 0;
 
 %--------------------------------------------------------------------------
 % User Prefrences

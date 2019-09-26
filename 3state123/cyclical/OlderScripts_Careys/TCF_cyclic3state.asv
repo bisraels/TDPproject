@@ -1,6 +1,9 @@
 function tcf = TCF_cyclic3state(time,A0,A1,A2,k01,k10,k12,k21,k20)
-A = [A0,A1,A2]);
-A0 = A0 - mean(A)
+A = [A0,A1,A2];
+A0 = A0 - mean(A);
+A1 = A1 - mean(A);
+A2 = A2 - mean(A);
+
 k02 = k20*k12*k01/(k21*k10); % This relation forces detailed balance to be satisfied.
 
 % Define eigenvalues lam1 and lam2
@@ -47,6 +50,12 @@ p1_0 = p1_eq + m_0*b*exp(-lam1*time) + n_0*y*exp(-lam2*time);
 p0_2 = p0_eq + m_2*a*exp(-lam1*time) + n_2*x*exp(-lam2*time);
 p0_1 = p0_eq + m_1*a*exp(-lam1*time) + n_1*x*exp(-lam2*time);
 p0_0 = p0_eq + m_0*a*exp(-lam1*time) + n_0*x*exp(-lam2*time);
+
+% % Subtract mean values
+% Amean = p0_eq*A0 + p1_eq*A1 + p2_eq*A2;
+% A0 = A0 - Amean;
+% A1 = A1 - Amean;
+% A2 = A2 - Amean;
 
 % Calculate TCF
 tcf = p2_eq*A2*(A2*p2_2 + A1*p1_2 + A0*p0_2) +...
