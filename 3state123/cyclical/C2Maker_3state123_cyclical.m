@@ -20,6 +20,7 @@
 function C2 = C2Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,timeArray)
 switch nargin
     case 0
+        disp('Using Default values in C2Maker_3state123_cyclical');
         t12 = 1e-4;
         t13 = 0.0061;
         t21 = 3.27e-5;
@@ -28,7 +29,6 @@ switch nargin
         A1 = 0.7786;
         A2 = 0.6161;
         A3 = 0.4811;
-        
         
         Npts = 150;
         timeArray = [0:9,logspace(1,6.4771212,Npts)]/1e6;
