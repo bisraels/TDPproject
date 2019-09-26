@@ -637,7 +637,7 @@ end
 
 Npts = 150;
 timeArray = [1:9,logspace(1,6.4771212,Npts)];
-C2 = C2sym(timeArray);
+C2 = double(C2sym(timeArray));
 
 
 
