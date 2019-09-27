@@ -373,9 +373,6 @@ end
     
     % Create a matrix to hold the C4's calculated for each (tau1,tau3) pair for
     % a set tau 2
-    if clockMode == 1
-tic
-end
     C4 = zeros(length(tau1vec),length(tau3vec));
     %-------------------------------------------------------------------------
     % Iterate over all the Permutations of FRET States

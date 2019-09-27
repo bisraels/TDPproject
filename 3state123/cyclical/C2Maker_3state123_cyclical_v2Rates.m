@@ -17,15 +17,15 @@
 %
 %--------------------------------------------------------------------------
 
-function C2 = C2Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,timeArray)
+function C2 = C2Maker_3state123_cyclical_v2Rates(k12,k13,k21,k23,k31,A1,A2,A3,timeArray)
 switch nargin
     case 0
         disp('Using Default values in C2Maker_3state123_cyclical');
-        t12 = 1e-4;
-        t13 = 0.0061;
-        t21 = 3.27e-5;
-        t23 = 1e-6;
-        t31 = 1e-3;
+        k12 = 1/1e-4;
+        k13 = 1/0.0061;
+        k21 = 1/3.27e-5;
+        k23 = 1/1e-6;
+        k31 = 1/1e-3;
         A1 = 0.7786;
         A2 = 0.6161;
         A3 = 0.4811;
@@ -37,7 +37,7 @@ switch nargin
         Npts = 150;
         timeArray = [0:9,logspace(1,6.4771212,Npts)]/1e6;
 end
-programName = 'C2Maker_3state123_cyclical.m';
+programName = 'C2Maker_3state123_cyclical_v2Rates.m';
 disp([':>> Running ' programName '.m']);
 
 
@@ -50,11 +50,11 @@ A = [ A1; A2; A3];
 %--------------------------------------------------------------------------
 % Set the rates
 %--------------------------------------------------------------------------
-k12 = 1/t12;
-k13 = 1/t13;
-k21 = 1/t21;
-k23 = 1/t23;
-k31 = 1/t31;
+t12 = 1/k12;
+t13 = 1/k13;
+t21 = 1/k21;
+t23 = 1/k23;
+t31 = 1/k31;
 % % Detailed balance condition: %k31 will be the rate fixed by the others
 k32 = k12*k23*k31/(k13*k21);
 % t32 = 1/k32;
@@ -69,9 +69,8 @@ plotMode = 0;
 %--------------------------------------------------------------------------
 % User Prefrences
 %--------------------------------------------------------------------------
-if clockMode == 1
+
 tic
-end
 %Output created by ODE solver
 if verboseMode == 1
     disp('Loading the conditional Probabilities as a function of rates');
@@ -85,18 +84,14 @@ if clockMode == 1
     disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
 
-if clockMode == 1
 tic
-end
 % disp('Calculating conditional probabilities using the rates defined')
 t = sym('t');
 
 %--------------------------------------------------------------------------
 % CALCULATE THE EIGENVALUES
 %--------------------------------------------------------------------------
-if clockMode == 1
 tic
-end
 % Evaluate the eigenvalues in terms of the rates defined above - produce as doubles
 %subs(s) returns a copy of s, replacing symbolic variables in s, with their
 %values obtained from the calling function and the MATLAB® Workspace,
@@ -122,9 +117,7 @@ end
 %--------------------------------------------------------------------------
 % Evaluate the conditional probabilities
 %--------------------------------------------------------------------------
-if clockMode == 1
 tic
-end
 % Evaluate conditional probabilties by substituting in values from above
 % and using vpa() to force the simplest form of the output.
 
@@ -174,9 +167,7 @@ Peq = [P1EQ; P2EQ; P3EQ];
 Amean = sum(A.*Peq);
 A = A - Amean;
 
-if clockMode == 1
 tic
-end
 C2sym(t) = 0*t;
 for i = 1:numel(A)
     for j = 1:numel(A)
@@ -304,9 +295,7 @@ if C4Mode == 1
     t3 = tau3vec';
     
     
-    if clockMode == 1
-tic
-end
+    tic
     if verboseMode == 1
         disp('... Calculating the Conditional Probabilities');
     end
@@ -369,13 +358,10 @@ end
     if verboseMode
         disp(['... Calculating the 4 point TCF']);
     end
-    
+    tic
     
     % Create a matrix to hold the C4's calculated for each (tau1,tau3) pair for
     % a set tau 2
-    if clockMode == 1
-tic
-end
     C4 = zeros(length(tau1vec),length(tau3vec));
     %-------------------------------------------------------------------------
     % Iterate over all the Permutations of FRET States

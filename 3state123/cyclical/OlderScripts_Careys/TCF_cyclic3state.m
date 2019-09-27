@@ -1,8 +1,8 @@
 function tcf = TCF_cyclic3state(time,A0,A1,A2,k01,k10,k12,k21,k20)
-% A = [A0,A1,A2];
-% A0 = A0 - mean(A);
-% A1 = A1 - mean(A);
-% A2 = A2 - mean(A);
+%disp: Now is a mean subtracted 2-point TCF
+
+%If fed: tcf = TCF_cyclic3state(C2_exp_x,A1,A2,A3,k12,k21,k23,k32,k31); it
+%will produce a erroneous 2pt for certain values (k02 --> k13)3
 
 k02 = k20*k12*k01/(k21*k10); % This relation forces detailed balance to be satisfied.
 

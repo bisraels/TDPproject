@@ -17,7 +17,7 @@
 %
 %--------------------------------------------------------------------------
 
-function C2 = C2Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,timeArray)
+function C2 = C2Maker_3state123_cyclical_speed2(t12,t13,t21,t23,t31,A1,A2,A3,timeArray)
 switch nargin
     case 0
         disp('Using Default values in C2Maker_3state123_cyclical');
@@ -61,10 +61,10 @@ k32 = k12*k23*k31/(k13*k21);
 %--------------------------------------------------------------------------
 % User Prefrences
 %--------------------------------------------------------------------------
-verboseMode = 0; %Set to 1 to see alot of progress updates and print off.
-clockMode = 0;
+verboseMode = 1; %Set to 1 to see alot of progress updates and print off.
+clockMode = 1;
 saveMode = 0;
-plotMode = 0;
+plotMode = 1;
 
 %--------------------------------------------------------------------------
 % User Prefrences
@@ -85,9 +85,6 @@ if clockMode == 1
     disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
 
-if clockMode == 1
-tic
-end
 % disp('Calculating conditional probabilities using the rates defined')
 t = sym('t');
 
@@ -177,7 +174,9 @@ A = A - Amean;
 if clockMode == 1
 tic
 end
+
 C2sym(t) = 0*t;
+
 for i = 1:numel(A)
     for j = 1:numel(A)
         %
@@ -191,17 +190,18 @@ sqm = (sum(A.*Peq))^2;      % mean square value <A>^2
 
 
 if verboseMode == 1
-    if double(C2sym(0)) == double(msq)
+    if double(msq) == double(C2sym(0))
         disp('Mean of the square <A^2> matches C2(t=0)!')
+        fprintf('Success: Mean of the square <A^2> (%f) matches C2(t=0) (%f)\r',double(msq),double(C2sym(0)));
     else
-        fprintf('Problem: mean of the square <A^2> (%f) DOES NOT match C2(t=0) (%f)',double(msq),double(C2sym(0)))
+        fprintf('Problem: Mean of the square <A^2> (%f) DOES NOT match C2(t=0) (%f)\r',double(msq),double(C2sym(0)));
     end
     
-    if double(C2sym(10^20)) == double(sqm)
-        disp('Square of the mean <A>^2 matches C2(t=inf)!')
+    if double(sqm) == double(C2sym(10^20))
+        fprintf('Success: Square of the mean <A>^2 (%f) matches C2(t=inf) (%f)!',double(sqm),double(C2sym(10^20)));
     else
         
-        fprintf('Problem: square of the mean <A>^2 (%f) DOES NOT match C2(t=inf) (%f)',double(sqm),double(C2sym(10^20)))
+        fprintf('Problem: square of the mean <A>^2 (%f) DOES NOT match C2(t=inf) (%f)\r',double(sqm),double(C2sym(10^20)));
     end
 end
 %--------------------------------------------------------------------------
