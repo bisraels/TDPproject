@@ -17,15 +17,7 @@
 %
 %--------------------------------------------------------------------------
 
-function C2 = C2Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,timeArray)
-%--------------------------------------------------------------------------
-% User Prefrences
-%--------------------------------------------------------------------------
-verboseMode = 0; %Set to 1 to see alot of progress updates and print off.
-clockMode = 0;
-saveMode = 0;
-plotMode = 0;
-
+function C2 = C2Maker_3state123_cyclical_speed2(t12,t13,t21,t23,t31,A1,A2,A3,timeArray)
 switch nargin
     case 0
         disp('Using Default values in C2Maker_3state123_cyclical');
@@ -46,7 +38,8 @@ switch nargin
         timeArray = [0:9,logspace(1,6.4771212,Npts)]/1e6;
 end
 programName = 'C2Maker_3state123_cyclical.m';
-% disp([':>> Running ' programName '.m']);
+disp([':>> Running ' programName '.m']);
+
 
 %--------------------------------------------------------------------------
 % Define the FRET Array
@@ -65,11 +58,14 @@ k31 = 1/t31;
 % % Detailed balance condition: %k31 will be the rate fixed by the others
 k32 = k12*k23*k31/(k13*k21);
 % t32 = 1/k32;
+%--------------------------------------------------------------------------
+% User Prefrences
+%--------------------------------------------------------------------------
+verboseMode = 0; %Set to 1 to see alot of progress updates and print off.
+clockMode = 0;
+saveMode = 0;
+plotMode = 0;
 
-
-if clockMode == 1    
-        tic
-end
 %--------------------------------------------------------------------------
 % User Prefrences
 %--------------------------------------------------------------------------
@@ -89,19 +85,12 @@ if clockMode == 1
     disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
 
-if clockMode == 1
-tic
-end
 % disp('Calculating conditional probabilities using the rates defined')
 t = sym('t');
 
 %--------------------------------------------------------------------------
 % CALCULATE THE EIGENVALUES
 %--------------------------------------------------------------------------
-
-if clockMode == 1    
-        tic
-end
 if clockMode == 1
 tic
 end
@@ -130,10 +119,6 @@ end
 %--------------------------------------------------------------------------
 % Evaluate the conditional probabilities
 %--------------------------------------------------------------------------
-
-if clockMode == 1    
-        tic
-end
 if clockMode == 1
 tic
 end
@@ -142,29 +127,17 @@ end
 
 %Pij(t) is prob from i--> j, assuming you start in state i: Pi(t=0)=100%=1
 
-% P11(t) = vpa(subs(P11));
-% P12(t) = vpa(subs(P12));
-% P13(t) = vpa(subs(P13));
-% 
-% P21(t) = vpa(subs(P21));
-% P22(t) = vpa(subs(P22));
-% P23(t) = vpa(subs(P23));
-% 
-% P31(t) = vpa(subs(P31));
-% P32(t) = vpa(subs(P32));
-% P33(t) = vpa(subs(P33));
+P11(t) = vpa(subs(P11));
+P12(t) = vpa(subs(P12));
+P13(t) = vpa(subs(P13));
 
-P11(t) = subs(P11);
-P12(t) = subs(P12);
-P13(t) = subs(P13);
+P21(t) = vpa(subs(P21));
+P22(t) = vpa(subs(P22));
+P23(t) = vpa(subs(P23));
 
-P21(t) = subs(P21);
-P22(t) = subs(P22);
-P23(t) = subs(P23);
-
-P31(t) = subs(P31);
-P32(t) = subs(P32);
-P33(t) = subs(P33);
+P31(t) = vpa(subs(P31));
+P32(t) = vpa(subs(P32));
+P33(t) = vpa(subs(P33));
 
 %Display the amount of time a process took. Begins at the last tic.
 if clockMode == 1
@@ -198,14 +171,12 @@ Peq = [P1EQ; P2EQ; P3EQ];
 Amean = sum(A.*Peq);
 A = A - Amean;
 
-if clockMode == 1    
-        tic
-end
-
 if clockMode == 1
 tic
 end
+
 C2sym(t) = 0*t;
+
 for i = 1:numel(A)
     for j = 1:numel(A)
         %
@@ -213,38 +184,37 @@ for i = 1:numel(A)
         C2sym(t) = C2sym(t) + C2temp(t);
     end
 end
-%Display the amount of time a process took. Begins at the last tic.
-if clockMode == 1
-    elapsedTime = toc;
-    task_str = 'Calculate the 2-point TCF as a function of rates {kij}';
-    disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
-end
 
 msq = sum((A.^2).*Peq);     % square of mean <A^2>.
 sqm = (sum(A.*Peq))^2;      % mean square value <A>^2
 
 
 if verboseMode == 1
-    if double(C2sym(0)) == double(msq)
+    if double(msq) == double(C2sym(0))
         disp('Mean of the square <A^2> matches C2(t=0)!')
+        fprintf('Success: Mean of the square <A^2> (%f) matches C2(t=0) (%f)\r',double(msq),double(C2sym(0)));
     else
-        fprintf('Problem: mean of the square <A^2> (%f) DOES NOT match C2(t=0) (%f)',double(msq),double(C2sym(0)))
+        fprintf('Problem: Mean of the square <A^2> (%f) DOES NOT match C2(t=0) (%f)\r',double(msq),double(C2sym(0)));
     end
     
-    if double(C2sym(10^20)) == double(sqm)
-        disp('Square of the mean <A>^2 matches C2(t=inf)!')
+    if double(sqm) == double(C2sym(10^20))
+        fprintf('Success: Square of the mean <A>^2 (%f) matches C2(t=inf) (%f)!',double(sqm),double(C2sym(10^20)));
     else
         
-        fprintf('Problem: square of the mean <A>^2 (%f) DOES NOT match C2(t=inf) (%f)',double(sqm),double(C2sym(10^20)))
+        fprintf('Problem: square of the mean <A>^2 (%f) DOES NOT match C2(t=inf) (%f)\r',double(sqm),double(C2sym(10^20)));
     end
 end
-
 %--------------------------------------------------------------------------
 % Evaluate C2 over a range of t's
 %--------------------------------------------------------------------------
 C2 = C2sym(timeArray);
 
-
+%Display the amount of time a process took. Begins at the last tic.
+if clockMode == 1
+    elapsedTime = toc;
+    task_str = 'Calculate the 2-point TCF as a function of rates {kij}';
+    disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+end
 
 %--------------------------------------------------------------------------
 %  Plot two point TCF

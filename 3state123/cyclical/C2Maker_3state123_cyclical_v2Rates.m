@@ -17,23 +17,15 @@
 %
 %--------------------------------------------------------------------------
 
-function C2 = C2Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,timeArray)
-%--------------------------------------------------------------------------
-% User Prefrences
-%--------------------------------------------------------------------------
-verboseMode = 0; %Set to 1 to see alot of progress updates and print off.
-clockMode = 0;
-saveMode = 0;
-plotMode = 0;
-
+function C2 = C2Maker_3state123_cyclical_v2Rates(k12,k13,k21,k23,k31,A1,A2,A3,timeArray)
 switch nargin
     case 0
         disp('Using Default values in C2Maker_3state123_cyclical');
-        t12 = 1e-4;
-        t13 = 0.0061;
-        t21 = 3.27e-5;
-        t23 = 1e-6;
-        t31 = 1e-3;
+        k12 = 1/1e-4;
+        k13 = 1/0.0061;
+        k21 = 1/3.27e-5;
+        k23 = 1/1e-6;
+        k31 = 1/1e-3;
         A1 = 0.7786;
         A2 = 0.6161;
         A3 = 0.4811;
@@ -45,8 +37,9 @@ switch nargin
         Npts = 150;
         timeArray = [0:9,logspace(1,6.4771212,Npts)]/1e6;
 end
-programName = 'C2Maker_3state123_cyclical.m';
-% disp([':>> Running ' programName '.m']);
+programName = 'C2Maker_3state123_cyclical_v2Rates.m';
+disp([':>> Running ' programName '.m']);
+
 
 %--------------------------------------------------------------------------
 % Define the FRET Array
@@ -57,25 +50,27 @@ A = [ A1; A2; A3];
 %--------------------------------------------------------------------------
 % Set the rates
 %--------------------------------------------------------------------------
-k12 = 1/t12;
-k13 = 1/t13;
-k21 = 1/t21;
-k23 = 1/t23;
-k31 = 1/t31;
+t12 = 1/k12;
+t13 = 1/k13;
+t21 = 1/k21;
+t23 = 1/k23;
+t31 = 1/k31;
 % % Detailed balance condition: %k31 will be the rate fixed by the others
 k32 = k12*k23*k31/(k13*k21);
 % t32 = 1/k32;
-
-
-if clockMode == 1    
-        tic
-end
 %--------------------------------------------------------------------------
 % User Prefrences
 %--------------------------------------------------------------------------
-if clockMode == 1
+verboseMode = 0; %Set to 1 to see alot of progress updates and print off.
+clockMode = 0;
+saveMode = 0;
+plotMode = 0;
+
+%--------------------------------------------------------------------------
+% User Prefrences
+%--------------------------------------------------------------------------
+
 tic
-end
 %Output created by ODE solver
 if verboseMode == 1
     disp('Loading the conditional Probabilities as a function of rates');
@@ -89,22 +84,14 @@ if clockMode == 1
     disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
 
-if clockMode == 1
 tic
-end
 % disp('Calculating conditional probabilities using the rates defined')
 t = sym('t');
 
 %--------------------------------------------------------------------------
 % CALCULATE THE EIGENVALUES
 %--------------------------------------------------------------------------
-
-if clockMode == 1    
-        tic
-end
-if clockMode == 1
 tic
-end
 % Evaluate the eigenvalues in terms of the rates defined above - produce as doubles
 %subs(s) returns a copy of s, replacing symbolic variables in s, with their
 %values obtained from the calling function and the MATLAB® Workspace,
@@ -130,41 +117,23 @@ end
 %--------------------------------------------------------------------------
 % Evaluate the conditional probabilities
 %--------------------------------------------------------------------------
-
-if clockMode == 1    
-        tic
-end
-if clockMode == 1
 tic
-end
 % Evaluate conditional probabilties by substituting in values from above
 % and using vpa() to force the simplest form of the output.
 
 %Pij(t) is prob from i--> j, assuming you start in state i: Pi(t=0)=100%=1
 
-% P11(t) = vpa(subs(P11));
-% P12(t) = vpa(subs(P12));
-% P13(t) = vpa(subs(P13));
-% 
-% P21(t) = vpa(subs(P21));
-% P22(t) = vpa(subs(P22));
-% P23(t) = vpa(subs(P23));
-% 
-% P31(t) = vpa(subs(P31));
-% P32(t) = vpa(subs(P32));
-% P33(t) = vpa(subs(P33));
+P11(t) = vpa(subs(P11));
+P12(t) = vpa(subs(P12));
+P13(t) = vpa(subs(P13));
 
-P11(t) = subs(P11);
-P12(t) = subs(P12);
-P13(t) = subs(P13);
+P21(t) = vpa(subs(P21));
+P22(t) = vpa(subs(P22));
+P23(t) = vpa(subs(P23));
 
-P21(t) = subs(P21);
-P22(t) = subs(P22);
-P23(t) = subs(P23);
-
-P31(t) = subs(P31);
-P32(t) = subs(P32);
-P33(t) = subs(P33);
+P31(t) = vpa(subs(P31));
+P32(t) = vpa(subs(P32));
+P33(t) = vpa(subs(P33));
 
 %Display the amount of time a process took. Begins at the last tic.
 if clockMode == 1
@@ -198,13 +167,7 @@ Peq = [P1EQ; P2EQ; P3EQ];
 Amean = sum(A.*Peq);
 A = A - Amean;
 
-if clockMode == 1    
-        tic
-end
-
-if clockMode == 1
 tic
-end
 C2sym(t) = 0*t;
 for i = 1:numel(A)
     for j = 1:numel(A)
@@ -212,12 +175,6 @@ for i = 1:numel(A)
         C2temp(t) = A(j) * cP(j,i) * A(i) * Peq(i);
         C2sym(t) = C2sym(t) + C2temp(t);
     end
-end
-%Display the amount of time a process took. Begins at the last tic.
-if clockMode == 1
-    elapsedTime = toc;
-    task_str = 'Calculate the 2-point TCF as a function of rates {kij}';
-    disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
 
 msq = sum((A.^2).*Peq);     % square of mean <A^2>.
@@ -238,13 +195,17 @@ if verboseMode == 1
         fprintf('Problem: square of the mean <A>^2 (%f) DOES NOT match C2(t=inf) (%f)',double(sqm),double(C2sym(10^20)))
     end
 end
-
 %--------------------------------------------------------------------------
 % Evaluate C2 over a range of t's
 %--------------------------------------------------------------------------
 C2 = C2sym(timeArray);
 
-
+%Display the amount of time a process took. Begins at the last tic.
+if clockMode == 1
+    elapsedTime = toc;
+    task_str = 'Calculate the 2-point TCF as a function of rates {kij}';
+    disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+end
 
 %--------------------------------------------------------------------------
 %  Plot two point TCF
@@ -334,9 +295,7 @@ if C4Mode == 1
     t3 = tau3vec';
     
     
-    if clockMode == 1
-tic
-end
+    tic
     if verboseMode == 1
         disp('... Calculating the Conditional Probabilities');
     end
@@ -399,13 +358,10 @@ end
     if verboseMode
         disp(['... Calculating the 4 point TCF']);
     end
-    
+    tic
     
     % Create a matrix to hold the C4's calculated for each (tau1,tau3) pair for
     % a set tau 2
-    if clockMode == 1
-tic
-end
     C4 = zeros(length(tau1vec),length(tau3vec));
     %-------------------------------------------------------------------------
     % Iterate over all the Permutations of FRET States
