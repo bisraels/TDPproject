@@ -33,7 +33,7 @@ switch nargin
 end
 programName = 'histMaker_3state123_cyclical.m';
 % disp([':>> Running ' programName '.m']);
-disp([':>> Running ' programName '.m']);
+
 
 
 %--------------------------------------------------------------------------

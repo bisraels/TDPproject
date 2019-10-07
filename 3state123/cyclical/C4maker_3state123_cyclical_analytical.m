@@ -1,6 +1,6 @@
 %Rewrite of carey phelps FourPtTCF_cyclic3state_norm
 % function [C4,C4_diff] = C4maker_3state123_cyclical(tau1range,tau2,A1,A2,A3,k12,k21,k23,k32,k31)
-function [C4,C4_diff] = C4maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range)
+function [C4,C4_diff] = C4maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range)
 switch nargin
     case 0
         disp('Using Default values in C2Maker_3state123_cyclical');
@@ -24,7 +24,7 @@ switch nargin
         Npts = 150;
         tau1range = [0:9,logspace(1,6.4771212,Npts)]/1e6;
 end
-programName = 'C4maker_3state123_cyclical.m';
+programName = 'C4maker_3state123_cyclical_analytical.m';
 % disp([':>> Running ' programName '.m']);
 
 %--------------------------------------------------------------------------
@@ -82,13 +82,13 @@ m_3 = (-p1_eq - n_3*x)/a;
 m_2 = (-p1_eq - n_2*x)/a;
 m_1 = (1 - p1_eq - n_1*x)/a;
 
-    t1 = tau1range;
-    t2 = tau2;
-    t3 = tau3range;
-   disp(['Size t1 = ' num2str(size(t1))]);
-disp(['Size t3 = ' num2str(size(t3))]);
+t1 = tau1range;
+t2 = tau2;
+t3 = tau3range;
+% disp(['Size t1 = ' num2str(size(t1))]);
+% disp(['Size t3 = ' num2str(size(t3))]);
 
-   
+
 % Subtract mean values
 Amean = p1_eq*A1 + p2_eq*A2 + p3_eq*A3;
 A1 = A1 - Amean;
@@ -165,7 +165,6 @@ path60 = p1_eq*A1*p3(1,t1)*A3*p2(3,t2)*A2.*p1(2,t3)*A1;
 path61 = p1_eq*A1*p3(1,t1)*A3*p1(3,t2)*A1.*p3(1,t3)*A3;
 path62 = p1_eq*A1*p3(1,t1)*A3*p1(3,t2)*A1.*p2(1,t3)*A2;
 path63 = p1_eq*A1*p3(1,t1)*A3*p1(3,t2)*A1.*p1(1,t3)*A1;
-disp(['Size path63 = ' num2str(size(path63))]);
 
 path64 = p1_eq*A1*p2(1,t1)*A2*p3(2,t2)*A3.*p3(3,t3)*A3;
 path65 = p1_eq*A1*p2(1,t1)*A2*p3(2,t2)*A3.*p2(3,t3)*A2;
@@ -186,64 +185,65 @@ path78 = p1_eq*A1*p1(1,t1)*A1*p2(1,t2)*A2.*p1(2,t3)*A1;
 path79 = p1_eq*A1*p1(1,t1)*A1*p1(1,t2)*A1.*p3(1,t3)*A3;
 path80 = p1_eq*A1*p1(1,t1)*A1*p1(1,t2)*A1.*p2(1,t3)*A2;
 path81 = p1_eq*A1*p1(1,t1)*A1*p1(1,t2)*A1.*p1(1,t3)*A1;
-disp(['Size path81 = ' num2str(size(path81))]);
+% disp(['Size path81 = ' num2str(size(path81))]);
 
 kappa2 = path1 + path2 + path3 + path4 + path5 + path6 + path7 + path8 + path9 + path10 + path11 + path12 + path13 + path14 + path15 + path16 + path17 + path18 + path19 + path20;
 kappa2 = kappa2 + path21 + path22 + path23 + path24 + path25 + path26 + path27 + path28 + path29 + path30 + path31 + path32 + path33 + path34 + path35 + path36 + path37 + path38 + path39 + path40;
 kappa2 = kappa2 + path41 + path42 + path43 + path44 + path45 + path46 + path47 + path48 + path49 + path50 + path51 + path52 + path53 + path54 + path55 + path56 + path57 + path58 + path59 + path60;
 C4 = kappa2 + path61 + path62 + path63 + path64 + path65 + path66 + path67 + path68 + path69 + path70 + path71 + path72 + path73 + path74 + path75 + path76 + path77 + path78 + path79 + path80 + path81;
-disp(['Size C4 = ' num2str(size(C4))]);
+% disp(['Size C4 = ' num2str(size(C4))]);
 
 C2_left = (p3_eq*A3*(A3*p3(3,t1) + A2*p2(3,t1) + A1*p1(3,t1)) + p2_eq*A2*(A3*p3(2,t1) + A2*p2(2,t1) + A1*p1(2,t1)) + p1_eq*A1*(A3*p3(1,t1) + A2*p2(1,t1) + A1*p1(1,t1)));
 C2_right = (p3_eq*A3*(A3*p3(3,t3) + A2*p2(3,t3) + A1*p1(3,t3)) + p2_eq*A2*(A3*p3(2,t3) + A2*p2(2,t3) + A1*p1(2,t3)) + p1_eq*A1*(A3*p3(1,t3) + A2*p2(1,t3) + A1*p1(1,t3)));
 C2Product = C2_left.*C2_right;
-disp(['Size C2Product = ' num2str(size(C2Product))]);
+% disp(['Size C2Product = ' num2str(size(C2Product))]);
 C4_diff = C4 - C2Product;
 
-disp(['Size C4_diff = ' num2str(size(C4_diff))]);
+% disp(['Size C4_diff = ' num2str(size(C4_diff))]);
 
-function p1_cp = p1(init,time)
-    if init == 3
-        m = m_3;
-        n = n_3;
-    elseif init == 2
-        m = m_2;
-        n = n_2;
-    else
-        m = m_1;
-        n = n_1;
+    function p1 = p1(init,time)
+        if init == 3
+            m = m_3;
+            n = n_3;
+        elseif init == 2
+            m = m_2;
+            n = n_2;
+        else
+            m = m_1;
+            n = n_1;
+        end
+        
+        p1 = p1_eq + m*a*exp(-lam1*time) + n*x*exp(-lam2*time);
     end
 
-    p1_cp = p1_eq + m*a*exp(-lam1*time) + n*x*exp(-lam2*time);
-end
-
-function p2_cp = p2(init,time)
-    if init == 3
-        m = m_3;
-        n = n_3;
-    elseif init == 2
-        m = m_2;
-        n = n_2;
-    else
-        m = m_1;
-        n = n_1;
+    function p2 = p2(init,time)
+        if init == 3
+            m = m_3;
+            n = n_3;
+        elseif init == 2
+            m = m_2;
+            n = n_2;
+        else
+            m = m_1;
+            n = n_1;
+        end
+        
+        p2 = p2_eq + m*b*exp(-lam1*time) + n*y*exp(-lam2*time);
     end
 
-    p2_cp = p2_eq + m*b*exp(-lam1*time) + n*y*exp(-lam2*time);
-end
-
-function p3_cp = p3(init,time)
-    if init == 3
-        m = m_3;
-        n = n_3;
-    elseif init == 2
-        m = m_2;
-        n = n_2;
-    else
-        m = m_1;
-        n = n_1;
+    function p3 = p3(init,time)
+        if init == 3
+            m = m_3;
+            n = n_3;
+        elseif init == 2
+            m = m_2;
+            n = n_2;
+        else
+            m = m_1;
+            n = n_1;
+        end
+            
+            p3 = p3_eq + m*c*exp(-lam1*time) + n*z*exp(-lam2*time);
+        end
     end
 
-    p3_cp = p3_eq + m*c*exp(-lam1*time) + n*z*exp(-lam2*time);
-end
-end
