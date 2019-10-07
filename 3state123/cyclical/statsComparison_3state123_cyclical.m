@@ -3,13 +3,13 @@ programName = 'statsComparison_3state123_cyclical';
 %--------------------------------------------------------------------------
 %USER OPTIONS
 %--------------------------------------------------------------------------
-saveMode = 1;
+saveMode = 0;
 clockMode = 1;%if clockMode == 1, tic; end if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); end
 plotMode = 1;
 
-compareHistMode = 0;
-compareC2Mode = 1;
-compareC4Mode = 1;
+compareHistMode = 1;
+compareC2Mode = 0;
+compareC4Mode = 0;
 %--------------------------------------------------------------------------
 % SET PARAMATERS
 %--------------------------------------------------------------------------
@@ -65,6 +65,7 @@ t32 = 1/k32;
 if compareHistMode == 1
     disp('Comparing the time it takes to calculate histograms...');
     figure(21);
+    clf
     set(gcf,'Color','w');
     
     sigma_A1 = 0.15;
@@ -85,9 +86,27 @@ if compareHistMode == 1
     fitHistPlot1 = plot(FRET_bins,hist_sim);
     fitHistPlot1.LineStyle = '-';
     fitHistPlot1.Color = 'red';
-    fitHistPlot1.LineWidth = 2;
-    fitHistPlot1.DisplayName = ['FourPtTCF cyclic3state xo'];
-    
+    fitHistPlot1.LineWidth = 3;
+    fitHistPlot1.DisplayName = ['cyclic3state hist'];
+    hold on;
+    %----------------------------------------------------------------------
+    % Calculate the histogram using the analytical code
+    %----------------------------------------------------------------------
+    if clockMode == 1, tic; end
+    [Peq] = histMaker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3);
+    if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' 'histMaker_3state123_cyclical_analytical']); end
+    p1_eq = Peq(1);
+    p2_eq = Peq(2);
+    p3_eq = Peq(3);
+    hist_sim3 = p1_eq*exp(-((FRET_bins-A1)/sigma_A1).^2) + p2_eq*exp(-((FRET_bins-A2)/sigma_A2).^2) + p3_eq*exp(-((FRET_bins-A3)/sigma_A3).^2);
+    denom_hist_sim3 = sum(hist_sim3);
+    hist_sim3 = hist_sim3./denom_hist_sim3;
+    fitHistPlot2 = plot(FRET_bins,hist_sim3);
+    fitHistPlot2.LineStyle = ':';
+    fitHistPlot2.Color = 'g';
+    fitHistPlot2.LineWidth = 2;
+    fitHistPlot2.DisplayName = ['histMaker 3state123 cyclical analytical'];
+    hold on;
     
     %----------------------------------------------------------------------
     % Calculate the histogram using the new code
@@ -108,25 +127,10 @@ if compareHistMode == 1
     fitHistPlot2.LineWidth = 2;
     fitHistPlot2.DisplayName = ['histMaker 3state123 cyclical'];
     
-    %----------------------------------------------------------------------
-    % Calculate the histogram using the old code
-    %----------------------------------------------------------------------
-    if clockMode == 1, tic; end
-    [Peq] = histMaker_3state123_cyclical_analytical(k12,k21,k23,k32,k31);
-    if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' 'histMaker_3state123_cyclical_analytical']); end
-    p1_eq = Peq(1);
-    p2_eq = Peq(2);
-    p3_eq = Peq(3);
-    hist_sim3 = p1_eq*exp(-((FRET_bins-A1)/sigma_A1).^2) + p2_eq*exp(-((FRET_bins-A2)/sigma_A2).^2) + p3_eq*exp(-((FRET_bins-A3)/sigma_A3).^2);
-    denom_hist_sim3 = sum(hist_sim3);
-    hist_sim3 = hist_sim3./denom_hist_sim3;
-    fitHistPlot2 = plot(FRET_bins,hist_sim3);
-    fitHistPlot2.LineStyle = ':';
-    fitHistPlot2.Color = 'g';
-    fitHistPlot2.LineWidth = 2;
-    fitHistPlot2.DisplayName = ['histMaker 3state123 cyclical analytical'];
+    leg = legend;
+    leg.Location = 'best';
     
-      
+    
     %--------------------------------------------------------------------------
     % Save the data
     %--------------------------------------------------------------------------
@@ -275,34 +279,7 @@ if compareC4Mode == 1
     
     tau1range = timeArray;
     tau2 = 0;
-    %----------------------------------------------------------------------
-    %Calculate the C4 with the old analytical expressions (original)
-    %----------------------------------------------------------------------
-    %     %     function [C4,C4_diff] = C4maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range)
-    %     if clockMode == 1, tic; end
-    %     % [kappa,tcf] = FourPtTCF_cyclic3state_norm(tau1range,tau2,A0,A1,A2,k01,k10,k12,k21,k20)
-    %     [C4,~] = FourPtTCF_cyclic3state_norm(tau1range,tau2,A1,A2,A3,k12,k21,k23,k32,k31);
-    %
-    %
-    %     % [C4,~] = C4maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range);
-    %     display_str = 'C4maker 3state123 cyclical analytical';
-    %     if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); end
-    %     if plotMode == 1
-    %         figure(23);
-    %         set(gcf,'Color','w');
-    %         set(gcf,'Name','C4');
-    %
-    %         plot_TCF4point = surf(tau1range, tau1range', C4,'DisplayName',display_str);
-    %         title('Analytical Four-point TCF: C^{(4)}','FontSize',18)
-    %         xlabel('Time (\tau_1)','FontSize',14);
-    %         ylabel('Time (\tau_3)','FontSize',14);
-    %         zlabel('C^{(4)}(\tau_1,\tau_2,\tau_3)','FontSize',14);
-    %
-    %         view(28,36);
-    %         ax = gca;
-    %         ax.XScale = 'log';
-    %         ax.YScale = 'log';
-    %     end
+    
     %----------------------------------------------------------------------
     %Calculate the C4 with the old analytical expressions (rewritten)
     %----------------------------------------------------------------------
@@ -310,7 +287,7 @@ if compareC4Mode == 1
     
     if clockMode == 1, tic; end
     
-    [C4,~] = C4maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range);
+    [C4,~,~] = C4maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range);
     display_str = 'C4maker 3state123 cyclical analytical';
     if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); end
     if plotMode == 1
@@ -359,7 +336,7 @@ if compareC4Mode == 1
         legend('show')
     end
     
-       
+    
     %--------------------------------------------------------------------------
     % Save the data
     %--------------------------------------------------------------------------

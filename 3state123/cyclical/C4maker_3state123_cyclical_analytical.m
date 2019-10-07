@@ -1,6 +1,6 @@
 %Rewrite of carey phelps FourPtTCF_cyclic3state_norm
 % function [C4,C4_diff] = C4maker_3state123_cyclical(tau1range,tau2,A1,A2,A3,k12,k21,k23,k32,k31)
-function [C4,C4_diff] = C4maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range)
+function [C4,C4_diff,C2] = C4maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range)
 switch nargin
     case 0
         disp('Using Default values in C2Maker_3state123_cyclical');
@@ -194,6 +194,7 @@ C4 = kappa2 + path61 + path62 + path63 + path64 + path65 + path66 + path67 + pat
 % disp(['Size C4 = ' num2str(size(C4))]);
 
 C2_left = (p3_eq*A3*(A3*p3(3,t1) + A2*p2(3,t1) + A1*p1(3,t1)) + p2_eq*A2*(A3*p3(2,t1) + A2*p2(2,t1) + A1*p1(2,t1)) + p1_eq*A1*(A3*p3(1,t1) + A2*p2(1,t1) + A1*p1(1,t1)));
+C2 = C2_left;
 C2_right = (p3_eq*A3*(A3*p3(3,t3) + A2*p2(3,t3) + A1*p1(3,t3)) + p2_eq*A2*(A3*p3(2,t3) + A2*p2(2,t3) + A1*p1(2,t3)) + p1_eq*A1*(A3*p3(1,t3) + A2*p2(1,t3) + A1*p1(1,t3)));
 C2Product = C2_left.*C2_right;
 % disp(['Size C2Product = ' num2str(size(C2Product))]);
