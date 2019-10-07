@@ -1,9 +1,9 @@
 function statsComparison_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3)
-programName = 'C2comparison';
+programName = 'statsComparison_3state123_cyclical';
 %--------------------------------------------------------------------------
 %USER OPTIONS
 %--------------------------------------------------------------------------
-saveMode = 0;
+saveMode = 1;
 clockMode = 1;%if clockMode == 1, tic; end if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); end
 plotMode = 1;
 
@@ -125,7 +125,42 @@ if compareHistMode == 1
     fitHistPlot2.Color = 'g';
     fitHistPlot2.LineWidth = 2;
     fitHistPlot2.DisplayName = ['histMaker 3state123 cyclical analytical'];
+    
+      
+    %--------------------------------------------------------------------------
+    % Save the data
+    %--------------------------------------------------------------------------
+    if saveMode == 1
+        %--------------------------------------------------------------------------
+        % Make a folder to hold output
+        %-------------------------------------------------------------------------
+        %Make output folder if it doesnt exist
+        outputFolderName = [programName '_output'];
+        if exist(outputFolderName,'dir') ~= 7
+            mkdir(outputFolderName);
+            disp('Making a folder to hold the output');
+        end
+        
+        %--------------------------------------------------------------------------
+        % Save a figure
+        %-------------------------------------------------------------------------
+        set(gcf,'PaperPositionMode','auto');
+        extension = 'png';
+        runNum = 1;
+        foutName = ['histSimulationComparison_' num2str(runNum)];
+        filePathOut = [outputFolderName filesep() foutName];
+        while exist([filePathOut '.' extension],'file') == 2
+            runNum = runNum + 1;
+            fprintf('Increasing the run num to %f',runNum);
+            foutName = ['histSimulationComparison_' num2str(runNum)];
+            filePathOut = [outputFolderName filesep() foutName];
+        end
+        print(gcf,filePathOut,['-d' extension],'-r0');
+        disp(['Saving the figure as ' foutName]);
+    end
 end
+
+
 
 %--------------------------------------------------------------------------
 % Compare the 2-point TCFs
@@ -322,6 +357,39 @@ if compareC4Mode == 1
         ax.XScale = 'log';
         ax.YScale = 'log';
         legend('show')
+    end
+    
+       
+    %--------------------------------------------------------------------------
+    % Save the data
+    %--------------------------------------------------------------------------
+    if saveMode == 1
+        %--------------------------------------------------------------------------
+        % Make a folder to hold output
+        %-------------------------------------------------------------------------
+        %Make output folder if it doesnt exist
+        outputFolderName = [programName '_output'];
+        if exist(outputFolderName,'dir') ~= 7
+            mkdir(outputFolderName);
+            disp('Making a folder to hold the output');
+        end
+        
+        %--------------------------------------------------------------------------
+        % Save a figure
+        %-------------------------------------------------------------------------
+        set(gcf,'PaperPositionMode','auto');
+        extension = 'png';
+        runNum = 1;
+        foutName = ['C4simulationComparison_' num2str(runNum)];
+        filePathOut = [outputFolderName filesep() foutName];
+        while exist([filePathOut '.' extension],'file') == 2
+            runNum = runNum + 1;
+            fprintf('Increasing the run num to %f',runNum);
+            foutName = ['C4simulationComparison_' num2str(runNum)];
+            filePathOut = [outputFolderName filesep() foutName];
+        end
+        print(gcf,filePathOut,['-d' extension],'-r0');
+        disp(['Saving the figure as ' foutName]);
     end
     
 end
