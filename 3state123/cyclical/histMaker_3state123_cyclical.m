@@ -32,7 +32,8 @@ switch nargin
         
 end
 programName = 'histMaker_3state123_cyclical.m';
-disp([':>> Running ' programName '.m']);
+% disp([':>> Running ' programName '.m']);
+
 
 
 %--------------------------------------------------------------------------
@@ -63,13 +64,15 @@ plotMode = 0;
 %--------------------------------------------------------------------------
 % User Prefrences
 %--------------------------------------------------------------------------
-
+if clockMode == 1
 tic
+end
 %Output created by ODE solver
 if verboseMode == 1
     disp('Loading the conditional Probabilities as a function of rates');
 end
-load('symCondProb_3state123_cyclical.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
+% load('symCondProb_3state123_cyclical.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
+load('symCondProb_3state123_cyclical.mat','P11','P22','P33')
 
 %Display the amount of time a process took. Begins at the last tic.
 if clockMode == 1
@@ -78,9 +81,8 @@ if clockMode == 1
     disp(['     Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
 
-tic
-% disp('Calculating conditional probabilities using the rates defined')
-t = sym('t');
+
+
 % 
 % %--------------------------------------------------------------------------
 % % CALCULATE THE EIGENVALUES
@@ -110,7 +112,11 @@ t = sym('t');
 % % and using vpa() to force the simplest form of the output.
 % 
 % %Pij(t) is prob from i--> j, assuming you start in state i: Pi(t=0)=100%=1
-% 
+if clockMode == 1
+tic
+end
+% disp('Calculating conditional probabilities using the rates defined')
+t = sym('t');
 P11(t) = vpa(subs(P11));
 % P12(t) = vpa(subs(P12));
 % P13(t) = vpa(subs(P13));
@@ -131,11 +137,11 @@ P33(t) = vpa(subs(P33));
 % % Now P00_t1 will be a double
 % 
 % %Display the amount of time a process took. Begins at the last tic.
-% if clockMode == 1
-%     elapsedTime = toc;
-%     task_str = 'Calculate the conditional probabilities as a function of rates {kij}';
-%     disp(['     Took ' num2str(elapsedTime) ' seconds to ' task_str]);
-% end
+if clockMode == 1
+    elapsedTime = toc;
+    task_str = 'Calculate the conditional probabilities as a function of rates {kij}';
+    disp(['     Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+end
 % %
 % %     CALCULATE TCF's
 % 
@@ -155,7 +161,9 @@ P33(t) = vpa(subs(P33));
 % % Row = final state & Column = initial condition
 
 %
+if clockMode == 1
 tic
+end
 % Define equilibrium populations from the conditional probabiltiies at
 % infinite time.
 P1EQ = P11(inf);
@@ -164,8 +172,8 @@ P3EQ = P33(inf);
 %Display the amount of time a process took. Begins at the last tic.
 if clockMode == 1
     elapsedTime = toc;
-    task_str = 'calculate the equilibrium populations';
-    disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+    task_str = 'calculate the equilibrium populations by evaluating Pii(inf)';
+    disp(['     Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
 
 Peq = [P1EQ; P2EQ; P3EQ];

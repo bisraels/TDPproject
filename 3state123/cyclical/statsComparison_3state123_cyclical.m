@@ -1,9 +1,9 @@
-function C2comparison_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3)
-programName = 'C2comparison';
+function statsComparison_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3)
+programName = 'statsComparison_3state123_cyclical';
 %--------------------------------------------------------------------------
 %USER OPTIONS
 %--------------------------------------------------------------------------
-saveMode = 0;
+saveMode = 1;
 clockMode = 1;%if clockMode == 1, tic; end if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); end
 plotMode = 1;
 
@@ -47,9 +47,9 @@ switch nargin
         
 end
 
-% %For testing
-        t12 = 0.000825; t13 = 0.006767; t21 = 0.000615; t23 = 0.006725; t31 = 0.003205; t32 = 0.004270; A1 = 0.737326; A2 = 0.518160; A3 = 0.315085;
-        
+% For testing (Has sensitive rates that will make a wrong solution diverge)
+% t12 = 0.000825; t13 = 0.006767; t21 = 0.000615; t23 = 0.006725; t31 = 0.003205; t32 = 0.004270; A1 = 0.737326; A2 = 0.518160; A3 = 0.315085;
+
 k12 = 1/t12;
 k13 = 1/t13;
 k21 = 1/t21;
@@ -125,7 +125,42 @@ if compareHistMode == 1
     fitHistPlot2.Color = 'g';
     fitHistPlot2.LineWidth = 2;
     fitHistPlot2.DisplayName = ['histMaker 3state123 cyclical analytical'];
+    
+      
+    %--------------------------------------------------------------------------
+    % Save the data
+    %--------------------------------------------------------------------------
+    if saveMode == 1
+        %--------------------------------------------------------------------------
+        % Make a folder to hold output
+        %-------------------------------------------------------------------------
+        %Make output folder if it doesnt exist
+        outputFolderName = [programName '_output'];
+        if exist(outputFolderName,'dir') ~= 7
+            mkdir(outputFolderName);
+            disp('Making a folder to hold the output');
+        end
+        
+        %--------------------------------------------------------------------------
+        % Save a figure
+        %-------------------------------------------------------------------------
+        set(gcf,'PaperPositionMode','auto');
+        extension = 'png';
+        runNum = 1;
+        foutName = ['histSimulationComparison_' num2str(runNum)];
+        filePathOut = [outputFolderName filesep() foutName];
+        while exist([filePathOut '.' extension],'file') == 2
+            runNum = runNum + 1;
+            fprintf('Increasing the run num to %f',runNum);
+            foutName = ['histSimulationComparison_' num2str(runNum)];
+            filePathOut = [outputFolderName filesep() foutName];
+        end
+        print(gcf,filePathOut,['-d' extension],'-r0');
+        disp(['Saving the figure as ' foutName]);
+    end
 end
+
+
 
 %--------------------------------------------------------------------------
 % Compare the 2-point TCFs
@@ -233,7 +268,7 @@ end
 %--------------------------------------------------------------------------
 if compareC4Mode == 1
     disp('Comparing the time it takes to calculate 4-point TCFs...');
-        
+    
     %Make an array of time for the x-axis
     Npts = 150;
     timeArray = [0:9,logspace(1,6.4771212,Npts)]/1e6;
@@ -243,31 +278,31 @@ if compareC4Mode == 1
     %----------------------------------------------------------------------
     %Calculate the C4 with the old analytical expressions (original)
     %----------------------------------------------------------------------
-%     %     function [C4,C4_diff] = C4maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range)
-%     if clockMode == 1, tic; end
-%     % [kappa,tcf] = FourPtTCF_cyclic3state_norm(tau1range,tau2,A0,A1,A2,k01,k10,k12,k21,k20)
-%     [C4,~] = FourPtTCF_cyclic3state_norm(tau1range,tau2,A1,A2,A3,k12,k21,k23,k32,k31);
-%     
-%     
-%     % [C4,~] = C4maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range);
-%     display_str = 'C4maker 3state123 cyclical analytical';
-%     if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); end
-%     if plotMode == 1
-%         figure(23);
-%         set(gcf,'Color','w');
-%         set(gcf,'Name','C4');
-%         
-%         plot_TCF4point = surf(tau1range, tau1range', C4,'DisplayName',display_str);
-%         title('Analytical Four-point TCF: C^{(4)}','FontSize',18)
-%         xlabel('Time (\tau_1)','FontSize',14);
-%         ylabel('Time (\tau_3)','FontSize',14);
-%         zlabel('C^{(4)}(\tau_1,\tau_2,\tau_3)','FontSize',14);
-%         
-%         view(28,36);
-%         ax = gca;
-%         ax.XScale = 'log';
-%         ax.YScale = 'log';
-%     end
+    %     %     function [C4,C4_diff] = C4maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range)
+    %     if clockMode == 1, tic; end
+    %     % [kappa,tcf] = FourPtTCF_cyclic3state_norm(tau1range,tau2,A0,A1,A2,k01,k10,k12,k21,k20)
+    %     [C4,~] = FourPtTCF_cyclic3state_norm(tau1range,tau2,A1,A2,A3,k12,k21,k23,k32,k31);
+    %
+    %
+    %     % [C4,~] = C4maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range);
+    %     display_str = 'C4maker 3state123 cyclical analytical';
+    %     if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); end
+    %     if plotMode == 1
+    %         figure(23);
+    %         set(gcf,'Color','w');
+    %         set(gcf,'Name','C4');
+    %
+    %         plot_TCF4point = surf(tau1range, tau1range', C4,'DisplayName',display_str);
+    %         title('Analytical Four-point TCF: C^{(4)}','FontSize',18)
+    %         xlabel('Time (\tau_1)','FontSize',14);
+    %         ylabel('Time (\tau_3)','FontSize',14);
+    %         zlabel('C^{(4)}(\tau_1,\tau_2,\tau_3)','FontSize',14);
+    %
+    %         view(28,36);
+    %         ax = gca;
+    %         ax.XScale = 'log';
+    %         ax.YScale = 'log';
+    %     end
     %----------------------------------------------------------------------
     %Calculate the C4 with the old analytical expressions (rewritten)
     %----------------------------------------------------------------------
@@ -283,7 +318,7 @@ if compareC4Mode == 1
         set(gcf,'Color','w');
         set(gcf,'Name','C4');
         
-        plot_TCF4point = surf(tau1range, tau1range', C4,'DisplayName',display_str);
+        surf_TCF4point = surf(tau1range, tau1range', C4,'DisplayName',display_str);
         title('Analytical Four-point TCF: C^{(4)}','FontSize',18)
         xlabel('Time (\tau_1)','FontSize',14);
         ylabel('Time (\tau_3)','FontSize',14);
@@ -302,7 +337,7 @@ if compareC4Mode == 1
     %----------------------------------------------------------------------
     if clockMode == 1, tic; end
     % function [C4,C4_diff,C2] = C4Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,timeArray)
-    [C4,~,~] = C4Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,0,tau1range); 
+    [C4,~,~] = C4Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,0,tau1range);
     display_str =  'C4Maker 3state123 cyclical (numerical)';
     if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); end
     %
@@ -322,6 +357,39 @@ if compareC4Mode == 1
         ax.XScale = 'log';
         ax.YScale = 'log';
         legend('show')
+    end
+    
+       
+    %--------------------------------------------------------------------------
+    % Save the data
+    %--------------------------------------------------------------------------
+    if saveMode == 1
+        %--------------------------------------------------------------------------
+        % Make a folder to hold output
+        %-------------------------------------------------------------------------
+        %Make output folder if it doesnt exist
+        outputFolderName = [programName '_output'];
+        if exist(outputFolderName,'dir') ~= 7
+            mkdir(outputFolderName);
+            disp('Making a folder to hold the output');
+        end
+        
+        %--------------------------------------------------------------------------
+        % Save a figure
+        %-------------------------------------------------------------------------
+        set(gcf,'PaperPositionMode','auto');
+        extension = 'png';
+        runNum = 1;
+        foutName = ['C4simulationComparison_' num2str(runNum)];
+        filePathOut = [outputFolderName filesep() foutName];
+        while exist([filePathOut '.' extension],'file') == 2
+            runNum = runNum + 1;
+            fprintf('Increasing the run num to %f',runNum);
+            foutName = ['C4simulationComparison_' num2str(runNum)];
+            filePathOut = [outputFolderName filesep() foutName];
+        end
+        print(gcf,filePathOut,['-d' extension],'-r0');
+        disp(['Saving the figure as ' foutName]);
     end
     
 end
