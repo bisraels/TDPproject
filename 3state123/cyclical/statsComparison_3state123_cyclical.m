@@ -10,6 +10,22 @@ plotMode = 1;
 compareHistMode = 1;
 compareC2Mode = 0;
 compareC4Mode = 0;
+
+%--------------------------------------------------------------------------
+% EXTERNAL PROGRAMS CALLS: (needs these codes in MATLAB PATH to function)
+%--------------------------------------------------------------------------
+% ANALYTICAL Algorithms (fast)
+% (1) histMaker_3state123_cyclical_analytical    % Calculates Peq
+% (2) C2maker_3state123_cyclical_analytical      % Calculates C2
+% (3) C4maker_3state123_cyclical_analytical      % Calculates C4
+
+% NUMERICAL Algorithms (slow)
+% (0) ODEsolver_3state123_cyclical.m    % Calculates the conditional probabilities (symCondProb_3state123_cyclical.mat)
+% (1) histMaker_3state123_cyclical      % Calculates Peq
+% (2) C2Maker_3state123_cyclical        % Calculates C2
+% (3) C4Maker_3state123_cyclical        % Calculates C4
+
+
 %--------------------------------------------------------------------------
 % SET PARAMATERS
 %--------------------------------------------------------------------------

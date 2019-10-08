@@ -1,6 +1,6 @@
 % function tcf = TCF_cyclic3state(time,A0,A1,A2,k01,k10,k12,k21,k20)
 % function tcf = C2maker_3state123_cyclical_analytical(time,A1,A2,A3,k12,k21,k23,k32,k31)
-function tcf = C2maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,time)
+function C2_sim = C2maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,time)
 % Now is a mean subtracted 2-point TCF. Works the same as TCF_cyclic3state
 
 % note: this messes it up:
@@ -69,7 +69,7 @@ A1 = A1 - Amean;
 A2 = A2 - Amean;
 A3 = A3 - Amean;
 
-% Calculate TCF
-tcf = p3_eq*A3*(A3*p3_3 + A2*p2_3 + A1*p1_3) +...
+% Calculate C2_sim
+C2_sim = p3_eq*A3*(A3*p3_3 + A2*p2_3 + A1*p1_3) +...
     p2_eq*A2*(A3*p3_2 + A2*p2_2 + A1*p1_2) +...
     p1_eq*A1*(A3*p3_1 + A2*p2_1 + A1*p1_1);
