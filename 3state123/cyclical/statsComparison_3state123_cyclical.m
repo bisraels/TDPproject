@@ -8,8 +8,8 @@ clockMode = 1;%if clockMode == 1, tic; end if clockMode == 1, disp(['     Took '
 plotMode = 1;
 
 compareHistMode = 1;
-compareC2Mode = 0;
-compareC4Mode = 0;
+compareC2Mode = 1;
+compareC4Mode = 1;
 
 %--------------------------------------------------------------------------
 % EXTERNAL PROGRAMS CALLS: (needs these codes in MATLAB PATH to function)
