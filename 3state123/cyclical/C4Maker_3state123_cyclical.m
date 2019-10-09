@@ -1,9 +1,9 @@
 %--------------------------------------------------------------------------
 % AUTHOR: Claire Albrecht & Brett Israels
 %
-% CREATED: September 2019 (C2Maker_3state123_cyclical.m)
+% CREATED: September 2019 (C4Maker_3state123_cyclical.m)
 %
-% PURPOSE:  Evaluate the Linear 3-State (123) conditional probabilties with a set of
+% PURPOSE:  Evaluate the cyclical 3-State (123) conditional probabilties with a set of
 %           rates then the  2 point TCF and 4 point TCF for that system
 %
 % INPUT: (1) conditional probabilities from ODE solver: symCondProb_3state123_cyclical.mat
@@ -15,8 +15,7 @@
 % MODIFICATIONS:
 %   (1) Adapted from function_3state123_cyclical.m
 %
-%--------------------------------------------------------------------------
-
+%----------------------------------------------------
 function [C4,C4_diff,C2] = C4Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,timeArray)
 %--------------------------------------------------------------------------
 % User Prefrences
@@ -226,13 +225,9 @@ end
 % Evaluate C2 over a range of t's
 %--------------------------------------------------------------------------
 C2 = C2sym(timeArray);
-
-
-
 %--------------------------------------------------------------------------
 %  Plot two point TCF
 %--------------------------------------------------------------------------
-
 %close all
 if plotMode == 1
     figure(2)
@@ -379,7 +374,6 @@ C2Product = C2.*C2';
 disp(['Size C2Product = ' num2str(size(C2Product))]);
 C4_diff = C4 - C2Product;
 disp(['Size C4_diff = ' num2str(size(C4_diff))]);
-
 
 % Plot surface of C4
 if plotMode == 1
