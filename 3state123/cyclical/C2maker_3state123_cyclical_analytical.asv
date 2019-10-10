@@ -23,8 +23,7 @@ c2 = 0.5*sqrt(k12^2 + 2*k12*k13 + 2*k12*k21 - 2*k12*k23 - 2*k12*k31 - 2*k12*k32 
 
 lam1 = c1 + c2;
 lam2 = c1 - c2;
-% disp(['1/Lam 1 = ' num2str(1/lam1) ]);
-% disp(['1/Lam 2 = ' num2str(1/lam2) ]);
+disp('Lam 1 = ' num2str(lam1) ])l
 
 % Define eigenvector components corresponding to lam1: v1 = [a,b,c], in the
 % basis [p2,p1,p0], where p# is the population in state #.
