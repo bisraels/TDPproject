@@ -1,6 +1,6 @@
 function tcf = TCF_3state(time,A0,A1,A2,k01,k10,k12,k21)
 
-% Define eigenvalues lam1 and lam2
+% Define eigenvalues lam1 and lam2\  
 c1 = 0.5*(k01+k10+k12+k21);
 c2 = 0.5*sqrt(k01^2 + 2*k01*k10 - 2*k01*k12 - 2*k01*k21 + k10^2 + 2*k10*k12 - 2*k10*k21 + k12^2 + 2*k12*k21 + k21^2);
 lam1 = c1 + c2;
