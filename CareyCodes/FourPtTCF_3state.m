@@ -23,9 +23,9 @@ y = k01/k10 - (c1 - c2)/k10;
 z = 1;
 
 % Define equilibrium values of populations
-p1_eq = 1/(k10/k01 + 1 + k12/k21)
-p0_eq = k10/k01*p1_eq
-p2_eq = k12/k21*p1_eq
+p1_eq = 1/(k10/k01 + 1 + k12/k21);
+p0_eq = k10/k01*p1_eq;
+p2_eq = k12/k21*p1_eq;
 
 % Define constants needed for differential equation solutions, for various
 % initial values of the population. m_2 is the constant "m" if the

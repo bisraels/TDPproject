@@ -1,6 +1,6 @@
 % AUTHOR:   Claire Albrecht & Brett Israels
 %
-% CREATED:  August 2019
+% CREATED:  August 2019 (ODEsolver_3state123_linear.m)
 %
 % PURPOSE:  Calculate the Linear Three state ODE  for  the master equation
 %           1 <-> 2 <-> 3 
@@ -68,6 +68,12 @@ evec1 = Vec(:,1);
 evec2 = Vec(:,2);
 evec3 = Vec(:,3);
 
+if verbose_mode
+    fprintf('Eigenvector 1 = %s\r',evec1);
+    fprintf('Eigenvector 2 = %s\r',evec2);
+    fprintf('Eigenvector 3 = %s\r',evec3);
+end
+
 % Define the DE we want to solve
 eqn = diff(P(t),t)== K * P(t);
 %OUTPUT: eqn =
@@ -106,7 +112,6 @@ disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 % Save the output
 %--------------------------------------------------------------------------
 save('symCondProb_3state123_linear.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
-
 
 %Display the amount of time a process took. Begins at the last tic.
 elapsedTime = toc;

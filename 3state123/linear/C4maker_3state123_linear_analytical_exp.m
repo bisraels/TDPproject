@@ -1,9 +1,8 @@
-function [C4,C4_diff,C2] = C4maker_3state123_linear_analytical(t12,t21,t23,t32,A1,A2,A3,tau2,tau1range)
+function [C4,C4_diff,C2] = C4maker_3state123_linear_analytical_exp(t12,t21,t23,t32,A1,A2,A3,tau2,tau1range)
 %MODEL: 1 <--> 2 <--> 3
 programName = 'C4maker_3state123_linear_analytical.m';
 % disp([':>> Running ' programName '.m']);
 verboseMode = 1;
-plotMode = 1;
 switch nargin
     case 0
         disp(['Using default values in ' programName]);
@@ -57,20 +56,20 @@ k32 = 1/t32;
 %--------------------------------------------------------------------------
 tau3range = tau1range';
 
+
 % Initialize 4-pt. TCF (C4) matrices
 C4 = zeros(length(tau1range),length(tau3range));
 C4_diff = zeros(length(tau1range),length(tau3range));
 C2Product = zeros(length(tau1range),length(tau3range));
 
-% Define eigenvalues lam1 and lam2
+% Define eigenvalues lam1 and lam2\
 c1 = 0.5*(k12+k21+k23+k32);
 c2 = 0.5*sqrt(k12^2 + 2*k12*k21 - 2*k12*k23 - 2*k12*k32 + k21^2 + 2*k21*k23 - 2*k21*k32 + k23^2 + 2*k23*k32 + k32^2);
 lam1 = c1 + c2;
 lam2 = c1 - c2;
 
-
 if verboseMode == 1
-    disp(['   ***The eigentimescales are: tau1 = 1/lam1 = ' num2str(1e6*1/lam1) ' microseconds '...
+    disp(['The final eigentimescales are: tau1 = 1/lam1 = ' num2str(1e6*1/lam1) ' microseconds '...
         ' tau2 = 1/eval2 = ' num2str(1e6*1/lam2) ' microseconds.']);
 end
 
@@ -219,29 +218,6 @@ C4_diff = C4 - C2Product;
 
 % disp(['Size C4_diff = ' num2str(size(C4_diff))]);
 
- %-------------------------------------------------------------------------
- % Plot the data
- %-------------------------------------------------------------------------
- if plotMode == 1
-        clf;
-        surf(t1, t3, C4);
-        title('Four-point TCF: C^{(4)}','FontSize',18)
-        xlabel('Time (\tau_1)','FontSize',14);
-        ylabel('Time (\tau_3)','FontSize',14);
-        zlabel('C^{(4)}(\tau_1,\tau_2,\tau_3)','FontSize',14);
-        
-        view(28,36);
-        ax = gca;
-        ax.XScale = 'log';
-        ax.YScale = 'log';
-        
-        drawnow();
-        hold on;
- end
-    
- %-------------------------------------------------------------------------
- %
- %-------------------------------------------------------------------------
     function p1 = p1(init,time)
         if init == 3
             m = m_3;
@@ -254,7 +230,7 @@ C4_diff = C4 - C2Product;
             n = n_1;
         end
         
-        p1 = p1_eq + m*a*exp(-lam1*time) + n*x*exp(-lam2*time);
+        p1 = p1_eq + m*a*exp(lam1*time) + n*x*exp(lam2*time);
     end
 
     function p2 = p2(init,time)
@@ -269,7 +245,7 @@ C4_diff = C4 - C2Product;
             n = n_1;
         end
         
-        p2 = p2_eq + m*b*exp(-lam1*time) + n*y*exp(-lam2*time);
+        p2 = p2_eq + m*b*exp(lam1*time) + n*y*exp(lam2*time);
     end
 
     function p3 = p3(init,time)
@@ -284,7 +260,7 @@ C4_diff = C4 - C2Product;
             n = n_1;
         end
         
-        p3 = p3_eq + m*c*exp(-lam1*time) + n*z*exp(-lam2*time);
+        p3 = p3_eq + m*c*exp(lam1*time) + n*z*exp(lam2*time);
     end
 end
 

@@ -1,5 +1,6 @@
 function statsComparison_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3)
 programName = 'statsComparison_3state123_cyclical';
+close all;
 %--------------------------------------------------------------------------
 %USER OPTIONS
 %--------------------------------------------------------------------------
@@ -31,7 +32,7 @@ compareC4Mode = 1;
 %--------------------------------------------------------------------------
 switch nargin
     case 0
-        disp('Using default values in C2comparison');
+        disp(['Using default values in ' programName]);
         
         
         t12_bounds = [1e-6,1000e-6];  %Paramater #1 is high--> med
@@ -45,9 +46,10 @@ switch nargin
         A2_bounds = [0.45,0.65];%Paramater #7 % Med FRET state
         A3_bounds = [0.30,0.45];%Paramater #8 %Low FRET state
         boundsArray = [t12_bounds;t13_bounds;t21_bounds;t23_bounds;t31_bounds;A1_bounds;A2_bounds;A3_bounds];
-        
-        population = rand(1,8);
-        for param_idx = 1:8
+         
+        Nparams = length(boundsArray);
+        population = rand(1,Nparams);
+        for param_idx = 1:Nparams
             %To pick a random number in the interval of LB to UB:
             % num = LB + rand*(UB - LB); %If rand = 0 then num = LB. If rand = 1, then num = UB.
             population(param_idx) = boundsArray(param_idx) + population(param_idx)*(boundsArray(param_idx,2) - boundsArray(param_idx,1));
@@ -60,12 +62,14 @@ switch nargin
         A1 = population(6);
         A2 = population(7);
         A3 = population(8);
-        
 end
 
 % For testing (Has sensitive rates that will make a wrong solution diverge)
 % t12 = 0.000825; t13 = 0.006767; t21 = 0.000615; t23 = 0.006725; t31 = 0.003205; t32 = 0.004270; A1 = 0.737326; A2 = 0.518160; A3 = 0.315085;
 
+%--------------------------------------------------------------------------
+% Set the rates (5 rates)
+%--------------------------------------------------------------------------
 k12 = 1/t12;
 k13 = 1/t13;
 k21 = 1/t21;
@@ -95,7 +99,10 @@ if compareHistMode == 1
     %----------------------------------------------------------------------
     if clockMode == 1, tic; end
     [p1_eq,p2_eq,p3_eq] = cyclic3state_hist(A1,A2,A3,k12,k21,k23,k32,k31);
-    if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' 'cyclic3state_hist']); end
+    display_str = 'cyclic3state_hist';
+    if clockMode == 1
+        disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); 
+    end
     hist_sim = p1_eq*exp(-((FRET_bins-A1)/sigma_A1).^2) + p2_eq*exp(-((FRET_bins-A2)/sigma_A2).^2) + p3_eq*exp(-((FRET_bins-A3)/sigma_A3).^2);
     denom_hist_sim = sum(hist_sim);
     hist_sim = hist_sim./sum(hist_sim);
@@ -110,7 +117,10 @@ if compareHistMode == 1
     %----------------------------------------------------------------------
     if clockMode == 1, tic; end
     [Peq] = histMaker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3);
-    if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' 'histMaker_3state123_cyclical_analytical']); end
+    display_str = 'histMaker_3state123_cyclical_analytical';
+    if clockMode == 1
+        disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); 
+    end
     p1_eq = Peq(1);
     p2_eq = Peq(2);
     p3_eq = Peq(3);
@@ -128,9 +138,14 @@ if compareHistMode == 1
     % Calculate the histogram using the new code
     %----------------------------------------------------------------------
     hold on
-    if clockMode == 1, tic; end
+    if clockMode == 1
+        tic;
+    end
     [Peq] = histMaker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3);
-    if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' 'histMaker_3state123_cyclical']); end
+    display_str = 'histMaker_3state123_cyclical';
+    if clockMode == 1
+        disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); 
+    end
     p1_eq = Peq(1);
     p2_eq = Peq(2);
     p3_eq = Peq(3);
@@ -193,19 +208,23 @@ if compareC2Mode == 1
     
     %Make an array of time for the x-axis
     Npts = 150;
-    timeArray = [0:9,logspace(1,6.4771212,Npts)]/1e6;
-    C2_exp_x = timeArray;
+    time = [0:9,logspace(1,6.4771212,Npts)]/1e6;
+    C2_exp_x = time;
     
     
     %----------------------------------------------------------------------
     %Calculate the TCF with the old analytical expressions (oiginal + meansubtraction)
     %----------------------------------------------------------------------
     % tcf = TCF_cyclic3state(time,A0,A1,A2,k01,k10,k12,k21,k20)
-    if clockMode == 1, tic; end
+    if clockMode == 1
+        tic;
+    end
     % function tcf = TCF_cyclic3state(time,A0,A1,A2,k01,k10,k12,k21,k20)
     tcf = TCF_cyclic3state(C2_exp_x,A1,A2,A3,k12,k21,k23,k32,k31);
     display_str = 'TCF cyclic3state';
-    if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); end
+   if clockMode == 1
+        disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); 
+    end
     tcf_plot = plot(C2_exp_x,tcf,'r-','LineWidth',2,'DisplayName',display_str);
     hold on;
     %RESULT:      Took 0.0041821 seconds to run TCF cyclic3state
@@ -213,11 +232,15 @@ if compareC2Mode == 1
     %----------------------------------------------------------------------
     %Calculate the TCF with the old analytical expressions (cleaner)
     %----------------------------------------------------------------------
-    if clockMode == 1, tic; end
+   if clockMode == 1
+        tic;
+    end
     %  tcf = C2maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,time)
     tcf_sim2 = C2maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,C2_exp_x);
     display_str = 'C2maker 3state123 cyclical analytical';
-    if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); end
+    if clockMode == 1
+        disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); 
+    end
     tcf_plot = plot(C2_exp_x,tcf_sim2,'g:','LineWidth',2,'DisplayName',display_str);
     hold on;
     %RESULT:      Took 0.0043612 seconds to run C2maker 3state123 cyclical analytical
@@ -225,11 +248,15 @@ if compareC2Mode == 1
     %----------------------------------------------------------------------
     %Calculate the TCF with the newer numerical methods
     %----------------------------------------------------------------------
-    if clockMode == 1, tic; end
+    if clockMode == 1
+        tic;
+    end
     % function C2 = C2Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,timeArray)
     C2_sim = C2Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,C2_exp_x);
     display_str = 'C2Maker 3state123 cyclical';
-    if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); end
+    if clockMode == 1
+        disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); 
+    end
     C2_sim_plot = plot(C2_exp_x,C2_sim,'b--','LineWidth',2,'DisplayName',display_str);
     %RESULT:      Took 0.8411 seconds to run C2Maker 3state123 cyclical (192
     %times slower than the analytical method). For certain values this
@@ -287,32 +314,39 @@ end
 % Compare the 4-point TCFs
 %--------------------------------------------------------------------------
 if compareC4Mode == 1
+    figure(23);
+    clf;
+       set(gcf,'Color','w');
+        set(gcf,'Name','C4: 3state123 Cyclical');
+        
     disp('Comparing the time it takes to calculate 4-point TCFs...');
     
     %Make an array of time for the x-axis
     Npts = 150;
-    timeArray = [0:9,logspace(1,6.4771212,Npts)]/1e6;
+    time = [0:9,logspace(1,6.4771212,Npts)]/1e6;
     
-    tau1range = timeArray;
+    tau1range = time;
     tau2 = 0;
     
     %----------------------------------------------------------------------
     %Calculate the C4 with the old analytical expressions (rewritten)
     %----------------------------------------------------------------------
-    %     function [C4,C4_diff] = C4maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range)
+ 
+    if clockMode == 1
+        tic; 
+    end
     
-    if clockMode == 1, tic; end
-    
-    [C4,~,~] = C4maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range);
+    [C4_sim_ana,~,~] = C4maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range);
     display_str = 'C4maker 3state123 cyclical analytical';
-    if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); end
+   
+    if clockMode == 1
+        disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); 
+   end
+   
     if plotMode == 1
-        figure(23);
-        set(gcf,'Color','w');
-        set(gcf,'Name','C4');
-        
-        surf_TCF4point = surf(tau1range, tau1range', C4,'DisplayName',display_str);
-        title('Analytical Four-point TCF: C^{(4)}','FontSize',18)
+        hold on;
+        surf_TCF4point = surf(tau1range, tau1range', C4_sim_ana,'DisplayName',display_str);
+        title('Four-point TCF: C^{(4)}','FontSize',18)
         xlabel('Time (\tau_1)','FontSize',14);
         ylabel('Time (\tau_3)','FontSize',14);
         zlabel('C^{(4)}(\tau_1,\tau_2,\tau_3)','FontSize',14);
@@ -321,26 +355,30 @@ if compareC4Mode == 1
         ax = gca;
         ax.XScale = 'log';
         ax.YScale = 'log';
-        
+       
         drawnow();
         hold on;
     end
+    
     %----------------------------------------------------------------------
     %Calculate the TCF with the newer numerical methods
     %----------------------------------------------------------------------
-    if clockMode == 1, tic; end
+    if clockMode == 1
+        tic;
+    end
+    
     % function [C4,C4_diff,C2] = C4Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,timeArray)
-    [C4,~,~] = C4Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,0,tau1range);
+    [C4_sim_num,~,~] = C4Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range);
     display_str =  'C4Maker 3state123 cyclical (numerical)';
-    if clockMode == 1, disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); end
+    if clockMode == 1
+        disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); 
+    end
     %
     if plotMode == 1
-        figure(23);
-        set(gcf,'Color','w');
-        set(gcf,'Name','C4');
-        
-        plot_TCF4point_analytical = mesh(tau1range, tau1range', C4,'DisplayName',display_str);
-        title('Analytical Four-point TCF: C^{(4)}','FontSize',18)
+       
+        hold on;
+        plot_TCF4point_analytical = mesh(tau1range, tau1range', C4_sim_num,'DisplayName',display_str);
+        title('Four-point TCF: C^{(4)}','FontSize',18)
         xlabel('Time (\tau_1)','FontSize',14);
         ylabel('Time (\tau_3)','FontSize',14);
         zlabel('C^{(4)}(\tau_1,\tau_2,\tau_3)','FontSize',14);

@@ -17,27 +17,25 @@
 %
 %--------------------------------------------------------------------------
 
-function [Peq] = histMaker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3)
-programName = 'histMaker_3state123_cyclical';
-%--------------------------------------------------------------------------
-% SET PARAMATERS
-%--------------------------------------------------------------------------
+function [Peq] = histMaker_3state123_linear(t12,t21,t23,t32,A1,A2,A3)
+verboseMode = 0;
+
+%MODEL: 1 <--> 2 <--> 3
+programName = 'histMaker_3state123_linear.m';
 switch nargin
     case 0
-        disp(['Using default values in ' programName]);
+      disp(['Using default values in ' programName]);
         
         t12_bounds = [1e-6,1000e-6];  %Paramater #1 is high--> med
-        t13_bounds = [100e-6,10e-3];    %Paramater #2 is high --> low
         t21_bounds = [1e-6,1e-3];%Paramater #3 is med --> high
         t23_bounds = [1e-6,10e-3];%Paramater #4 is med --> low
-        t31_bounds = [10e-6,10e-3];  %Paramater #5 is low --> Medium = [1e-3,10e-3];%Paramater #5 %t32 is low --> Medium
-        % *t32 wll be determined by the other rates
-        
+        t32_bounds = [10e-6,10e-3];  %Paramater #5 is low --> Medium 
+       
         A1_bounds = [0.65,0.85];%Paramater #6 % HIGH fret State
         A2_bounds = [0.45,0.65];%Paramater #7 % Med FRET state
         A3_bounds = [0.30,0.45];%Paramater #8 %Low FRET state
-        boundsArray = [t12_bounds;t13_bounds;t21_bounds;t23_bounds;t31_bounds;A1_bounds;A2_bounds;A3_bounds];
-         
+         boundsArray = [t12_bounds;t21_bounds;t23_bounds;t32_bounds;A1_bounds;A2_bounds;A3_bounds];
+        
         Nparams = length(boundsArray);
         population = rand(1,Nparams);
         for param_idx = 1:Nparams
@@ -46,33 +44,34 @@ switch nargin
             population(param_idx) = boundsArray(param_idx) + population(param_idx)*(boundsArray(param_idx,2) - boundsArray(param_idx,1));
         end
         t12 = population(1);
-        t13 = population(2);
-        t21 = population(3);
-        t23 = population(4);
-        t31 = population(5);
-        A1 = population(6);
-        A2 = population(7);
-        A3 = population(8);
+        t21 = population(2);
+        t23 = population(3);
+        t32 = population(4);
+        A1 = population(5);
+        A2 = population(6);
+        A3 = population(7); 
 end
+%--------------------------------------------------------------------------
+% Set the rates (4 rates)
+%--------------------------------------------------------------------------
+k12 = 1/t12;
+k21 = 1/t21;
+k23 = 1/t23;
+k32 = 1/t32;
+
+if verboseMode == 1
+    fprintf(['k12 = %f, k21 = %f, k23 = %f, k32 = %f'...
+        '\n A1 = %f, A2 = %f, A3 = %f\r\n'],...
+        k12,k21,k23,k32,A1,A2,A3);
+end
+% disp([':>> Running ' programName '.m']);
 
 %--------------------------------------------------------------------------
 % Define the FRET Array
 %--------------------------------------------------------------------------
-
 A = [ A1; A2; A3];
 
-%--------------------------------------------------------------------------
-% Set the rates
-%--------------------------------------------------------------------------
-k12 = 1/t12;
-k13 = 1/t13;
-k21 = 1/t21;
-k23 = 1/t23;
-k31 = 1/t31;
-% % Detailed balance condition: %k31 will be the rate fixed by the others
-k32 = k12*k23*k31/(k13*k21);
-% t32 = 1/k32;
-%--------------------------------------------------------------------------
+%--------------------------------------------------------
 % User Prefrences
 %--------------------------------------------------------------------------
 verboseMode = 0; %Set to 1 to see alot of progress updates and print off.
@@ -90,8 +89,8 @@ end
 if verboseMode == 1
     disp('Loading the conditional Probabilities as a function of rates');
 end
-% load('symCondProb_3state123_cyclical.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
-load('symCondProb_3state123_cyclical.mat','P11','P22','P33')
+% load('symCondProb_3state123_linear.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
+load('symCondProb_3state123_linear.mat','P11','P22','P33')
 
 %Display the amount of time a process took. Begins at the last tic.
 if clockMode == 1
