@@ -19,9 +19,9 @@ tic
 %--------------------------------------------------------------------------
 % User Prefrences
 %--------------------------------------------------------------------------
-verbose_mode = 1;
-
-
+verboseMode = 1;
+saveMode = 1;
+clockMode = 0;
 %--------------------------------------------------------------------------
 % Solve for the conditional probabilities
 %--------------------------------------------------------------------------
@@ -33,10 +33,11 @@ syms P1(t) P2(t) P3(t)
 K = [-k12, k21, 0;...
     k12, (-k21 - k23 ), k32;...
     0, k23, -k32;];
-if verbose_mode
+if verboseMode
     disp('Sovling for the eigenvalues of the rate matrix K');
     disp(K);
 end
+
 
 % Make a column vector of the equilibrium Populations
 P(t) = [P1(t); P2(t); P3(t)];
@@ -51,7 +52,7 @@ eval1 = lambda(1,1);        % First Eigenvalue should always be zero.
 eval2 = lambda(2,2);
 eval3 = lambda(3,3);
 
-if verbose_mode
+if verboseMode
     fprintf('Eigenvalue 1 = %s\r',eval1);
     fprintf('Eigenvalue 2 = %s\r',eval2);
     fprintf('Eigenvalue 3 = %s\r',eval3);
@@ -68,11 +69,12 @@ evec1 = Vec(:,1);
 evec2 = Vec(:,2);
 evec3 = Vec(:,3);
 
-if verbose_mode
+if verboseMode
     fprintf('Eigenvector 1 = %s\r',evec1);
     fprintf('Eigenvector 2 = %s\r',evec2);
     fprintf('Eigenvector 3 = %s\r',evec3);
 end
+
 
 % Define the DE we want to solve
 eqn = diff(P(t),t)== K * P(t);
@@ -111,9 +113,14 @@ disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 %--------------------------------------------------------------------------
 % Save the output
 %--------------------------------------------------------------------------
-save('symCondProb_3state123_linear.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
+if saveMode == 1
+%     save('symCondProb_3state123_linear.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
+    save('symCondProb_3state123_linear_soln1.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3','evec1','evec2','evec3')
+end
 
+if clockMode == 1
 %Display the amount of time a process took. Begins at the last tic.
 elapsedTime = toc;
 task_str = 'save the conditional probabilities and eigenvalues.';
 disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+end

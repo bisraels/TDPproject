@@ -1,5 +1,7 @@
-function C2_sim = C2maker_3state123_linear_analytical(t12,t21,t23,t32,A1,A2,A3,time)
-verboseMode = 1;
+function C2_sim = C2maker_3state123_linear_analytical_v2(t12,t21,t23,t32,A1,A2,A3,time)
+verboseMode = 0;
+plotMode = 1;
+saveMode = 0;
 %MODEL: 1 <--> 2 <--> 3
 programName = 'C2Maker_3state123_linear.m';
 switch nargin
@@ -59,7 +61,7 @@ lam2 = c1 - c2;
 % % Eigenvalue 2 = - k12/2 - k21/2 - k23/2 - k32/2 - (2*k12*k21 - 2*k12*k23 - 2*k12*k32 + 2*k21*k23 - 2*k21*k32 + 2*k23*k32 + k12^2 + k21^2 + k23^2 + k32^2)^(1/2)/2
 % % Eigenvalue 3 = (2*k12*k21 - 2*k12*k23 - 2*k12*k32 + 2*k21*k23 - 2*k21*k32 + 2*k23*k32 + k12^2 + k21^2 + k23^2 + k32^2)^(1/2)/2 - k21/2 - k23/2 - k32/2 - k12/2
 % If c1 = k12/2 + k21/2 + k23/3 + k32/2
-% then Eigenvalue 2 = -c1 + 
+% then Eigenvalue 2 = -c1 +
 
 
 if verboseMode == 1
@@ -69,7 +71,7 @@ end
 
 % % SOLUTION FROM ODEsolver_3state123_linear
 % % Eigenvector 1 corresponds to the 0 eigenvalue
-% % Eigenvector 1 = (k21*k32)/(k12*k23)        
+% % Eigenvector 1 = (k21*k32)/(k12*k23)
 % % Eigenvector 1 = k32/k23
 % % Eigenvector 1 = 1
 
@@ -84,30 +86,63 @@ end
 % % Eigenvector 3 = 1
 
 % Define eigenvector components corresponding to lam1: v1 = [a,b,c], in the
-% basis [p2,p1,p0], where p# is the population in state #.
-a = (c1 + c2)/k21 - (k12 + k21)/k21;
-b = k12/k21 - (c1 + c2)/k21;
+% basis [p2,p1,p0], where p# is the population in state #. (original)
+% % % a = (c1 + c2)/k21 - (k12 + k21)/k21;
+% % % b = k12/k21 - (c1 + c2)/k21;
+% % % c = 1;
+% % %
+% % % % Define eigenvector components corresponding to lam2: v2 = [x,y,z]. (original)
+% % % x = (c1 - c2)/k21 - (k12 + k21)/k21;
+% % % y = k12/k21 - (c1 - c2)/k21;
+% % % z = 1;
+% % Eigenvector 2 = (k12/2 + k21/2 + k23/2 + k32/2 + (2*k12*k21 - 2*k12*k23 - 2*k12*k32 + 2*k21*k23 - 2*k21*k32 + 2*k23*k32 + k12^2 + k21^2 + k23^2 + k32^2)^(1/2)/2)/k23 - (k23 + k32)/k23
+% % Eigenvector 2 = (c1+c2)/k23 - (k23 + k32)/k23
+% % Eigenvector 2 = k32/k23 - (k12/2 + k21/2 + k23/2 + k32/2 + (2*k12*k21 - 2*k12*k23 - 2*k12*k32 + 2*k21*k23 - 2*k21*k32 + 2*k23*k32 + k12^2 + k21^2 + k23^2 + k32^2)^(1/2)/2)/k23
+% % Eigenvector 2 = 1
+
+% Define eigenvector components corresponding to lam2: v2 = [x,y,z]. (altered)
+a = (c1 + c2)/k23 - (k23 + k32)/k23;
+b = k32/k23 - (c1 + c2)/k23;
 c = 1;
 
-% Define eigenvector components corresponding to lam2: v2 = [x,y,z].
-x = (c1 - c2)/k21 - (k12 + k21)/k21;
-y = k12/k21 - (c1 - c2)/k21;
+% % Eigenvector 3 = (k12/2 + k21/2 + k23/2 + k32/2 - (2*k12*k21 - 2*k12*k23 - 2*k12*k32 + 2*k21*k23 - 2*k21*k32 + 2*k23*k32 + k12^2 + k21^2 + k23^2 + k32^2)^(1/2)/2)/k23 - (k23 + k32)/k23
+% % x = (c1 - c2)/k23 - (k32 + k23)/k23;
+% % Eigenvector 3 = k32/k23 - (k12/2 + k21/2 + k23/2 + k32/2 - (2*k12*k21 - 2*k12*k23 - 2*k12*k32 + 2*k21*k23 - 2*k21*k32 + 2*k23*k32 + k12^2 + k21^2 + k23^2 + k32^2)^(1/2)/2)/k23
+% % Eigenvector 3 = 1
+% Define eigenvector components corresponding to lam2: v2 = [x,y,z]. (altered)
+x = (c1 - c2)/k23 - (k23 + k32)/k23;
+y = k32/k23 - (c1 - c2)/k23;
 z = 1;
 
-% Define equilibrium values of populations
-p2_eq = 1/(k21/k12 + 1 + k23/k32);
-p1_eq = k21/k12*p2_eq;
-p3_eq = k23/k32*p2_eq;
+% % % Define equilibrium values of populations (original)
+% % p2_eq = 1/(k21/k12 + 1 + k23/k32);
+% % p1_eq = k21/k12*p2_eq;
+% % p3_eq = k23/k32*p2_eq;
 
+% Define equilibrium values of populations (altered)
+p2_eq = 1/(k23/k32 + 1 + k21/k12);
+p3_eq = k23/k32*p2_eq;
+p1_eq = k21/k12*p2_eq;
+
+% % % ???Original
+% % % Define constants needed for differential equation solutions, for various
+% % % initial values of the population. m_2 is the constant "m" if the
+% % % population of state 2 begins at 1 (others would then be zero).
+% % n_3 = (-p2_eq - b/a*(1 - p3_eq))/(y - b/a*x);
+% % n_2 = (1 - p2_eq + b/a*p3_eq)/(y - b/a*x);
+% % n_1 = (-p2_eq + b/a*p3_eq)/(y - b/a*x);
+% % m_3 = (1 - p3_eq - n_3*x)/a;
+% % m_2 = (-p3_eq - n_2*x)/a;
+% % m_1 = (-p3_eq - n_1*x)/a;
 % Define constants needed for differential equation solutions, for various
 % initial values of the population. m_2 is the constant "m" if the
 % population of state 2 begins at 1 (others would then be zero).
-n_3 = (-p2_eq - b/a*(1 - p3_eq))/(y - b/a*x);
-n_2 = (1 - p2_eq + b/a*p3_eq)/(y - b/a*x);
-n_1 = (-p2_eq + b/a*p3_eq)/(y - b/a*x);
-m_3 = (1 - p3_eq - n_3*x)/a;
-m_2 = (-p3_eq - n_2*x)/a;
-m_1 = (-p3_eq - n_1*x)/a;
+n_3 = (-p2_eq - b/a*(1 - p1_eq))/(y - b/a*x);
+n_2 = (1 - p2_eq + b/a*p1_eq)/(y - b/a*x);
+n_1 = (-p2_eq + b/a*p1_eq)/(y - b/a*x);
+m_3 = (1 - p1_eq - n_3*x)/a;
+m_2 = (-p1_eq - n_2*x)/a;
+m_1 = (-p1_eq - n_1*x)/a;
 
 % Define populations as a function of time for different initial values.
 % p2_1 population 2 as a function of time, with the population initially in
@@ -131,5 +166,28 @@ A3 = A3 - Amean;
 % Calculate TCF
 % Calculate C2_sim
 C2_sim = p3_eq*A3*(A3*p3_3 + A2*p2_3 + A1*p1_3) +...
-         p2_eq*A2*(A3*p3_2 + A2*p2_2 + A1*p1_2) +...
-         p1_eq*A1*(A3*p3_1 + A2*p2_1 + A1*p1_1);
+    p2_eq*A2*(A3*p3_2 + A2*p2_2 + A1*p1_2) +...
+    p1_eq*A1*(A3*p3_1 + A2*p2_1 + A1*p1_1);
+
+if plotMode == 1
+    figure(2)
+    
+    set(gcf,'Color','w');
+    set(gcf,'Name','C2');
+    TCF2pt = plot(time,C2_sim,'LineWidth',2);
+    
+    title('Analytical Two point TCF','FontSize',18)
+    xlabel('Time (\tau_1)','FontSize',14);
+    ylabel('C^{(2)}(\tau)','FontSize',14);
+    %xlim([10^-5 10^0])
+    % ylim([C2(500) C2(0)])
+    
+    ax = gca;
+    ax.XScale = 'log';
+    set(gca,'yscale','log')
+    
+    if saveMode == 1
+        saveName = ['C2_','example'];
+        saveas(TCF2pt,saveName, 'png')
+    end
+end

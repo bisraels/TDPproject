@@ -23,7 +23,7 @@ function [C4,C4_diff,C2] = C4Maker_3state123_linear(t12,t21,t23,t32,A1,A2,A3,tau
 verboseMode = 1; %Set to 1 to see alot of progress updates and print off.
 clockMode = 0;
 saveMode = 0;
-plotMode = 0;
+plotMode = 1;
 
 %MODEL: 1 <--> 2 <--> 3
 programName = 'C4Maker_3state123_linear.m';
@@ -351,7 +351,6 @@ cP_t3(1,3,:) = double(P31(t3));
 cP_t3(2,3,:) = double(P32(t3));
 cP_t3(3,3,:) = double(P33(t3));
 
-
 %Display the amount of time a process           Took. Begins at the last tic.
 if clockMode == 1
     elapsedTime = toc;
@@ -366,7 +365,9 @@ end
 
 % Create a matrix to hold the C4's calculated for each (tau1,tau3) pair for
 % a set tau 2
-if clockMode == 1,tic;end
+if clockMode == 1
+    tic;
+end
 C4 = zeros(length(tau1vec),length(tau3vec));
 %-------------------------------------------------------------------------
 % Iterate over all the Permutations of FRET States

@@ -27,6 +27,7 @@ p1_eq = 1/(k10/k01 + 1 + k12/k21);
 p0_eq = k10/k01*p1_eq;
 p2_eq = k12/k21*p1_eq;
 
+
 % Define constants needed for differential equation solutions, for various
 % initial values of the population. m_2 is the constant "m" if the
 % population of state 2 begins at 1 (others would then be zero).

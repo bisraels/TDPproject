@@ -24,8 +24,8 @@ tic
 % User Prefrences
 %--------------------------------------------------------------------------
 verboseMode = 1;
-saveMode = 1;
-clockMode = 1;
+saveMode = 0;
+clockMode = 0;
 %--------------------------------------------------------------------------
 % Solve for the conditional probabilities
 %--------------------------------------------------------------------------
@@ -73,6 +73,13 @@ end
 evec1 = Vec(:,1);
 evec2 = Vec(:,2);
 evec3 = Vec(:,3);
+
+if verboseMode== 1
+    fprintf('Eigenvector 1 = %s\r',evec1);
+    fprintf('Eigenvector 2 = %s\r',evec2);
+    fprintf('Eigenvector 3 = %s\r',evec3);
+end
+
 
 % Define the DE we want to solve
 eqn = diff(P(t),t)== K * P(t);
