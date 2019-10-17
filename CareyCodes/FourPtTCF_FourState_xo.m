@@ -45,7 +45,8 @@ Dppp = V2(4,4);
 
 beta = (Ap*D - A*Dp)/(A*Bp - Ap*B);
 
-%Pij_t1 is prob to go from i to j in time t1
+% pij_t1 is prob to go from i to j in time t1
+% pij(t) = pj_eq + c_1_i*v_1_j*exp(-lam1(t)) + c_2_i*v_2_j*exp(-lam2(t)*t)+ c_3_i*v_3_j*exp(-lam2(t)*t)
 p00_t1 = p0_eq + c1(0)*A*exp(-lam2(2)*t1range) + c2(0)*B*exp(-lam2(3)*t1range) + c3(0)*D*exp(-lam2(4)*t1range);
 p01_t1 = p1_eq + c1(0)*Ap*exp(-lam2(2)*t1range) + c2(0)*Bp*exp(-lam2(3)*t1range) + c3(0)*Dp*exp(-lam2(4)*t1range);
 p02_t1 = p2_eq + c1(0)*App*exp(-lam2(2)*t1range) + c2(0)*Bpp*exp(-lam2(3)*t1range) + c3(0)*Dpp*exp(-lam2(4)*t1range);
