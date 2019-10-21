@@ -417,6 +417,9 @@ if compareC4Mode == 1
         ax.XScale = 'log';
         ax.YScale = 'log';
         legend('show')
+        
+            drawnow();
+            hold on;
     end
     
     

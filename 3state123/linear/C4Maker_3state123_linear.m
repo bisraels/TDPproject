@@ -95,8 +95,8 @@ if verboseMode == 1
     disp('Loading the conditional Probabilities as a function of rates');
 end
 if clockMode == 1, tic; end
-% load('symCondProb_3state123_linear.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
-load('symCondProb_3state123_linear_soln1.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3');
+load('symCondProb_3state123_linear.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
+% load('symCondProb_3state123_linear_soln1.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3');
 %Display the amount of time a process      Took. Begins at the last tic.
 if clockMode == 1
     elapsedTime = toc;
