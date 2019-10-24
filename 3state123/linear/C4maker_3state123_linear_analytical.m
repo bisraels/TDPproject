@@ -3,7 +3,7 @@ function [C4,C4_diff,C2] = C4maker_3state123_linear_analytical(t12,t21,t23,t32,A
 programName = 'C4maker_3state123_linear_analytical.m';
 % disp([':>> Running ' programName '.m']);
 verboseMode = 0;
-plotMode = 0;
+plotMode = 1;
 switch nargin
     case 0
         disp(['Using default values in ' programName]);
