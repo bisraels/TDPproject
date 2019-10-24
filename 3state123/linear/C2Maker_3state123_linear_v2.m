@@ -11,7 +11,7 @@
 % OUTPUT: (1) C2 simulation
 %--------------------------------------------------------------------------
 
-function C2_sim2 = C2Maker_3state123_linear_v2(t12,t21,t23,t32,A1,A2,A3,time)
+% function C2_sim2 = C2Maker_3state123_linear_v2(t12,t21,t23,t32,A1,A2,A3,time)
 %--------------------------------------------------------------------------
 % User Prefrences
 %--------------------------------------------------------------------------
@@ -27,8 +27,8 @@ sim_4point_mode = 1;
 
 %MODEL: 1 <--> 2 <--> 3
 programName = 'C2Maker_3state123_linear.m';
-switch nargin
-    case 0
+% switch nargin
+%     case 0
         disp(['Using default values in ' programName]);
         
         t12_bounds = [1e-6,1000e-6];  %Paramater #1 is high--> med
@@ -58,11 +58,11 @@ switch nargin
         
         Npts = 150;
         time = [0:9,logspace(1,6.4771212,Npts)]/1e6;
-    case 7
-        Npts = 150;
-        time = [0:9,logspace(1,6.4771212,Npts)]/1e6;
-        
-end
+%     case 7
+%         Npts = 150;
+%         time = [0:9,logspace(1,6.4771212,Npts)]/1e6;
+%         
+% end
 %--------------------------------------------------------------------------
 % Set the rates (4rates)
 %--------------------------------------------------------------------------
@@ -384,10 +384,12 @@ if use_C2_fast_numerical_mode == 1
     if clockMode == 1
         tic
     end
+    t = time;
     C2_sim2 = zeros(1,length(time));
     for i = 1:numel(Ams)
         for j = 1:numel(Ams)
-            C2_sim_temp = Ams(j) .* cp{i,j}(time,k12,k21,k23,k32) * Ams(i) * Peq(i);
+%             C2_sim_temp = Ams(j) .* cp{i,j}(time,k12,k21,k23,k32) * Ams(i) * Peq(i);
+            C2_sim_temp = Ams(j) .* double(subs(cp{j,i})) * Ams(i) * Peq(i);
             C2_sim2 = C2_sim2 + C2_sim_temp;
         end
     end

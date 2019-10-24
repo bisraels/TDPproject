@@ -118,6 +118,8 @@ t3 = tau3range;
 % disp(['Size t3 = ' num2str(size(t3))]);
 
 % Calculate TCF
+% path ijkl = prob(i->j-> k-> l)*val(i*j*k*l) = 
+% prob(i)* pj(i,t1)*pk(j,t2),+pl(k,t3)*val_i*val_j*val_k*val_l
 path1 = p3_eq*A3*p3(3,t1)*A3*p3(3,t2)*A3.*p3(3,t3)*A3;
 path2 = p3_eq*A3*p3(3,t1)*A3*p3(3,t2)*A3.*p2(3,t3)*A2;
 path3 = p3_eq*A3*p3(3,t1)*A3*p3(3,t2)*A3.*p1(3,t3)*A1;

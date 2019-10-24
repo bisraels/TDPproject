@@ -64,9 +64,9 @@ end
 
 %Display the amount of time a process took. Begins at the last tic.
 if clockMode == 1
-elapsedTime = toc;
-task_str = 'calculate the eigenvalues.';
-disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+    elapsedTime = toc;
+    task_str = 'calculate the eigenvalues.';
+    disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
 
 %We do not use these eigenvectors as anything
@@ -88,8 +88,8 @@ eqn = diff(P(t),t)== K * P(t);
 %  diff(P2(t), t) == k12*P1(t) - P2(t)*(k21 + k23) + k32*P3(t)
 %  diff(P3(t), t) == k23*P2(t) - k32*P3(t)
 
-% Solve the equations and give an output 
-%Pij(t) is prob from i--> j, assuming you start in state i: Pi(t=0)=100%=1 
+% Solve the equations and give an output
+%Pij(t) is prob from i--> j, assuming you start in state i: Pi(t=0)=100%=1
 % Condition 1: P(t) = [P1(t) = 1, P2(t) = 0, P3(t) = 0]
 Psol_1 = dsolve(eqn,[P1(0) == 1 , P2(0) == 0 , P3(0) == 0]);
 %vpa(x) uses variable-precision floating-point arithmetic (VPA)
@@ -100,7 +100,7 @@ P13(t) = vpa(Psol_1.P3);
 
 % Condition 2: P(t) = [P1(t) = 0, P2(t) = 1, P3(t) = 0]
 Psol_2 = dsolve(eqn,[P1(0) == 0 , P2(0) == 1 , P3(0) == 0]);
-P21(t) = vpa(Psol_2.P1); 
+P21(t) = vpa(Psol_2.P1);
 P22(t) = vpa(Psol_2.P2);
 P23(t) = vpa(Psol_2.P3);
 
@@ -112,20 +112,25 @@ P33(t) = vpa(Psol_1.P3);
 
 %Display the amount of time a process took. Begins at the last tic.
 if clockMode == 1
-elapsedTime = toc;
-task_str = 'calculate the conditional probabilities.';
-disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+    elapsedTime = toc;
+    task_str = 'calculate the conditional probabilities.';
+    disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
 %--------------------------------------------------------------------------
 % Save the output
 %--------------------------------------------------------------------------
 if saveMode == 1
-save('symCondProb_3state123_cyclical.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
+    save('symCondProb_3state123_cyclical.mat','P11','P12','P13','P21','P22','P23','P31','P32','P33','eval1','eval2','eval3')
 end
 
 if clockMode == 1
-%Display the amount of time a process took. Begins at the last tic.
-elapsedTime = toc;
-task_str = 'save the conditional probabilities and eigenvalues.';
-disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+    %Display the amount of time a process took. Begins at the last tic.
+    elapsedTime = toc;
+    task_str = 'save the conditional probabilities and eigenvalues.';
+    disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
+
+%--------------------------------------------------------------------------
+%Calculate the equilibrium populations
+%--------------------------------------------------------------------------
+

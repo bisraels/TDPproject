@@ -195,33 +195,34 @@ if compareC2Mode == 1
     time = [0:9,logspace(1,6.4771212,Npts)]/1e6;
     C2_exp_x = time;
     
-%     %----------------------------------------------------------------------
-%     %Calculate the TCF with the old analytical expressions (test)
-%     %----------------------------------------------------------------------
-%     if clockMode == 1
-%         tic;
-%     end
-%     %  tcf = C2maker_3state123_linear_analytical(t12,t13,t21,t23,t31,A1,A2,A3,time)
-%     tcf_simv2 = C2maker_3state123_linear_analytical_v2(t12,t21,t23,t32,A1,A2,A3,time);
-%     display_str = 'C2maker 3state123 linear analytical v2';
-%     if clockMode == 1
-%         disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); 
-%     end
-%     tcf_plot = plot(C2_exp_x,tcf_simv2,'g:','LineWidth',2,'DisplayName',display_str);
-%     hold on;
-
-
+    %     %----------------------------------------------------------------------
+    %     %Calculate the TCF with the old analytical expressions (test)
+    %     %----------------------------------------------------------------------
+    %     if clockMode == 1
+    %         tic;
+    %     end
+    %     %  tcf = C2maker_3state123_linear_analytical(t12,t13,t21,t23,t31,A1,A2,A3,time)
+    %     tcf_simv2 = C2maker_3state123_linear_analytical_v2(t12,t21,t23,t32,A1,A2,A3,time);
+    %     display_str = 'C2maker 3state123 linear analytical v2';
+    %     if clockMode == 1
+    %         disp(['     Took ' num2str(toc) ' seconds to run ' display_str]);
+    %     end
+    %     tcf_plot = plot(C2_exp_x,tcf_simv2,'g:','LineWidth',2,'DisplayName',display_str);
+    %     hold on;
+    
+    
     %----------------------------------------------------------------------
     %Calculate the TCF with the old analytical expressions (cleaner)
     %----------------------------------------------------------------------
     if clockMode == 1
         tic;
     end
+    
     %  tcf = C2maker_3state123_linear_analytical(t12,t13,t21,t23,t31,A1,A2,A3,time)
     tcf_sim_ana = C2maker_3state123_linear_analytical(t12,t21,t23,t32,A1,A2,A3,time);
     display_str = 'C2maker 3state123 linear analytical';
     if clockMode == 1
-        disp(['     Took ' num2str(toc) ' seconds to run ' display_str]); 
+        disp(['     Took ' num2str(toc) ' seconds to run ' display_str]);
     end
     tcf_plot = plot(C2_exp_x,tcf_sim_ana,'r-','LineWidth',2,'DisplayName',display_str);
     hold on;
@@ -245,21 +246,21 @@ if compareC2Mode == 1
     %fails/
     
     %----------------------------------------------------------------------
-%Calculate the TCF with the new numerical expressions (test)
-%----------------------------------------------------------------------
-% if clockMode == 1
-%     tic;
-% end
-% %  tcf = C2maker_3state123_linear_analytical(t12,t13,t21,t23,t31,A1,A2,A3,time)
-% tcf_numv2 = C2Maker_3state123_linear_v2(t12,t21,t23,t32,A1,A2,A3,time);
-% display_str = 'C2maker 3state123 linear v2';
-% if clockMode == 1
-%     disp(['     Took ' num2str(toc) ' seconds to run ' display_str]);
-% end
-% tcf_plot = plot(C2_exp_x,tcf_numv2,'g:','LineWidth',4,'DisplayName',display_str);
-% hold on;
-
-
+    %Calculate the TCF with the new numerical expressions (test)
+    %----------------------------------------------------------------------
+    % if clockMode == 1
+    %     tic;
+    % end
+    % %  tcf = C2maker_3state123_linear_analytical(t12,t13,t21,t23,t31,A1,A2,A3,time)
+    % tcf_numv2 = C2Maker_3state123_linear_v2(t12,t21,t23,t32,A1,A2,A3,time);
+    % display_str = 'C2maker 3state123 linear v2';
+    % if clockMode == 1
+    %     disp(['     Took ' num2str(toc) ' seconds to run ' display_str]);
+    % end
+    % tcf_plot = plot(C2_exp_x,tcf_numv2,'g:','LineWidth',4,'DisplayName',display_str);
+    % hold on;
+    
+    
     %----------------------------------------------------------------------
     %Clean up the plot
     %----------------------------------------------------------------------
@@ -328,39 +329,39 @@ if compareC4Mode == 1
     
     tau1range = time;
     tau2 = 0;
-    %----------------------------------------------------------------------
-    %Calculate the C4 with the old analytical expressions
-    %----------------------------------------------------------------------
-        if clockMode == 1
-            tic;
-        end
-        %     [kappa,theta,tcf] = FourPtTCF_3state(tau1range,tau2,tau3range,A0,A1,A2,k01,k10,k12,k21);
-    
-    disp('>>: Running FourPtTCF_3state_V2');
-        [~,~,C4_sim_ana1] = FourPtTCF_3state_V2(tau1range,tau2,tau1range',A1,A2,A3,k12,k21,k23,k32);
-        display_str = 'FourPtTCF_3state';
-        if clockMode == 1
-            disp(['     Took ' num2str(toc) ' seconds to run ' display_str]);
-        end
-    
-        if plotMode == 1
-            set(gcf,'Color','w');
-            set(gcf,'Name','C4');
-    
-            surf_C4_sim_ana1 = surf(tau1range, tau1range', C4_sim_ana1,'DisplayName','FourPtTCF 3state V2');
-            title(' Four-point TCF: C^{(4)}','FontSize',18)
-            xlabel('Time (\tau_1)','FontSize',14);
-            ylabel('Time (\tau_3)','FontSize',14);
-            zlabel('C^{(4)}(\tau_1,\tau_2,\tau_3)','FontSize',14);
-    
-            view(28,36);
-            ax = gca;
-            ax.XScale = 'log';
-            ax.YScale = 'log';
-    
-            drawnow();
-            hold on;
-        end
+%     %----------------------------------------------------------------------
+%     %Calculate the C4 with the old analytical expressions
+%     %----------------------------------------------------------------------
+%     if clockMode == 1
+%         tic;
+%     end
+%     %     [kappa,theta,tcf] = FourPtTCF_3state(tau1range,tau2,tau3range,A0,A1,A2,k01,k10,k12,k21);
+%     
+%     disp('>>: Running FourPtTCF_3state_V2');
+%     [~,~,C4_sim_ana1] = FourPtTCF_3state_V2(tau1range,tau2,tau1range',A1,A2,A3,k12,k21,k23,k32);
+%     display_str = 'FourPtTCF_3state';
+%     if clockMode == 1
+%         disp(['     Took ' num2str(toc) ' seconds to run ' display_str]);
+%     end
+%     
+%     if plotMode == 1
+%         set(gcf,'Color','w');
+%         set(gcf,'Name','C4');
+%         
+%         surf_C4_sim_ana1 = surf(tau1range, tau1range', C4_sim_ana1,'DisplayName','FourPtTCF 3state V2');
+%         title(' Four-point TCF: C^{(4)}','FontSize',18)
+%         xlabel('Time (\tau_1)','FontSize',14);
+%         ylabel('Time (\tau_3)','FontSize',14);
+%         zlabel('C^{(4)}(\tau_1,\tau_2,\tau_3)','FontSize',14);
+%         
+%         view(28,36);
+%         ax = gca;
+%         ax.XScale = 'log';
+%         ax.YScale = 'log';
+%         
+%         drawnow();
+%         hold on;
+%     end
     %----------------------------------------------------------------------
     %Calculate the C4 with the old analytical expressions (rewritten)
     %----------------------------------------------------------------------
@@ -369,14 +370,14 @@ if compareC4Mode == 1
         tic;
     end
     disp('>>: Running C4maker_3state123_linear_analytical');
-%     [C4,C4_diff,C2] = C4maker_3state123_linear_analytical(t12,t21,t23,t32,A1,A2,A3,tau2,tau1range)
+    %     [C4,C4_diff,C2] = C4maker_3state123_linear_analytical(t12,t21,t23,t32,A1,A2,A3,tau2,tau1range)
     [C4_sim_ana,~,~] = C4maker_3state123_linear_analytical(t12,t21,t23,t32,A1,A2,A3,tau2,tau1range);
     display_str = 'C4maker 3state123 linear analytical';
     if clockMode == 1
         disp(['     Took ' num2str(toc) ' seconds to run ' display_str]);
     end
     if plotMode == 1
-        
+        figure(23)
         C4_sim_ana = surf(tau1range, tau1range, C4_sim_ana,'DisplayName',display_str);
         title('Four-point TCF: C^{(4)}','FontSize',18)
         xlabel('Time (\tau_1)','FontSize',14);
@@ -405,7 +406,8 @@ if compareC4Mode == 1
     end
     
     if plotMode == 1
-        
+        figure(23)
+        hold on;
         plot_C4_sim_Num = mesh(tau1range, tau1range, C4_sim_Num,'DisplayName',display_str);
         title('Four-point TCF: C^{(4)}','FontSize',18)
         xlabel('Time (\tau_1)','FontSize',14);

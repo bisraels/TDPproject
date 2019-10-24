@@ -7,7 +7,9 @@ K = [-(k01 + k02 + 0), k10, k20, 0;...
     k01, -(k10 + k12 + 0), k21, 0;...
     k02, k12, -(k20 + k21 + k23), k32;...
     0, 0, k23, -(0 + 0 + k32);];
+
     P = [sym('P',[1 4],'real')];
+    
     eqns = [mtimes(K,P') == 0; P1 + P2 + P3 + P4 == 1];
     
     solns = solve(eqns,[P1 P2 P3 P4]);
@@ -16,3 +18,4 @@ K = [-(k01 + k02 + 0), k10, k20, 0;...
     P3_n4 = solns.P3
     P4_n4 = solns.P4
     
+    %Note: use subs to evaluate a symbolic expression with its values

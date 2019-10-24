@@ -20,7 +20,7 @@ tic
 % User Prefrences
 %--------------------------------------------------------------------------
 verboseMode = 1;
-saveMode = 1;
+saveMode = 0;
 clockMode = 0;
 %--------------------------------------------------------------------------
 % Solve for the conditional probabilities
@@ -124,3 +124,4 @@ elapsedTime = toc;
 task_str = 'save the conditional probabilities and eigenvalues.';
 disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
+

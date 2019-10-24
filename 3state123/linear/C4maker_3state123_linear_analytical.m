@@ -1,8 +1,12 @@
 function [C4,C4_diff,C2] = C4maker_3state123_linear_analytical(t12,t21,t23,t32,A1,A2,A3,tau2,tau1range)
 %MODEL: 1 <--> 2 <--> 3
+
+%%% To work I had to switch the values of a/x with c/z
+%%%
+
 programName = 'C4maker_3state123_linear_analytical.m';
 % disp([':>> Running ' programName '.m']);
-verboseMode = 0;
+verboseMode = 1;
 plotMode = 0;
 switch nargin
     case 0
@@ -62,17 +66,44 @@ C4 = zeros(length(tau1range),length(tau3range));
 C4_diff = zeros(length(tau1range),length(tau3range));
 C2Product = zeros(length(tau1range),length(tau3range));
 
+% % Sovling for the eigenvalues of the rate matrix K
+% % [ -k12,         k21,    0]
+% % [  k12, - k21 - k23,  k32]
+% % [    0,         k23, -k32]
+ 
+% % Eigenvalue 1 = 0
+% % Eigenvalue 2 = - k12/2 - k21/2 - k23/2 - k32/2 - (2*k12*k21 - 2*k12*k23 - 2*k12*k32 + 2*k21*k23 - 2*k21*k32 + 2*k23*k32 + k12^2 + k21^2 + k23^2 + k32^2)^(1/2)/2
+% % Eigenvalue 3 = (2*k12*k21 - 2*k12*k23 - 2*k12*k32 + 2*k21*k23 - 2*k21*k32 + 2*k23*k32 + k12^2 + k21^2 + k23^2 + k32^2)^(1/2)/2 - k21/2 - k23/2 - k32/2 - k12/2
+
+
 % Define eigenvalues lam1 and lam2 (3state123 Linear Analytical)
 c1 = 0.5*(k12+k21+k23+k32);
 c2 = 0.5*sqrt(k12^2 + 2*k12*k21 - 2*k12*k23 - 2*k12*k32 + k21^2 + 2*k21*k23 - 2*k21*k32 + k23^2 + 2*k23*k32 + k32^2);
 lam1 = c1 + c2;
 lam2 = c1 - c2;
 
+
+
 if verboseMode == 1
     disp(['   ***The eigentimescales are: tau1 = 1/lam1 = ' num2str(1e6*1/lam1) ' microseconds '...
         ' tau2 = 1/eval2 = ' num2str(1e6*1/lam2) ' microseconds.']);
 end
 
+% % SOLUTION FROM ODEsolver_3state123_linear
+% % Eigenvector 1 corresponds to the 0 eigenvalue
+% % Eigenvector 1 = (k21*k32)/(k12*k23)        
+% % Eigenvector 1 = k32/k23
+% % Eigenvector 1 = 1
+
+% % Eigenvector 2 corresponds to the 1st non-zero eigenvalue
+% % Eigenvector 2 = (k12/2 + k21/2 + k23/2 + k32/2 + (2*k12*k21 - 2*k12*k23 - 2*k12*k32 + 2*k21*k23 - 2*k21*k32 + 2*k23*k32 + k12^2 + k21^2 + k23^2 + k32^2)^(1/2)/2)/k23 - (k23 + k32)/k23
+% % Eigenvector 2 = k32/k23 - (k12/2 + k21/2 + k23/2 + k32/2 + (2*k12*k21 - 2*k12*k23 - 2*k12*k32 + 2*k21*k23 - 2*k21*k32 + 2*k23*k32 + k12^2 + k21^2 + k23^2 + k32^2)^(1/2)/2)/k23
+% % Eigenvector 2 = 1
+
+% % Eigenvector 3 corresponds to the 3rd eigenvalue eigenvalue
+% % Eigenvector 3 = (k12/2 + k21/2 + k23/2 + k32/2 - (2*k12*k21 - 2*k12*k23 - 2*k12*k32 + 2*k21*k23 - 2*k21*k32 + 2*k23*k32 + k12^2 + k21^2 + k23^2 + k32^2)^(1/2)/2)/k23 - (k23 + k32)/k23
+% % Eigenvector 3 = k32/k23 - (k12/2 + k21/2 + k23/2 + k32/2 - (2*k12*k21 - 2*k12*k23 - 2*k12*k32 + 2*k21*k23 - 2*k21*k32 + 2*k23*k32 + k12^2 + k21^2 + k23^2 + k32^2)^(1/2)/2)/k23
+% % Eigenvector 3 = 1
 
 % Define eigenvector components corresponding to lam1: v1 = [a,b,c], in the
 % basis [p2,p1,p0], where p# is the population in state #.
@@ -275,9 +306,12 @@ C4_diff = C4 - C2Product;
             n = n_1;
         end
         
-        p1 = p1_eq + m*a*exp(-lam1*time) + n*x*exp(-lam2*time);
+%         p1 = p1_eq + m*a*exp(-lam1*time) + n*x*exp(-lam2*time);
+        p1 = p1_eq + m*c*exp(-lam1*time) + n*z*exp(-lam2*time);
     end
 
+
+ 
     function p2 = p2(init,time)
         if init == 3
             m = m_3;
@@ -305,7 +339,8 @@ C4_diff = C4 - C2Product;
             n = n_1;
         end
         
-        p3 = p3_eq + m*c*exp(-lam1*time) + n*z*exp(-lam2*time);
+%         p3 = p3_eq + m*c*exp(-lam1*time) + n*z*exp(-lam2*time);
+        p3 = p3_eq + m*a*exp(-lam1*time) + n*x*exp(-lam2*time);
     end
 end
 
