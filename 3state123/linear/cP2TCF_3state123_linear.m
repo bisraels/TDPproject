@@ -2,7 +2,7 @@
 %
 % CREATED: August 2019
 %
-% PURPOSE:  Evaluate the Linear 3-State (123) conditional probabilties with a set of 
+% PURPOSE:  Evaluate the Linear 3-State (123) conditional probabilties with a set of
 %           rates then the  2 point TCF and 4 point TCF for that system
 %
 % INPUT: (1) conditional probabilities from ODE solver: symCondProb_3state123_linear.mat
@@ -56,7 +56,7 @@ eval3 = double(vpa(subs(eval3)));
 % Evaluate conditional probabilties by substituting in values from above
 % and using vpa() to force the simplest form of the output.
 
-%Pij(t) is prob from i--> j, assuming you start in state i: Pi(t=0)=100%=1 
+%Pij(t) is prob from i--> j, assuming you start in state i: Pi(t=0)=100%=1
 
 P11(t) = vpa(subs(P11));
 P12(t) = vpa(subs(P12));
@@ -83,7 +83,7 @@ task_str = 'Calculate the conditional probabilities as a function of rates {kij}
 disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 
 %%
-%     CALCULATE TCF's     
+%     CALCULATE TCF's
 
 
 % Need:
@@ -102,9 +102,9 @@ A3 = 0.67;
 A = [ A1; A2; A3];
 
 % Matrix of conditional probabilities Pi-->j with i is initial condition
- cP = [ P11(t), P21(t), P31(t);
-        P12(t), P22(t), P32(t);
-        P13(t), P23(t), P33(t)];
+cP = [ P11(t), P21(t), P31(t);
+    P12(t), P22(t), P32(t);
+    P13(t), P23(t), P33(t)];
 % Row = final state & Column = initial condition
 
 %%
@@ -114,7 +114,7 @@ A = [ A1; A2; A3];
 P1EQ = P11(inf);
 P2EQ = P22(inf);
 P3EQ = P33(inf);
- 
+
 Peq = [P1EQ; P2EQ; P3EQ];
 
 if sum(Peq) == 1
@@ -137,7 +137,7 @@ sqm = (sum(A.*Peq))^2;      % mean square value <A>^2
 C2sym(t) = 0*t;
 for i = 1:numel(A)
     for j = 1:numel(A)
-        % 
+        %
         C2temp(t) = A(j) * cP(j,i) * A(i) * Peq(i);
         C2sym(t) = C2sym(t) + C2temp(t);
     end
@@ -146,13 +146,13 @@ end
 
 if double(C2sym(0)) == double(msq)
     disp('Mean of the square <A^2> matches C2(t=0)!')
-else 
+else
     disp('Problem: mean of the square <A^2> DOES NOT match C2(t=0)')
 end
 
 if double(C2sym(10^20)) == double(sqm)
     disp('Square of the mean <A>^2 matches C2(t=inf)!')
-else 
+else
     disp('Problem: square of the mean <A>^2 DOES NOT match C2(t=inf)')
 end
 
@@ -244,7 +244,7 @@ tau3vec = logspace(0,3,Npts);
 t1 = tau1vec;
 t2 = tau2;
 t3 = tau3vec';
-        
+
 
 tic
 disp('... Calculating the Conditional Probabilities');
@@ -267,7 +267,7 @@ cP_t1(3,3,:) = double(P33(t1));
 % Initialize size of 3D array for conditional probability for t2:
 cP_t2 = zeros(numel(A),numel(A),length(t2));
 
-% Define the vector in each position ******* ***** 
+% Define the vector in each position ******* *****
 cP_t2(1,1,:) = double(P11(t2));
 cP_t2(2,1,:) = double(P12(t2));
 cP_t2(3,1,:) = double(P13(t2));
@@ -279,7 +279,7 @@ cP_t2(3,2,:) = double(P23(t2));
 cP_t2(1,3,:) = double(P31(t2));
 cP_t2(2,3,:) = double(P32(t2));
 cP_t2(3,3,:) = double(P33(t2));
-         
+
 % Initialize size of 3D array for conditional probability for t3:
 cP_t3 = zeros(numel(A),numel(A),length(t3));
 
@@ -309,19 +309,19 @@ tic
 % Create a matrix to hold the C4's calculated for each (tau1,tau3) pair for
 % a set tau 2
 C4 = zeros(length(tau1vec),length(tau3vec));
- %-------------------------------------------------------------------------
- % Iterate over all the Permutations of FRET States
- %-------------------------------------------------------------------------
-     for i = 1:numel(A)
-         for j = 1:numel(A)
-             for k = 1:numel(A)
-                 for l = 1:numel(A)
-                     C4term_val =  A(l) *squeeze(cP_t3(l,k,:)) * A(k) * cP_t2(k,j) * A(j) * squeeze(cP_t1(j,i,:))'* A(i) * Peq(i);
-                     C4 = C4 + C4term_val;
-                 end
-             end
-         end
-     end
+%-------------------------------------------------------------------------
+% Iterate over all the Permutations of FRET States
+%-------------------------------------------------------------------------
+for i = 1:numel(A)
+    for j = 1:numel(A)
+        for k = 1:numel(A)
+            for l = 1:numel(A)
+                C4term_val =  A(l) *squeeze(cP_t3(l,k,:)) * A(k) * cP_t2(k,j) * A(j) * squeeze(cP_t1(j,i,:))'* A(i) * Peq(i);
+                C4 = C4 + C4term_val;
+            end
+        end
+    end
+end
 
 %Display the amount of time a process took. Begins at the last tic.
 elapsedTime = toc;

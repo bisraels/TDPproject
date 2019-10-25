@@ -1,9 +1,9 @@
 %--------------------------------------------------------------------------
 % AUTHOR: Claire Albrecht & Brett Israels
 %
-% CREATED: September 2019 (C2Maker_3state123_cyclical.m)
+% CREATED: September 2019 (C4Maker_3state123_cyclical.m)
 %
-% PURPOSE:  Evaluate the Linear 3-State (123) conditional probabilties with a set of
+% PURPOSE:  Evaluate the cyclical 3-State (123) conditional probabilties with a set of
 %           rates then the  2 point TCF and 4 point TCF for that system
 %
 % INPUT: (1) conditional probabilities from ODE solver: symCondProb_3state123_cyclical.mat
@@ -15,9 +15,8 @@
 % MODIFICATIONS:
 %   (1) Adapted from function_3state123_cyclical.m
 %
-%--------------------------------------------------------------------------
-
-function [C4,C4_diff,C2] = C4Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,timeArray)
+%----------------------------------------------------
+function [C4,C4_diff,C2] = C4Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,tau2,tau1range)
 %--------------------------------------------------------------------------
 % User Prefrences
 %--------------------------------------------------------------------------
@@ -26,33 +25,54 @@ clockMode = 0;
 saveMode = 0;
 plotMode = 0;
 
+programName = 'C4Maker_3state123_cyclical.m';
+% disp([':>> Running ' programName '.m']);
+%--------------------------------------------------------------------------
+% SET PARAMATERS
+%--------------------------------------------------------------------------
 switch nargin
     case 0
-        disp('Using Default values in C2Maker_3state123_cyclical');
-        t12 = 1e-4;
-        t13 = 0.0061;
-        t21 = 3.27e-5;
-        t23 = 1e-6;
-        t31 = 1e-3;
-        A1 = 0.7786;
-        A2 = 0.6161;
-        A3 = 0.4811;
+        disp(['Using default values in ' programName]);
         
-        Npts = 150;
-        timeArray = [0:9,logspace(1,6.4771212,Npts)]/1e6;
+        t12_bounds = [1e-6,1000e-6];  %Paramater #1 is high--> med
+        t13_bounds = [100e-6,10e-3];    %Paramater #2 is high --> low
+        t21_bounds = [1e-6,1e-3];%Paramater #3 is med --> high
+        t23_bounds = [1e-6,10e-3];%Paramater #4 is med --> low
+        t31_bounds = [10e-6,10e-3];  %Paramater #5 is low --> Medium = [1e-3,10e-3];%Paramater #5 %t32 is low --> Medium
+        % *t32 wll be determined by the other rates
+        
+        A1_bounds = [0.65,0.85];%Paramater #6 % HIGH fret State
+        A2_bounds = [0.45,0.65];%Paramater #7 % Med FRET state
+        A3_bounds = [0.30,0.45];%Paramater #8 %Low FRET state
+        boundsArray = [t12_bounds;t13_bounds;t21_bounds;t23_bounds;t31_bounds;A1_bounds;A2_bounds;A3_bounds];
+        
+        Nparams = length(boundsArray);
+        population = rand(1,Nparams);
+        for param_idx = 1:Nparams
+            %To pick a random number in the interval of LB to UB:
+            % num = LB + rand*(UB - LB); %If rand = 0 then num = LB. If rand = 1, then num = UB.
+            population(param_idx) = boundsArray(param_idx) + population(param_idx)*(boundsArray(param_idx,2) - boundsArray(param_idx,1));
+        end
+        t12 = population(1);
+        t13 = population(2);
+        t21 = population(3);
+        t23 = population(4);
+        t31 = population(5);
+        A1 = population(6);
+        A2 = population(7);
+        A3 = population(8);
         
         tau2 = 0;
-
+        
+        Npts = 150;
+        tau1range = [0:9,logspace(1,6.4771212,Npts)]/1e6;
     case 8
         
-        Npts = 150;
-        timeArray = [0:9,logspace(1,6.4771212,Npts)]/1e6;
-
         tau2 = 0;
-
+        
+        Npts = 150;
+        tau1range = [0:9,logspace(1,6.4771212,Npts)]/1e6;
 end
-programName = 'C4Maker_3state123_cyclical.m';
-disp([':>> Running ' programName '.m']);
 
 %--------------------------------------------------------------------------
 % Define the FRET Array
@@ -98,7 +118,9 @@ t = sym('t');
 % CALCULATE THE EIGENVALUES
 %--------------------------------------------------------------------------
 
-if clockMode == 1, tic; end
+if clockMode == 1 
+    tic;
+end
 % Evaluate the eigenvalues in terms of the rates defined above - produce as doubles
 %subs(s) returns a copy of s, replacing symbolic variables in s, with their
 %values obtained from the calling function and the MATLAB® Workspace,
@@ -124,7 +146,9 @@ end
 %--------------------------------------------------------------------------
 % Evaluate the conditional probabilities
 %--------------------------------------------------------------------------
-if clockMode == 1, tic; end
+if clockMode == 1
+    tic;
+end
 % Evaluate conditional probabilties by substituting in values from above
 % and using vpa() to force the simplest form of the output.
 
@@ -183,12 +207,13 @@ Peq = [P1EQ; P2EQ; P3EQ];
 %--------------------------------------------------------------------------
 % (2) Calculate Two point TCF:
 %-------------------------------------------------------------------------
-%SUBTRACT OFF THE MEAN VALUE 
+%SUBTRACT OFF THE MEAN VALUE
 Amean = sum(A.*Peq);
 A = A - Amean;
 
-
-if clockMode == 1, tic; end
+if clockMode == 1
+    tic;
+end
 
 C2sym(t) = 0*t;
 for i = 1:numel(A)
@@ -198,6 +223,7 @@ for i = 1:numel(A)
         C2sym(t) = C2sym(t) + C2temp(t);
     end
 end
+
 %Display the amount of time a process      Took. Begins at the last tic.
 if clockMode == 1
     elapsedTime = toc;
@@ -225,15 +251,11 @@ end
 %--------------------------------------------------------------------------
 % Evaluate C2 over a range of t's
 %--------------------------------------------------------------------------
-C2 = C2sym(timeArray);
-
-
+C2 = C2sym(tau1range);
 
 %--------------------------------------------------------------------------
 %  Plot two point TCF
 %--------------------------------------------------------------------------
-
-%close all
 if plotMode == 1
     figure(2)
     
@@ -241,7 +263,7 @@ if plotMode == 1
     set(gcf,'Name','C2');
     %subplot(1,2,1)
     %TCF2pt = fplot(C2(t),[1e-3,1],'LineWidth',2);      % fplot() was making it hard to plot on loglog scale, so calculate for specfic time range
-    TCF2pt = plot(timeArray,C2,'LineWidth',2);
+    TCF2pt = plot(tau1range,C2,'LineWidth',2);
     
     title('Analytical Two point TCF','FontSize',18)
     xlabel('Time (\tau_1)','FontSize',14);
@@ -260,8 +282,9 @@ if plotMode == 1
 end
 
 
-disp('Will calculate C4');
-tic
+if clockMode == 1
+tic;
+end
 %--------------------------------------------------------------------------
 % (3) Four point TCF:
 %--------------------------------------------------------------------------
@@ -272,8 +295,8 @@ tic
 % Npts = 50;
 % tau1vec = logspace(0,3,Npts); % logspace(starting exponent, final exponent, number of bins)
 % tau3vec = logspace(0,3,Npts);
-tau1vec = timeArray;
-tau3vec = timeArray;
+tau1vec = tau1range;
+tau3vec = tau1range;
 
 % Or define tau1 and tau3 symbolically and plot the functions
 % tau1 = sym('tau1');
@@ -283,7 +306,9 @@ t1 = tau1vec;
 t2 = tau2;
 t3 = tau3vec';
 
-if clockMode == 1, tic; end
+if clockMode == 1 
+   tic;
+end
 if verboseMode == 1
     disp('... Calculating the Conditional Probabilities');
 end
@@ -350,7 +375,9 @@ end
 
 % Create a matrix to hold the C4's calculated for each (tau1,tau3) pair for
 % a set tau 2
-if clockMode == 1,tic;end
+if clockMode == 1
+    tic;
+end
 C4 = zeros(length(tau1vec),length(tau3vec));
 %-------------------------------------------------------------------------
 % Iterate over all the Permutations of FRET States
@@ -373,13 +400,12 @@ if clockMode == 1
     disp(['     Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
 
-disp(['Size C4 = ' num2str(size(C4))]);
+% disp(['Size C4 = ' num2str(size(C4))]);
 
 C2Product = C2.*C2';
-disp(['Size C2Product = ' num2str(size(C2Product))]);
+% disp(['Size C2Product = ' num2str(size(C2Product))]);
 C4_diff = C4 - C2Product;
-disp(['Size C4_diff = ' num2str(size(C4_diff))]);
-
+% disp(['Size C4_diff = ' num2str(size(C4_diff))]);
 
 % Plot surface of C4
 if plotMode == 1

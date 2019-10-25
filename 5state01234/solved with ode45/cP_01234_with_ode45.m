@@ -55,6 +55,9 @@ K = [-(k01+k02+k03+k04), k10,             k20,              k30,              k4
         k02,             k12,       -(k20+k21+k23+k24),     k32,              k42;...
         k03,             k13,             k23,      -(k30+k31+k32+k34),       k43;...
         k04,             k14,             k24,              k34,        -(k40+k41+k42+k43)];
+    
+    syms P0(t) P1(t) P2(t) P3(t) P4(t)
+
 % Vector of populations (or probabilities)
 P(t) = [P0(t); P1(t); P2(t); P3(t); P4(t)];
 
