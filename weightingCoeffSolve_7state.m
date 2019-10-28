@@ -4,7 +4,7 @@
 %
 % PURPOSE:  Symbolically solve  for coefficients and Peq for the 7 state
 %
-% METHOD:  Wrtie out conditonal probability equations
+% METHOD:  Write out conditonal probability equations
 %
 % INPUT:    nothing.
 %           
