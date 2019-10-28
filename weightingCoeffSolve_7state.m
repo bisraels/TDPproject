@@ -1,78 +1,18 @@
+% AUTHOR:   Claire Albrecht & Brett Israels
+%
+% CREATED:  September 2019
+%
+% PURPOSE:  Symbolically solve  for coefficients and Peq for the 7 state
+%
+% METHOD:  Wrtie out conditonal probability equations
+%
+% INPUT:    nothing.
+%           
+%
+% MODIFICATIONS:
+%
+%__________________________________________________________________________
 
-syms a b c %Components of the first eigenvector
-syms x y z %Components of the second eigenvector
-syms m_1 m_2 m_3 %Components of the first coefficient
-syms n_1 n_2 n_3 %Components of the second coefficient
-syms p1_eq p2_eq p3_eq %Equilibrium Populations
-
-syms p_1 p_2 p_3  % coefficients for population starting in P1
-syms f g h        % compoents of zeroth eigenvector
-
-% % P i --> 3                          % Pji
-% eqn1 = 1 == p3_eq + m_3*c + n_3*z;   % P33  
-% eqn2 = 0 == p3_eq + m_2*c + n_2*z;   % P32
-% eqn3 = 0 == p3_eq + m_1*c + n_1*z;   % P31
-% 
-% % P i --> 2
-% eqn4 = 0 == p2_eq + m_3*b + n_3*y;   % P23
-% eqn5 = 1 == p2_eq + m_2*b + n_2*y;   % P22
-% eqn6 = 0 == p2_eq + m_1*b + n_1*y;   % P21
-% 
-% % P i --> 1
-% eqn7 = 0 == p1_eq + m_3*a + n_3*x;   % P13
-% eqn8 = 0 == p1_eq + m_2*a + n_2*x;   % P12
-% eqn9 = 1 == p1_eq + m_1*a + n_1*x;   % P11
-
-
-% The computer sees this an an inhomogenous differential equation which is
-% hard to solve. If we make it easier by making it compatible with matrix
-% form (break up the p_eq terms) it can solve it.
-
-
-% Define p1, p2, p3 (another weighting coefficient) and f g h (components
-% of 0th eigenvector)
-
-% P i --> 3                          % Pji
-eqn1 = 1 == p_3*h + m_3*c + n_3*z;   % P33  
-eqn2 = 0 == p_2*h + m_2*c + n_2*z;   % P32
-eqn3 = 0 == p_1*h + m_1*c + n_1*z;   % P31
-
-% P i --> 2
-eqn4 = 0 == p_3*g + m_3*b + n_3*y;   % P23
-eqn5 = 1 == p_2*g + m_2*b + n_2*y;   % P22
-eqn6 = 0 == p_1*g + m_1*b + n_1*y;   % P21
-
-% P i --> 1
-eqn7 = 0 == p_3*f + m_3*a + n_3*x;   % P13
-eqn8 = 0 == p_2*f + m_2*a + n_2*x;   % P12
-eqn9 = 1 == p_1*f + m_1*a + n_1*x;   % P11
-
-p1_eq = p_1*f;
-p2_eq = p_2*g;
-p3_eq = p_3*h;
-
-% eqn10 = p_1*f + p_2*g + p_3*h == 1;
-eq10 = p1_eq + p2_eq + p3_eq == 1;
-
-eqns = [eqn1,eqn2,eqn3,eqn4,eqn5,eqn6,eqn7,eqn8,eqn9,eqn10];
-vars = [m_1, m_2, m_3, n_1, n_2, n_3, p_1, p_2, p_3];
-sol = solve(eqns,vars)
-
-p1_eq = (sol.p_1)*f;
-p2_eq = (sol.p_2)*g;
-p3_eq = (sol.p_3)*h;
-
-
-%%
-
-
-% eqn9 = 1 == h0 * d + m_1 * a + n_1 * x;   % P11
-% eqn6 = 0 == h0 * e + m_1 * b + n_1 * y;   % P21
-% eqn3 = 0 == h0 * f + m_1 * c + n_1 * z;   % P31
-% 
-% sols = solve([eqn9, eqn6, eqn3],[m_1, n_1, h0])
-
-%% Try for 7 state
 
 syms c1_1 c1_2 c1_3 c1_4 c1_5 c1_6 c1_7
 syms c2_1 c2_2 c2_3 c2_4 c2_5 c2_6 c2_7
@@ -262,3 +202,6 @@ P4_eq = (sols.c1_4 * v1_4);
 p5_eq = (sols.c1_5 * v1_5);
 P6_eq = (sols.c1_6 * v1_6); 
 P7_eq = (sols.c1_7 * v1_7); 
+
+save('wCoef_7state.mat','c1_1', 'c1_2', 'c1_3', 'c1_4', 'c1_5', 'c1_6', 'c1_7', 'c2_1', 'c2_2', 'c2_3', 'c2_4', 'c2_5', 'c2_6', 'c2_7','c3_1', 'c3_2', 'c3_3', 'c3_4', 'c3_5', 'c3_6', 'c3_7', 'c4_1', 'c4_2', 'c4_3', 'c4_4', 'c4_5', 'c4_6', 'c4_7', 'c5_1', 'c5_2', 'c5_3', 'c5_4', 'c5_5', 'c5_6', 'c5_7', 'c6_1', 'c6_2', 'c6_3', 'c6_4', 'c6_5', 'c6_6', 'c6_7', 'c7_1', 'c7_2', 'c7_3', 'c7_4', 'c7_5', 'c7_6', 'c7_7','P1_eq', 'P2_eq','P3_eq','P4_eq','P5_eq','P6_eq','P7_eq');
+      
