@@ -1,3 +1,5 @@
+% function PeqSolver_3state123_cyclical
+
 syms k12 k21 k23 k32 k13 k31
 syms P1eq P2eq P3eq
 

@@ -115,11 +115,11 @@ if verboseMode== 1
  cP = [ P11(t), P21(t), P31(t);
         P12(t), P22(t), P32(t);
         P13(t), P23(t), P33(t)];
-    for i = 1:3
-        for j = 1:3
-            fprintf('p%d%d(t) = %s\r\n',i,j,cP(j,i));
-        end
-    end
+%     for i = 1:3
+%         for j = 1:3
+%             fprintf('p%d%d(t) = %s\r\n',i,j,cP(j,i));
+%         end
+%     end
 end
 
 %Display the amount of time a process took. Begins at the last tic.
