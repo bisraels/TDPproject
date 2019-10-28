@@ -1,4 +1,3 @@
-
 % function statsComparison_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3)
 programName = 'statsComparison_3state123_cyclical';
 close all;
@@ -28,6 +27,7 @@ compareC4Mode = 0;
 % (3) C4Maker_3state123_cyclical        % Calculates C4
 
 
+%//////////////////////////////////////////////////////////////////////////
 %--------------------------------------------------------------------------
 % SET PARAMATERS
 %--------------------------------------------------------------------------
@@ -80,9 +80,12 @@ k31 = 1/t31;
 k32 = k12*k23*k31/(k13*k21); % Detailed balance condition: %k31 will be the rate fixed by the others
 t32 = 1/k32;
 
+%//////////////////////////////////////////////////////////////////////
 %--------------------------------------------------------------------------
 % Compare the histograms
 %--------------------------------------------------------------------------
+%\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 if compareHistMode == 1
     disp('Comparing the time it takes to calculate histograms...');
     figure(21);
@@ -97,7 +100,7 @@ if compareHistMode == 1
     
     
     %----------------------------------------------------------------------
-    % Calculate the histogram using the analytical code
+    % Calculate the histogram using the analytical code             (Part3)
     %----------------------------------------------------------------------
     if clockMode == 1, tic; end
     [Peq] = histMaker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3);
@@ -181,9 +184,11 @@ end
 
 
 
+%//////////////////////////////////////////////////////////////////////////
 %--------------------------------------------------------------------------
 % Compare the 2-point TCFs
 %--------------------------------------------------------------------------
+%//////////////////////////////////////////////////////////////////////////
 if compareC2Mode == 1
     disp('Comparing the time it takes to calculate 2-point TCFs...');
     figure(22)
@@ -277,10 +282,11 @@ if compareC2Mode == 1
         disp(['Saving the figure as ' foutName]);
     end
 end
-
+%//////////////////////////////////////////////////////////////////////////
 %--------------------------------------------------------------------------
 % Compare the 4-point TCFs
 %--------------------------------------------------------------------------
+%//////////////////////////////////////////////////////////////////////////
 if compareC4Mode == 1
     figure(23);
     clf;
@@ -346,6 +352,7 @@ if compareC4Mode == 1
         
         hold on;
         plot_TCF4point_analytical = mesh(tau1range, tau1range', C4_sim_num,'DisplayName',display_str);
+        plot_TCF4point_analytical.FaceAlpha = 0.5;
         title('Four-point TCF: C^{(4)}','FontSize',18)
         xlabel('Time (\tau_1)','FontSize',14);
         ylabel('Time (\tau_3)','FontSize',14);
@@ -355,13 +362,17 @@ if compareC4Mode == 1
         ax = gca;
         ax.XScale = 'log';
         ax.YScale = 'log';
-        legend('show')
+        lgd = legend;
+        lgd.Location = "north";
+        
     end
     
     
+    %\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     %--------------------------------------------------------------------------
     % Save the data
     %--------------------------------------------------------------------------
+    %\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     if saveMode == 1
         %--------------------------------------------------------------------------
         % Make a folder to hold output
