@@ -1,6 +1,7 @@
 syms k12 k21 k23 k32 k13 k31
 syms P1eq P2eq P3eq
 
+%For 3 state cyclical
 % Define the Rate Matrix K
 K = [(-k12 - k13), k21, k31;...
     k12, (-k21 - k23 ), k32;...
