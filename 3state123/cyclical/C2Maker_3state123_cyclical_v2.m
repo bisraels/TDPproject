@@ -22,7 +22,7 @@
 % User Prefrences
 %--------------------------------------------------------------------------
 verboseMode = 0; %Set to 1 to see alot of progress updates and print off.
-clockMode = 0;
+clockMode = 1;
 saveMode = 0;
 plotMode = 0;
 
@@ -168,7 +168,6 @@ end
 % P32(t) = vpa(subs(P32));
 % P33(t) = vpa(subs(P33));
 
-
 P11(t) = subs(P11);
 P12(t) = subs(P12);
 P13(t) = subs(P13);
@@ -181,6 +180,20 @@ P31(t) = subs(P31);
 P32(t) = subs(P32);
 P33(t) = subs(P33);
 
+%Slowed it down signifigantly
+% P11 = subs(P11);
+% P12 = subs(P12);
+% P13 = subs(P13);
+% 
+% P21 = subs(P21);
+% P22 = subs(P22);
+% P23 = subs(P23);
+% 
+% P31 = subs(P31);
+% P32 = subs(P32);
+% P33 = subs(P33);
+
+
 %Display the amount of time a process took. Begins at the last tic.
 if clockMode == 1
     elapsedTime = toc;
@@ -192,8 +205,9 @@ end
 % CALCULATE Equilibrium populations
 %--------------------------------------------------------------------------
 
-t = sym('t');   % This allows for a dynamic workspace
+% t = sym('t');   % This allows for a dynamic workspace
 
+t = time;
 % Matrix of conditional probabilities Pi-->j with i is initial condition
 cP = [ P11(t), P21(t), P31(t);
     P12(t), P22(t), P32(t);
@@ -217,14 +231,18 @@ if clockMode == 1
     tic
 end
 
-C2sym(t) = 0*t;
+% C2sym(t) = 0*t;
+C2sim = zeros(size(time));
 for i = 1:numel(A)
     for j = 1:numel(A)
         %
-        C2temp(t) = A(j) * cP(j,i) * A(i) * Peq(i);
-        C2sym(t) = C2sym(t) + C2temp(t);
+%         C2temp(t) = A(j) * cP(j,i) * A(i) * Peq(i);
+%         C2sym(t) = C2sym(t) + C2temp(t);
+C2temp  = A(j) * cP(j,i) * A(i) * Peq(i);
+C2sim = C2sim + C2temp;
     end
 end
+
 %Display the amount of time a process took. Begins at the last tic.
 if clockMode == 1
     elapsedTime = toc;

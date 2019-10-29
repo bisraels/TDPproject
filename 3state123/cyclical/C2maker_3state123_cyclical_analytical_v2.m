@@ -74,6 +74,16 @@ lam2 = c1 - c2;
 % disp(['1/Lam 1 = ' num2str(1/lam1) ]);
 % disp(['1/Lam 2 = ' num2str(1/lam2) ]);
 
+% % Using PeqSolver_3state123_cyclical (solve): we get same ansers
+% p1_eq = (k21*k31 + k21*k32 + k23*k31)/(k13*k21 + k12*k23 + k13*k23 + k12*k31 + k12*k32 + k13*k32 + k21*k31 + k21*k32 + k23*k31)
+%  p2_eq = (k12*k31 + k12*k32 + k13*k32)/(k13*k21 + k12*k23 + k13*k23 + k12*k31 + k12*k32 + k13*k32 + k21*k31 + k21*k32 + k23*k31)
+% p3_eq = (k13*k21 + k12*k23 + k13*k23)/(k13*k21 + k12*k23 + k13*k23 + k12*k31 + k12*k32 + k13*k32 + k21*k31 + k21*k32 + k23*k31)
+
+% Define equilibrium values of populations
+p1_eq = 1/(1 + (k12 + k13)/k21 + (1 - k31/k21)*((k21 + k23)*(k12 + k13) - k12*k21)/((k21 + k23)*k31 + k32*k21));
+p3_eq = ((k21 + k23)*(k12 + k13) - k12*k21)/((k21 + k23)*k31 + k32*k21)*p1_eq;
+p2_eq = ((k12 + k13)*p1_eq - k31*p3_eq)/k21;
+
 % % OUTOUT FROM ODEsolver_3state123_cyclical:
 % % Eigenvector1_1 = (k21*k31 + k21*k32 + k23*k31)/(k13*k21 + k12*k23 + k13*k23)
 % % Eigenvector1_2 = (k12*k31 + k12*k32 + k13*k32)/(k13*k21 + k12*k23 + k13*k23)
@@ -98,15 +108,6 @@ x = (k23 + k31 + k32 - c1 + c2)/(k13 - k23);
 y = (c1 - c2 - k13 - k31 - k32)/(k13 - k23);
 z = 1;
 
-% % Using PeqSolver_3state123_cyclical (solve): we get same ansers
-% p1_eq = (k21*k31 + k21*k32 + k23*k31)/(k13*k21 + k12*k23 + k13*k23 + k12*k31 + k12*k32 + k13*k32 + k21*k31 + k21*k32 + k23*k31)
-%  p2_eq = (k12*k31 + k12*k32 + k13*k32)/(k13*k21 + k12*k23 + k13*k23 + k12*k31 + k12*k32 + k13*k32 + k21*k31 + k21*k32 + k23*k31)
-% p3_eq = (k13*k21 + k12*k23 + k13*k23)/(k13*k21 + k12*k23 + k13*k23 + k12*k31 + k12*k32 + k13*k32 + k21*k31 + k21*k32 + k23*k31)
-
-% Define equilibrium values of populations
-p1_eq = 1/(1 + (k12 + k13)/k21 + (1 - k31/k21)*((k21 + k23)*(k12 + k13) - k12*k21)/((k21 + k23)*k31 + k32*k21));
-p3_eq = ((k21 + k23)*(k12 + k13) - k12*k21)/((k21 + k23)*k31 + k32*k21)*p1_eq;
-p2_eq = ((k12 + k13)*p1_eq - k31*p3_eq)/k21;
 
 % Define constants needed for differential equation solutions, for various
 % initial values of the population. m_2 is the constant "m" if the
