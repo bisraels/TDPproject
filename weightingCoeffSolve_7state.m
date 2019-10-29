@@ -8,7 +8,7 @@
 %
 % INPUT:    nothing.
 %           
-% OUTPUT:  .mat  file containing c coefficients and Peq's in terms of
+% OUTPUT:  .mat  file containing c coefficients and Peq's all in terms of
 %           eigenvector components
 %
 % MODIFICATIONS:
