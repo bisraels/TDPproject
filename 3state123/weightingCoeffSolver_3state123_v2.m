@@ -9,7 +9,9 @@ syms c2_1 c2_2 c2_3 %Components of the second coefficient
 
 syms p1_eq p2_eq p3_eq %Equilibrium Populations
 
-% P i --> 3                          % Pji
+% probability from i to j
+% pji(t=0) = c0_i*v0_j + c1_i*v1_j + c2_i*v2_j
+% P i --> 3                         
 eqn1 = 1 == c0_3*v0_3 + c1_3*v1_3 + c2_3*v2_3;   % P33  
 eqn2 = 0 == c0_2*v0_3 + c1_2*v1_3 + c2_2*v2_3;   % P32
 eqn3 = 0 == c0_1*v0_3 + c1_1*v1_3 + c2_1*v2_3;   % P31
@@ -33,9 +35,21 @@ eqn10 = p1_eq + p2_eq + p3_eq == 1;
 
 eqns = [eqn1,eqn2,eqn3,eqn4,eqn5,eqn6,eqn7,eqn8,eqn9,eqn10];
 vars = [c0_1, c0_2, c0_3, c1_1, c1_2, c1_3, c2_1, c2_2, c2_3];
-sol = solve(eqns,vars)
+sol = solve(eqns,vars);
 
 p1_eq = (sol.c0_1)*v0_1;
 p2_eq = (sol.c0_2)*v0_2;
 p3_eq = (sol.c0_3)*v0_3;
 
+C0_1 = sol.c0_1;
+C0_2 = sol.c0_2;
+C0_3 = sol.c0_3;
+C1_1 = sol.c1_1;
+C1_2 = sol.c1_2;
+C1_3 = sol.c1_3;
+C2_1 = sol.c2_1;
+C2_2 = sol.c2_2;
+C2_3 = sol.c2_3;
+
+save('weightingCoeff_solved_3state123.mat','p1_eq','p2_eq','p3_eq',...
+    'C0_1','C0_2','C0_3','C1_1','C1_2','C1_3','C2_1','C2_2','C2_3')
