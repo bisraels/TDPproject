@@ -1,11 +1,11 @@
-function C2_sim = C2maker_3state123_cyclical_analytical(t12,t13,t21,t23,t31,A1,A2,A3,time)
+% function C2_sim = C2maker_3state123_cyclical_analytical_v2(t12,t13,t21,t23,t31,A1,A2,A3,time)
 % Now is a mean subtracted 2-point TCF. Works the same as TCF_cyclic3state
-programName = 'C2maker_3state123_cyclical_analytical';
+programName = 'C2maker_3state123_cyclical_analytical_v2';
 %--------------------------------------------------------------------------
 % SET PARAMATERS
 %--------------------------------------------------------------------------
-switch nargin
-    case 0
+% switch nargin
+%     case 0
         disp(['Using default values in ' programName]);
         
         t12_bounds = [1e-6,1000e-6];  %Paramater #1 is high--> med
@@ -38,12 +38,12 @@ switch nargin
         
         Npts = 150;
         time = [0:9,logspace(1,6.4771212,Npts)]/1e6;
-    case 8
-        
-        Npts = 150;
-        time = [0:9,logspace(1,6.4771212,Npts)]/1e6;
-        
-end
+%     case 8
+%         
+%         Npts = 150;
+%         time = [0:9,logspace(1,6.4771212,Npts)]/1e6;
+%         
+% end
 
 % note: this messes it up:
 %t12 = 0.000825, t13 = 0.006767, t21 = 0.000615, t23 = 0.006725, t31 = 0.003205, t32 = 0.004270  A1 = 0.737326, A2 = 0.518160, A3 = 0.315085,
@@ -73,6 +73,11 @@ lam2 = c1 - c2;
 % disp(['1/Lam 1 = ' num2str(1/lam1) ]);
 % disp(['1/Lam 2 = ' num2str(1/lam2) ]);
 
+% % OUTOUT FROM ODEsolver_3state123_cyclical:
+% % Eigenvector1_1 = (k21*k31 + k21*k32 + k23*k31)/(k13*k21 + k12*k23 + k13*k23)
+% % Eigenvector1_2 = (k12*k31 + k12*k32 + k13*k32)/(k13*k21 + k12*k23 + k13*k23)
+% % Eigenvector1_3 = 1
+
 % % OUTOUT FROM ODEsolver_3state123_cyclical: Same values
 % % Eigenvector2_1 = (k23 + k31 + k32)/(k13 - k23) - (k12/2 + k13/2 + k21/2 + k23/2 + k31/2 + k32/2 + (2*k12*k13 + 2*k12*k21 - 2*k13*k21 - 2*k12*k23 - 2*k13*k23 - 2*k12*k31 - 2*k12*k32 + 2*k13*k31 + 2*k21*k23 - 2*k13*k32 - 2*k21*k31 - 2*k21*k32 - 2*k23*k31 + 2*k23*k32 + 2*k31*k32 + k12^2 + k13^2 + k21^2 + k23^2 + k31^2 + k32^2)^(1/2)/2)/(k13 - k23)
 % % Eigenvector2_2 = (k12/2 + k13/2 + k21/2 + k23/2 + k31/2 + k32/2 + (2*k12*k13 + 2*k12*k21 - 2*k13*k21 - 2*k12*k23 - 2*k13*k23 - 2*k12*k31 - 2*k12*k32 + 2*k13*k31 + 2*k21*k23 - 2*k13*k32 - 2*k21*k31 - 2*k21*k32 - 2*k23*k31 + 2*k23*k32 + 2*k31*k32 + k12^2 + k13^2 + k21^2 + k23^2 + k31^2 + k32^2)^(1/2)/2)/(k13 - k23) - (k13 + k31 + k32)/(k13 - k23)
@@ -93,9 +98,9 @@ y = (c1 - c2 - k13 - k31 - k32)/(k13 - k23);
 z = 1;
 
 % % Using PeqSolver_3state123_cyclical (solve): we get same ansers
-% P1eqSol = (k21*k31 + k21*k32 + k23*k31)/(k13*k21 + k12*k23 + k13*k23 + k12*k31 + k12*k32 + k13*k32 + k21*k31 + k21*k32 + k23*k31)
-%  P2eqSol = (k12*k31 + k12*k32 + k13*k32)/(k13*k21 + k12*k23 + k13*k23 + k12*k31 + k12*k32 + k13*k32 + k21*k31 + k21*k32 + k23*k31)
-% P3eqSol = (k13*k21 + k12*k23 + k13*k23)/(k13*k21 + k12*k23 + k13*k23 + k12*k31 + k12*k32 + k13*k32 + k21*k31 + k21*k32 + k23*k31)
+% p1_eq = (k21*k31 + k21*k32 + k23*k31)/(k13*k21 + k12*k23 + k13*k23 + k12*k31 + k12*k32 + k13*k32 + k21*k31 + k21*k32 + k23*k31)
+%  p2_eq = (k12*k31 + k12*k32 + k13*k32)/(k13*k21 + k12*k23 + k13*k23 + k12*k31 + k12*k32 + k13*k32 + k21*k31 + k21*k32 + k23*k31)
+% p3_eq = (k13*k21 + k12*k23 + k13*k23)/(k13*k21 + k12*k23 + k13*k23 + k12*k31 + k12*k32 + k13*k32 + k21*k31 + k21*k32 + k23*k31)
 
 % Define equilibrium values of populations
 p1_eq = 1/(1 + (k12 + k13)/k21 + (1 - k31/k21)*((k21 + k23)*(k12 + k13) - k12*k21)/((k21 + k23)*k31 + k32*k21));
@@ -110,7 +115,7 @@ n_2 = (1 - p2_eq + b/a*p1_eq)/(y - b/a*x);
 n_1 = (-p2_eq - b/a*(1 - p1_eq))/(y - b/a*x);
 m_3 = (-p1_eq - n_3*x)/a;
 m_2 = (-p1_eq - n_2*x)/a;
-m_1 = (1 - p1_eq - n_1*x)/a
+m_1 = (1 - p1_eq - n_1*x)/a;
 
 
 %%Using ODE solver: GIVES THE SAME ANSER!
