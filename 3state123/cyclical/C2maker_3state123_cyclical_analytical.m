@@ -110,7 +110,7 @@ n_2 = (1 - p2_eq + b/a*p1_eq)/(y - b/a*x);
 n_1 = (-p2_eq - b/a*(1 - p1_eq))/(y - b/a*x);
 m_3 = (-p1_eq - n_3*x)/a;
 m_2 = (-p1_eq - n_2*x)/a;
-m_1 = (1 - p1_eq - n_1*x)/a
+m_1 = (1 - p1_eq - n_1*x)/a;
 
 
 %%Using ODE solver: GIVES THE SAME ANSER!
