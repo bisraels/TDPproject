@@ -22,7 +22,7 @@ function C2_sim = C2Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,A3,time)
 % User Prefrences
 %--------------------------------------------------------------------------
 verboseMode = 0; %Set to 1 to see alot of progress updates and print off.
-clockMode = 1;
+clockMode = 0;
 saveMode = 0;
 plotMode = 0;
 
