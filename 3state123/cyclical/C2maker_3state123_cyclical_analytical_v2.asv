@@ -80,9 +80,9 @@ lam2 = c1 - c2;
 % p3_eq = (k13*k21 + k12*k23 + k13*k23)/(k13*k21 + k12*k23 + k13*k23 + k12*k31 + k12*k32 + k13*k32 + k21*k31 + k21*k32 + k23*k31)
 
 % Define equilibrium values of populations
-P1_eq = 1/(1 + (k12 + k13)/k21 + (1 - k31/k21)*((k21 + k23)*(k12 + k13) - k12*k21)/((k21 + k23)*k31 + k32*k21));
-P3_eq = ((k21 + k23)*(k12 + k13) - k12*k21)/((k21 + k23)*k31 + k32*k21)*P1_eq;
-P2_eq = ((k12 + k13)*P1_eq - k31*P3_eq)/k21;
+p1_eq = 1/(1 + (k12 + k13)/k21 + (1 - k31/k21)*((k21 + k23)*(k12 + k13) - k12*k21)/((k21 + k23)*k31 + k32*k21));
+p3_eq = ((k21 + k23)*(k12 + k13) - k12*k21)/((k21 + k23)*k31 + k32*k21)*p1_eq;
+p2_eq = ((k12 + k13)*p1_eq - k31*p3_eq)/k21;
 
 % % OUTOUT FROM ODEsolver_3state123_cyclical:
 % % Eigenvector1_1 = (k21*k31 + k21*k32 + k23*k31)/(k13*k21 + k12*k23 + k13*k23)
@@ -93,31 +93,31 @@ P2_eq = ((k12 + k13)*P1_eq - k31*P3_eq)/k21;
 % % Eigenvector2_1 = (k23 + k31 + k32)/(k13 - k23) - (k12/2 + k13/2 + k21/2 + k23/2 + k31/2 + k32/2 + (2*k12*k13 + 2*k12*k21 - 2*k13*k21 - 2*k12*k23 - 2*k13*k23 - 2*k12*k31 - 2*k12*k32 + 2*k13*k31 + 2*k21*k23 - 2*k13*k32 - 2*k21*k31 - 2*k21*k32 - 2*k23*k31 + 2*k23*k32 + 2*k31*k32 + k12^2 + k13^2 + k21^2 + k23^2 + k31^2 + k32^2)^(1/2)/2)/(k13 - k23)
 % % Eigenvector2_2 = (k12/2 + k13/2 + k21/2 + k23/2 + k31/2 + k32/2 + (2*k12*k13 + 2*k12*k21 - 2*k13*k21 - 2*k12*k23 - 2*k13*k23 - 2*k12*k31 - 2*k12*k32 + 2*k13*k31 + 2*k21*k23 - 2*k13*k32 - 2*k21*k31 - 2*k21*k32 - 2*k23*k31 + 2*k23*k32 + 2*k31*k32 + k12^2 + k13^2 + k21^2 + k23^2 + k31^2 + k32^2)^(1/2)/2)/(k13 - k23) - (k13 + k31 + k32)/(k13 - k23)
 % % Eigenvector2_3 = 1
-% Define eigenvector components corresponding to lam2: v2 = [a,b,c], in the
+% Define eigenvector components corresponding to lam1: v1 = [a,b,c], in the
 % basis [p2,p1,p0], where p# is the population in state #.
-v2_1 = (k23 + k31 + k32 - c1 - c2)/(k13 - k23);
-v2_2 = (c1 + c2 - k13 - k31 - k32)/(k13 - k23);
-v2_3 = 1;
+v1_1 = (k23 + k31 + k32 - c1 - c2)/(k13 - k23);
+v1_2 = (c1 + c2 - k13 - k31 - k32)/(k13 - k23);
+v1_3 = 1;
 
 % % OUTOUT FROM ODEsolver_3state123_cyclical: Same values
 % % Eigenvector3_1 = (k23 + k31 + k32)/(k13 - k23) - (k12/2 + k13/2 + k21/2 + k23/2 + k31/2 + k32/2 - (2*k12*k13 + 2*k12*k21 - 2*k13*k21 - 2*k12*k23 - 2*k13*k23 - 2*k12*k31 - 2*k12*k32 + 2*k13*k31 + 2*k21*k23 - 2*k13*k32 - 2*k21*k31 - 2*k21*k32 - 2*k23*k31 + 2*k23*k32 + 2*k31*k32 + k12^2 + k13^2 + k21^2 + k23^2 + k31^2 + k32^2)^(1/2)/2)/(k13 - k23)
 % % Eigenvector3_2 = (k12/2 + k13/2 + k21/2 + k23/2 + k31/2 + k32/2 - (2*k12*k13 + 2*k12*k21 - 2*k13*k21 - 2*k12*k23 - 2*k13*k23 - 2*k12*k31 - 2*k12*k32 + 2*k13*k31 + 2*k21*k23 - 2*k13*k32 - 2*k21*k31 - 2*k21*k32 - 2*k23*k31 + 2*k23*k32 + 2*k31*k32 + k12^2 + k13^2 + k21^2 + k23^2 + k31^2 + k32^2)^(1/2)/2)/(k13 - k23) - (k13 + k31 + k32)/(k13 - k23)
 % % Eigenvector3_3 = 1
-% Define eigenvector components corresponding to lam3: v2 = [x,y,z].
-v3_1 = (k23 + k31 + k32 - c1 + c2)/(k13 - k23);
-v3_2 = (c1 - c2 - k13 - k31 - k32)/(k13 - k23);
-v3_3 = 1;
+% Define eigenvector components corresponding to lam2: v2 = [x,y,z].
+v2_1 = (k23 + k31 + k32 - c1 + c2)/(k13 - k23);
+v2_2 = (c1 - c2 - k13 - k31 - k32)/(k13 - k23);
+v2_3 = 1;
 
 
 % Define constants needed for differential equation solutions, for various
 % initial values of the population. c1_2 is the constant "m" if the
 % population of state 2 begins at 1 (others would then be zero).
-c2_3 = (-P2_eq + v2_2/v2_1*P1_eq)/(v3_2 - v2_2/v2_1*v3_1);
-c2_2 = (1 - P2_eq + v2_2/v2_1*P1_eq)/(v3_2 - v2_2/v2_1*v3_1);
-c2_1 = (-P2_eq - v2_2/v2_1*(1 - P1_eq))/(v3_2 - v2_2/v2_1*v3_1);
-c1_3 = (-P1_eq - c2_3*v3_1)/v2_1;
-c1_2 = (-P1_eq - c2_2*v3_1)/v2_1;
-c1_1 = (1 - P1_eq - c2_1*v3_1)/v2_1;
+c2_3 = (-p2_eq + v1_2/v1_1*p1_eq)/(v2_2 - v1_2/v1_1*v2_1);
+c2_2 = (1 - p2_eq + v1_2/v1_1*p1_eq)/(v2_2 - v1_2/v1_1*v2_1);
+c2_1 = (-p2_eq - v1_2/v1_1*(1 - p1_eq))/(v2_2 - v1_2/v1_1*v2_1);
+c1_3 = (-p1_eq - c2_3*v2_1)/v1_1;
+c1_2 = (-p1_eq - c2_2*v2_1)/v1_1;
+c1_1 = (1 - p1_eq - c2_1*v2_1)/v1_1;
 
 
 %%Using ODE solver: GIVES THE SAME ANSER!
@@ -130,28 +130,29 @@ c1_1 = (1 - P1_eq - c2_1*v3_1)/v2_1;
 % p2_1 population 2 as a function of time, with the population initially in
 % state 1. 
 % tic
+p3_3 = p3_eq + c1_3*v1_3*exp(-lam1*time) + c2_3*v2_3*exp(-lam2*time);
 % toc
-p1_1 = P1_eq + c1_1*v2_1*exp(-lam1*time) + c2_1*v3_1*exp(-lam2*time);
-p1_2 = P1_eq + c1_2*v2_1*exp(-lam1*time) + c2_2*v3_1*exp(-lam2*time);
-p1_3 = P1_eq + c1_3*v2_1*exp(-lam1*time) + c2_3*v3_1*exp(-lam2*time);
-p2_1 = P2_eq + c1_1*v2_2*exp(-lam1*time) + c2_1*v3_2*exp(-lam2*time);
-p2_2 = P2_eq + c1_2*v2_2*exp(-lam1*time) + c2_2*v3_2*exp(-lam2*time);
-p2_3 = P2_eq + c1_3*v2_2*exp(-lam1*time) + c2_3*v3_2*exp(-lam2*time);
-p3_1 = P3_eq + c1_1*v2_3*exp(-lam1*time) + c2_1*v3_3*exp(-lam2*time);
-p3_2 = P3_eq + c1_2*v2_3*exp(-lam1*time) + c2_2*v3_3*exp(-lam2*time);
-p3_3 = P3_eq + c1_3*v2_3*exp(-lam1*time) + c2_3*v3_3*exp(-lam2*time);
+p3_2 = p3_eq + c1_2*v1_3*exp(-lam1*time) + c2_2*v2_3*exp(-lam2*time);
 
+
+p1_1 = p1_eq + c1_1*v1_1*exp(-lam1*time) + c2_1*v2_1*exp(-lam2*time);
+p1_2 = p1_eq + c1_2*v1_1*exp(-lam1*time) + c2_2*v2_1*exp(-lam2*time);
+p1_3 = p1_eq + c1_3*v1_1*exp(-lam1*time) + c2_3*v2_1*exp(-lam2*time);
+p2_1 = p2_eq + c1_1*v1_2*exp(-lam1*time) + c2_1*v2_2*exp(-lam2*time);
+p2_2 = p2_eq + c1_2*v1_2*exp(-lam1*time) + c2_2*v2_2*exp(-lam2*time);
+p2_3 = p2_eq + c1_3*v1_2*exp(-lam1*time) + c2_3*v2_2*exp(-lam2*time);
+p3_1 = p3_eq + c1_1*v1_3*exp(-lam1*time) + c2_1*v2_3*exp(-lam2*time);
 % Subtract mean values
-Amean = P1_eq*A1 + P2_eq*A2 + P3_eq*A3;
+Amean = p1_eq*A1 + p2_eq*A2 + p3_eq*A3;
 A1 = A1 - Amean;
 A2 = A2 - Amean;
 A3 = A3 - Amean;
 
 % Calculate C2_sim
 tic
-C2_sim = P3_eq*A3*(A3*p3_3 + A2*p2_3 + A1*p1_3) +...
-    P2_eq*A2*(A3*p3_2 + A2*p2_2 + A1*p1_2) +...
-    P1_eq*A1*(A3*p3_1 + A2*p2_1 + A1*p1_1);
+C2_sim = p3_eq*A3*(A3*p3_3 + A2*p2_3 + A1*p1_3) +...
+    p2_eq*A2*(A3*p3_2 + A2*p2_2 + A1*p1_2) +...
+    p1_eq*A1*(A3*p3_1 + A2*p2_1 + A1*p1_1);
 toc
 % Matrix of conditional probabilities Pji (i-->j) with i is initial condition
 % cP = [ p1_1, p1_2, p1_3;
@@ -160,7 +161,7 @@ toc
 
 %mean has already been subtracted
 A = [A1,A2,A3];
-Peq = [P1_eq,P2_eq,P3_eq];
+Peq = [p1_eq,p2_eq,p3_eq];
 
 cP = zeros(numel(A),numel(A),length(time));
 cP(1,1,:) = p1_1;

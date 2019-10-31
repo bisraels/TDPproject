@@ -1,4 +1,4 @@
-%3state cyclical
+function [k12,k13,k21,k23,k31,A1,A2,A3,k32,time] = paramSim_3state123_cyclical()
 t12_bounds = [1e-6,1000e-6];  %Paramater #1 is high--> med
 t13_bounds = [100e-6,10e-3];    %Paramater #2 is high --> low
 t21_bounds = [1e-6,1e-3];%Paramater #3 is med --> high
@@ -27,18 +27,14 @@ A1 = population(6);
 A2 = population(7);
 A3 = population(8);
 
-
+% Set the rates
 k12 = 1/t12;
 k13 = 1/t13;
 k21 = 1/t21;
 k23 = 1/t23;
 k31 = 1/t31;
-% Detailed balance condition:
+% % Detailed balance condition: %k31 will be the rate fixed by the others
 k32 = k12*k23*k31/(k13*k21);
 
 Npts = 150;
-time = [0:9,logspace(1,6.4771212,Npts)]/1e6;
-
-K = [(-k12 - k13), k21, k31;...
-    k12, (-k21 - k23 ), k32;...
-    k13, k23, (-k31-k32);];
+time = [0:9,logspace(1,log10(3e6),Npts)]/1e6;
