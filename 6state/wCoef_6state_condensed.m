@@ -44,7 +44,7 @@ end
     
 % Solve eqns for vars
 tic
-sols = solve(eqs, vars)
+sols = vpasolve(eqs, vars)
 toc
 
 % Plug in the solutions to solve for the eqilibrium probabilities
