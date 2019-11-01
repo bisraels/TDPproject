@@ -1,4 +1,5 @@
 clockMode = 1;
+plotMode = 1;
 
 % Define matrix of c's for our constants
 c = sym('c', [3,3]);
@@ -40,7 +41,8 @@ vars = c(:);
     
 % Solve eqns for vars
 tic
-sols = solve(eqs, vars)
+sols = vpasolve(eqs, vars)
+disp('     Time to solve coupled equations ...');
 toc
 %Takes about 0.3 seconds
 
@@ -123,33 +125,32 @@ v3_3 = evec3(3);
 
 % Calculate the expansion coefficients in terms of the eigevcetor
 % components
-c1_1 = subs(c1_1);
-returns
-c2_1 = subs(c2_1);
-c3_1 = subs(c3_1);
+c1_1 = double(subs(c1_1));
+c2_1 = double(subs(c2_1));
+c3_1 = double(subs(c3_1));
 
-c1_2 = subs(c1_2);
-c2_2 = subs(c2_2);
-c3_2 = subs(c3_2);
+c1_2 = double(subs(c1_2));
+c2_2 = double(subs(c2_2));
+c3_2 = double(subs(c3_2));
 
-c1_3 = subs(c1_3);
-c2_3 = subs(c2_3);
-c3_3 = subs(c3_3);
+c1_3 = double(subs(c1_3));
+c2_3 = double(subs(c2_3));
+c3_3 = double(subs(c3_3));
 
-P1_eq = subs(P1_eq);
-P2_eq = subs(P2_eq);
-P3_eq = subs(P3_eq);
+P1_eq = double(subs(P1_eq));
+P2_eq = double(subs(P2_eq));
+P3_eq = double(subs(P3_eq));
 
 % Calculate the NxN conditional Probabilities
-p1_1 = P1_eq + c2_1*v2_1*exp(-lam1*time) + c3_1*v3_1*exp(-lam2*time);
-p1_2 = P1_eq + c2_2*v2_1*exp(-lam1*time) + c3_2*v3_1*exp(-lam2*time);
-p1_3 = P1_eq + c2_3*v2_1*exp(-lam1*time) + c3_3*v3_1*exp(-lam2*time);
-p2_1 = P2_eq + c2_1*v2_2*exp(-lam1*time) + c3_1*v3_2*exp(-lam2*time);
-p2_2 = P2_eq + c2_2*v2_2*exp(-lam1*time) + c3_2*v3_2*exp(-lam2*time);
-p2_3 = P2_eq + c2_3*v2_2*exp(-lam1*time) + c3_3*v3_2*exp(-lam2*time);
-p3_1 = P3_eq + c2_1*v2_3*exp(-lam1*time) + c3_1*v3_3*exp(-lam2*time);
-p3_2 = P3_eq + c2_2*v2_3*exp(-lam1*time) + c3_2*v3_3*exp(-lam2*time);
-p3_3 = P3_eq + c2_3*v2_3*exp(-lam1*time) + c3_3*v3_3*exp(-lam2*time);
+p1_1 = P1_eq + c2_1*v2_1*exp(lam2*time) + c3_1*v3_1*exp(lam3*time);
+p1_2 = P1_eq + c2_2*v2_1*exp(lam2*time) + c3_2*v3_1*exp(lam3*time);
+p1_3 = P1_eq + c2_3*v2_1*exp(lam2*time) + c3_3*v3_1*exp(lam3*time);
+p2_1 = P2_eq + c2_1*v2_2*exp(lam2*time) + c3_1*v3_2*exp(lam3*time);
+p2_2 = P2_eq + c2_2*v2_2*exp(lam2*time) + c3_2*v3_2*exp(lam3*time);
+p2_3 = P2_eq + c2_3*v2_2*exp(lam2*time) + c3_3*v3_2*exp(lam3*time);
+p3_1 = P3_eq + c2_1*v2_3*exp(lam2*time) + c3_1*v3_3*exp(lam3*time);
+p3_2 = P3_eq + c2_2*v2_3*exp(lam2*time) + c3_2*v3_3*exp(lam3*time);
+p3_3 = P3_eq + c2_3*v2_3*exp(lam2*time) + c3_3*v3_3*exp(lam3*time);
 
 
 % Compute the 2 point TCF (Using conditinal Probabilities)
@@ -164,4 +165,72 @@ tic
 C2_sim = P3_eq*A3*(A3*p3_3 + A2*p2_3 + A1*p1_3) +...
     P2_eq*A2*(A3*p3_2 + A2*p2_2 + A1*p1_2) +...
     P1_eq*A1*(A3*p3_1 + A2*p2_1 + A1*p1_1);
+disp('     Time to calculate C2 ...');
 toc
+
+% Subtract mean values
+Amean = P1_eq*A1 + P2_eq*A2 + P3_eq*A3;
+A1 = A1 - Amean;
+A2 = A2 - Amean;
+A3 = A3 - Amean;
+
+% Calculate C2_sim
+tic
+C2_sim = P3_eq*A3*(A3*p3_3 + A2*p2_3 + A1*p1_3) +...
+    P2_eq*A2*(A3*p3_2 + A2*p2_2 + A1*p1_2) +...
+    P1_eq*A1*(A3*p3_1 + A2*p2_1 + A1*p1_1);
+disp('     Time to calculate C2 using one line...');
+toc
+% Matrix of conditional probabilities Pji (i-->j) with i is initial condition
+% cP = [ p1_1, p1_2, p1_3;
+%     p2_1, p2_2, p2_3;
+%     p3_1, p3_2, p3_3];
+
+%mean has already been subtracted
+A = [A1,A2,A3];
+Peq = [P1_eq,P2_eq,P3_eq];
+
+cP = zeros(numel(A),numel(A),length(time));
+cP(1,1,:) = p1_1;
+cP(2,1,:) = p2_1;
+cP(3,1,:) = p3_1;
+cP(1,2,:) = p1_2;
+cP(2,2,:) = p2_2;
+cP(3,2,:) = p3_2;
+cP(1,3,:) = p1_3;
+cP(2,3,:) = p2_3;
+cP(3,3,:) = p3_3;
+
+tic
+C2_sim2 = zeros(size(time));
+for i = 1:numel(A)
+    for j = 1:numel(A)
+        C2_sim1_temp = A(j) * squeeze(cP(j,i,:)) * A(i) * Peq(i);
+        C2_sim2 = C2_sim2 + C2_sim1_temp;
+    end
+end
+disp('     Time to calculate C2 using loops...');
+toc
+
+%--------------------------------------------------------------------------
+%  Plot two point TCF
+%--------------------------------------------------------------------------
+if plotMode == 1
+    figure(2)
+    clf;
+    set(gcf,'Color','w');
+    set(gcf,'Name','C2');
+    %subplot(1,2,1)
+    %TCF2pt = fplot(C2(t),[1e-3,1],'LineWidth',2);      % fplot() was making it hard to plot on loglog scale, so calculate for specfic time range
+    TCF2pt = plot(time,C2_sim,'LineWidth',2);
+    hold on;
+    TCF2pt2 = plot(time,C2_sim2,'r--','LineWidth',2);
+    
+    title('Two point TCF','FontSize',18)
+    xlabel('Time','FontSize',14);
+    ylabel('C^{(2)}(\tau)','FontSize',14);
+
+    ax = gca;
+    ax.XScale = 'log';
+    
+end

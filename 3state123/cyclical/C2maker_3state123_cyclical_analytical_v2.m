@@ -177,10 +177,11 @@ tic
 C2_sim2 = zeros(size(time));
 for i = 1:numel(A)
     for j = 1:numel(A)
-        C2_sic1_temp = A(j) * squeeze(cP(j,i,:)) * A(i) * Peq(i);
-        C2_sim2 = C2_sim2 + C2_sic1_temp;
+        C2_sim1_temp = A(j) * squeeze(cP(j,i,:)) * A(i) * Peq(i);
+        C2_sim2 = C2_sim2 + C2_sim1_temp;
     end
 end
+disp('Time to calculate C2 using loops...');
 toc
 %--------------------------------------------------------------------------
 %  Plot two point TCF
