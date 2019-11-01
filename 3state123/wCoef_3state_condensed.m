@@ -67,13 +67,17 @@ save('wCoef_3state_condensed.mat','sols',...
     'c3_1', 'c3_2', 'c3_3',...
     'P1_eq', 'P2_eq','P3_eq');
 
-
+%%
+load('wCoef_3state_condensed.mat',...
+    'c1_1', 'c1_2', 'c1_3',...
+    'c2_1', 'c2_2', 'c2_3',...
+    'c3_1', 'c3_2', 'c3_3',...
+    'P1_eq', 'P2_eq','P3_eq');
 % Test the solutions with calcuation of 2 point TCF
 %--------------------------------------------------------------------------
 % Pick random values for the rate constants and FRET states
 %--------------------------------------------------------------------------
 [k12,k13,k21,k23,k31,A1,A2,A3,k32,time] = paramSim_3state123_cyclical();
-
 
 %--------------------------------------------------------------------------
 % Calculate the Eigenvalues and Eigenvectors
@@ -98,41 +102,65 @@ K = [(-k12 - k13), k21, k31;...
 lambdaSorted = lambda(index,index);
 VecSorted = Vec(:,index);
 
-lam1 = double(lambdaSorted(2,2));
-lam2 = double(lambdaSorted(3,3));
+lam2 = double(lambdaSorted(2,2));
+lam3 = double(lambdaSorted(3,3));
 
 evec1 = VecSorted(:,1);%We dont need this eigenvector
 evec2 = VecSorted(:,2);
 evec3 = VecSorted(:,3);
 
-v1_1 = evec2(1);
+
+v1_1 = evec1(1);
+v1_2 = evec1(2);
+v1_3 = evec1(3);
+v2_1 = evec2(1);
 v2_2 = evec2(2);
 v2_3 = evec2(3);
 v3_1 = evec3(1);
 v3_2 = evec3(2);
 v3_3 = evec3(3);
-%
+
+% Calculate the expansion coefficients in terms of the eigevcetor
+% components
+c1_1 = subs(c1_1);
+returns
+c2_1 = subs(c2_1);
+c3_1 = subs(c3_1);
+
+c1_2 = subs(c1_2);
+c2_2 = subs(c2_2);
+c3_2 = subs(c3_2);
+
+c1_3 = subs(c1_3);
+c2_3 = subs(c2_3);
+c3_3 = subs(c3_3);
+
+P1_eq = subs(P1_eq);
+P2_eq = subs(P2_eq);
+P3_eq = subs(P3_eq);
+
 % Calculate the NxN conditional Probabilities
-p1_1 = P1_eq + c1_1*v1_1*exp(-lam1*time) + c2_1*v3_1*exp(-lam2*time);
-p1_2 = P1_eq + c1_2*v1_1*exp(-lam1*time) + c2_2*v3_1*exp(-lam2*time);
-p1_3 = P1_eq + c1_3*v1_1*exp(-lam1*time) + c2_3*v3_1*exp(-lam2*time);
-p2_1 = P2_eq + c1_1*v2_2*exp(-lam1*time) + c2_1*v3_2*exp(-lam2*time);
-p2_2 = P2_eq + c1_2*v2_2*exp(-lam1*time) + c2_2*v3_2*exp(-lam2*time);
-p2_3 = P2_eq + c1_3*v2_2*exp(-lam1*time) + c2_3*v3_2*exp(-lam2*time);
-p3_1 = P3_eq + c1_1*v2_3*exp(-lam1*time) + c2_1*v3_3*exp(-lam2*time);
-p3_2 = P3_eq + c1_2*v2_3*exp(-lam1*time) + c2_2*v3_3*exp(-lam2*time);
-p3_3 = P3_eq + c1_3*v2_3*exp(-lam1*time) + c2_3*v3_3*exp(-lam2*time);
+p1_1 = P1_eq + c2_1*v2_1*exp(-lam1*time) + c3_1*v3_1*exp(-lam2*time);
+p1_2 = P1_eq + c2_2*v2_1*exp(-lam1*time) + c3_2*v3_1*exp(-lam2*time);
+p1_3 = P1_eq + c2_3*v2_1*exp(-lam1*time) + c3_3*v3_1*exp(-lam2*time);
+p2_1 = P2_eq + c2_1*v2_2*exp(-lam1*time) + c3_1*v3_2*exp(-lam2*time);
+p2_2 = P2_eq + c2_2*v2_2*exp(-lam1*time) + c3_2*v3_2*exp(-lam2*time);
+p2_3 = P2_eq + c2_3*v2_2*exp(-lam1*time) + c3_3*v3_2*exp(-lam2*time);
+p3_1 = P3_eq + c2_1*v2_3*exp(-lam1*time) + c3_1*v3_3*exp(-lam2*time);
+p3_2 = P3_eq + c2_2*v2_3*exp(-lam1*time) + c3_2*v3_3*exp(-lam2*time);
+p3_3 = P3_eq + c2_3*v2_3*exp(-lam1*time) + c3_3*v3_3*exp(-lam2*time);
+
 
 % Compute the 2 point TCF (Using conditinal Probabilities)
 % Subtract mean values
-Amean = p1_eq*A1 + p2_eq*A2 + p3_eq*A3;
+Amean = P1_eq*A1 + P2_eq*A2 + P3_eq*A3;
 A1 = A1 - Amean;
 A2 = A2 - Amean;
 A3 = A3 - Amean;
 
 % Calculate C2_sim
 tic
-C2_sim = p3_eq*A3*(A3*p3_3 + A2*p2_3 + A1*p1_3) +...
-    p2_eq*A2*(A3*p3_2 + A2*p2_2 + A1*p1_2) +...
-    p1_eq*A1*(A3*p3_1 + A2*p2_1 + A1*p1_1);
+C2_sim = P3_eq*A3*(A3*p3_3 + A2*p2_3 + A1*p1_3) +...
+    P2_eq*A2*(A3*p3_2 + A2*p2_2 + A1*p1_2) +...
+    P1_eq*A1*(A3*p3_1 + A2*p2_1 + A1*p1_1);
 toc

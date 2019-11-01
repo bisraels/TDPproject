@@ -112,12 +112,12 @@ v3_3 = 1;
 % Define constants needed for differential equation solutions, for various
 % initial values of the population. c1_2 is the constant "m" if the
 % population of state 2 begins at 1 (others would then be zero).
-c2_3 = (-P2_eq + v2_2/v2_1*P1_eq)/(v3_2 - v2_2/v2_1*v3_1);
-c2_2 = (1 - P2_eq + v2_2/v2_1*P1_eq)/(v3_2 - v2_2/v2_1*v3_1);
-c2_1 = (-P2_eq - v2_2/v2_1*(1 - P1_eq))/(v3_2 - v2_2/v2_1*v3_1);
-c1_3 = (-P1_eq - c2_3*v3_1)/v2_1;
-c1_2 = (-P1_eq - c2_2*v3_1)/v2_1;
-c1_1 = (1 - P1_eq - c2_1*v3_1)/v2_1;
+c3_3 = (-P2_eq + v2_2/v2_1*P1_eq)/(v3_2 - v2_2/v2_1*v3_1);
+c3_2 = (1 - P2_eq + v2_2/v2_1*P1_eq)/(v3_2 - v2_2/v2_1*v3_1);
+c3_1 = (-P2_eq - v2_2/v2_1*(1 - P1_eq))/(v3_2 - v2_2/v2_1*v3_1);
+c2_3 = (-P1_eq - c3_3*v3_1)/v2_1;
+c2_2 = (-P1_eq - c3_2*v3_1)/v2_1;
+c2_1 = (1 - P1_eq - c3_1*v3_1)/v2_1;
 
 
 %%Using ODE solver: GIVES THE SAME ANSER!
@@ -131,15 +131,15 @@ c1_1 = (1 - P1_eq - c2_1*v3_1)/v2_1;
 % state 1. 
 % tic
 % toc
-p1_1 = P1_eq + c1_1*v2_1*exp(-lam1*time) + c2_1*v3_1*exp(-lam2*time);
-p1_2 = P1_eq + c1_2*v2_1*exp(-lam1*time) + c2_2*v3_1*exp(-lam2*time);
-p1_3 = P1_eq + c1_3*v2_1*exp(-lam1*time) + c2_3*v3_1*exp(-lam2*time);
-p2_1 = P2_eq + c1_1*v2_2*exp(-lam1*time) + c2_1*v3_2*exp(-lam2*time);
-p2_2 = P2_eq + c1_2*v2_2*exp(-lam1*time) + c2_2*v3_2*exp(-lam2*time);
-p2_3 = P2_eq + c1_3*v2_2*exp(-lam1*time) + c2_3*v3_2*exp(-lam2*time);
-p3_1 = P3_eq + c1_1*v2_3*exp(-lam1*time) + c2_1*v3_3*exp(-lam2*time);
-p3_2 = P3_eq + c1_2*v2_3*exp(-lam1*time) + c2_2*v3_3*exp(-lam2*time);
-p3_3 = P3_eq + c1_3*v2_3*exp(-lam1*time) + c2_3*v3_3*exp(-lam2*time);
+p1_1 = P1_eq + c2_1*v2_1*exp(-lam1*time) + c3_1*v3_1*exp(-lam2*time);
+p1_2 = P1_eq + c2_2*v2_1*exp(-lam1*time) + c3_2*v3_1*exp(-lam2*time);
+p1_3 = P1_eq + c2_3*v2_1*exp(-lam1*time) + c3_3*v3_1*exp(-lam2*time);
+p2_1 = P2_eq + c2_1*v2_2*exp(-lam1*time) + c3_1*v3_2*exp(-lam2*time);
+p2_2 = P2_eq + c2_2*v2_2*exp(-lam1*time) + c3_2*v3_2*exp(-lam2*time);
+p2_3 = P2_eq + c2_3*v2_2*exp(-lam1*time) + c3_3*v3_2*exp(-lam2*time);
+p3_1 = P3_eq + c2_1*v2_3*exp(-lam1*time) + c3_1*v3_3*exp(-lam2*time);
+p3_2 = P3_eq + c2_2*v2_3*exp(-lam1*time) + c3_2*v3_3*exp(-lam2*time);
+p3_3 = P3_eq + c2_3*v2_3*exp(-lam1*time) + c3_3*v3_3*exp(-lam2*time);
 
 % Subtract mean values
 Amean = P1_eq*A1 + P2_eq*A2 + P3_eq*A3;
