@@ -105,7 +105,7 @@ load('symCondProb_3state123_cyclical.mat','P11','P12','P13','P21','P22','P23','P
 %Display the amount of time a process took. Begins at the last tic.
 if clockMode == 1
     elapsedTime = toc;
-    task_str = 'load the conditional probabilities';
+    task_str = 'load the conditional probabilities Pij';
     disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
 
@@ -139,7 +139,7 @@ end
 %Display the amount of time a process took. Begins at the last tic.
 if clockMode == 1
     elapsedTime = toc;
-    task_str = 'Calculate the eigenvalues';
+    task_str = 'evaluate the eigenvalues using subs';
     disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
 
@@ -197,7 +197,7 @@ P33(t) = subs(P33);
 %Display the amount of time a process took. Begins at the last tic.
 if clockMode == 1
     elapsedTime = toc;
-    task_str = 'evaluate the conditional probabilities as a function of rates {kij}';
+    task_str = 'evaluate the conditional probabilities as a function of rates {kij} using subs';
     disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
 %
@@ -272,7 +272,7 @@ end
 %--------------------------------------------------------------------------
 % Evaluate C2 over a range of t's
 %--------------------------------------------------------------------------
-C2_sim = C2sym(time);
+% C2_sim = C2sym(time);
 
 %--------------------------------------------------------------------------
 %  Plot two point TCF
