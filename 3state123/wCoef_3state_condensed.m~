@@ -152,6 +152,7 @@ p3_1 = P3_eq + c2_1*v2_3*exp(lam2*time) + c3_1*v3_3*exp(lam3*time);
 p3_2 = P3_eq + c2_2*v2_3*exp(lam2*time) + c3_2*v3_3*exp(lam3*time);
 p3_3 = P3_eq + c2_3*v2_3*exp(lam2*time) + c3_3*v3_3*exp(lam3*time);
 
+
 % Compute the 2 point TCF (Using conditinal Probabilities)
 % Subtract mean values
 Amean = P1_eq*A1 + P2_eq*A2 + P3_eq*A3;
@@ -225,29 +226,6 @@ if plotMode == 1
     
 end
 
-% Calculate the NxN conditional Probabilities
-tau2 = 0;
-p1_1_t2 = P1_eq + c2_1*v2_1*exp(lam2*tau2) + c3_1*v3_1*exp(lam3*tau2);
-p1_2_t2 = P1_eq + c2_2*v2_1*exp(lam2*tau2) + c3_2*v3_1*exp(lam3*tau2);
-p1_3_t2 = P1_eq + c2_3*v2_1*exp(lam2*tau2) + c3_3*v3_1*exp(lam3*tau2);
-p2_1_t2 = P2_eq + c2_1*v2_2*exp(lam2*tau2) + c3_1*v3_2*exp(lam3*tau2);
-p2_2_t2 = P2_eq + c2_2*v2_2*exp(lam2*tau2) + c3_2*v3_2*exp(lam3*tau2);
-p2_3_t2 = P2_eq + c2_3*v2_2*exp(lam2*tau2) + c3_3*v3_2*exp(lam3*tau2);
-p3_1_t2 = P3_eq + c2_1*v2_3*exp(lam2*tau2) + c3_1*v3_3*exp(lam3*tau2);
-p3_2_t2 = P3_eq + c2_2*v2_3*exp(lam2*tau2) + c3_2*v3_3*exp(lam3*tau2);
-p3_3_t2 = P3_eq + c2_3*v2_3*exp(lam2*tau2) + c3_3*v3_3*exp(lam3*tau2);
-
-cP = zeros(numel(A),numel(A),length(time));
-cP(1,1,:) = p1_1_t2 ;
-cP(2,1,:) = p2_1_t2 ;
-cP(3,1,:) = p3_1_t2 ;
-cP(1,2,:) = p1_2_t2 ;
-cP(2,2,:) = p2_2_t2 ;
-cP(3,2,:) = p3_2_t2 ;
-cP(1,3,:) = p1_3_t2 ;
-cP(2,3,:) = p2_3_t2 ;
-cP(3,3,:) = p3_3_t2 ;
-
 %-------------------------------------------------------------------------
 % Iterate over all the Permutations of FRET States
 %-------------------------------------------------------------------------
@@ -255,7 +233,7 @@ for i = 1:numel(A)
     for j = 1:numel(A)
         for k = 1:numel(A)
             for l = 1:numel(A)
-                C4term_val =  A(l) *squeeze(cP(l,k,:)) * A(k) * cP_t2(k,j) * A(j) * squeeze(cP(j,i,:))'* A(i) * Peq(i);
+                C4term_val =  A(l) *squeeze(cP_t3(l,k,:)) * A(k) * cP_t2(k,j) * A(j) * squeeze(cP_t1(j,i,:))'* A(i) * Peq(i);
                 C4 = C4 + C4term_val;
             end
         end

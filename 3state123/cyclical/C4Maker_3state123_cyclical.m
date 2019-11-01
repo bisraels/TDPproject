@@ -21,7 +21,7 @@ function [C4,C4_diff,C2] = C4Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,
 % User Prefrences
 %--------------------------------------------------------------------------
 verboseMode = 0; %Set to 1 to see alot of progress updates and print off.
-clockMode = 0;
+clockMode = 1;
 saveMode = 0;
 plotMode = 0;
 
