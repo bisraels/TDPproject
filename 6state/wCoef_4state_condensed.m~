@@ -1,5 +1,5 @@
 
-N = 6;
+N = 4;
 
 % Define matrix of c's for our constants
 c = sym('c', [N,N]);
@@ -15,9 +15,8 @@ eq1 = cond(:,1) == V * c(:,1) ;
 eq2 = cond(:,2) == V * c(:,2) ;
 eq3 = cond(:,3) == V * c(:,3) ;
 eq4 = cond(:,4) == V * c(:,4) ;
-eq5 = cond(:,5) == V * c(:,5) ;
-eq6 = cond(:,6) == V * c(:,6) ;
 
+retu
 % Define the eqilibrium probabilities
 P1_eq = (c(1,1) * V(1,1)); % from P11
 P2_eq = (c(1,2) * V(2,1)); % from P22
@@ -44,7 +43,7 @@ end
     
 % Solve eqns for vars
 tic
-sols = vpasolve(eqs, vars)
+sols = solve(eqs, vars)
 toc
 
 % Plug in the solutions to solve for the eqilibrium probabilities

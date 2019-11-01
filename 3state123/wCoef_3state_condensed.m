@@ -42,6 +42,7 @@ vars = c(:);
 tic
 sols = solve(eqs, vars)
 toc
+%Takes about 0.3 seconds
 
 
 % Plug in the solutions to solve for the eqilibrium probabilities
