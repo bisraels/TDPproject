@@ -123,7 +123,7 @@ v3_3 = evec3(3);
 % Calculate the expansion coefficients in terms of the eigevcetor
 % components
 c1_1 = subs(c1_1);
-returns
+
 c2_1 = subs(c2_1);
 c3_1 = subs(c3_1);
 

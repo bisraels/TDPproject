@@ -42,14 +42,7 @@ eqs = [eq1, eq2, eq3, eq4, eq5, eq6, eq7, eq_sum];
 
 
 % Build list of vars - writing out by hand is prone to  mistakes
-vars = sym.empty();
-for j = 1:length(c)
-    for i = 1:length(c)
-        temp(i) = c(i,j);
-        vars_temp(i) = temp(i);
-    end
-    vars = [vars, vars_temp];
-end
+vars = c(:);
 
 if length(vars) == (length(c)*length(c))
     disp('We have all the variables!')
@@ -60,7 +53,7 @@ end
     
 % Solve eqns for vars
 tic
-sols = solve(eqs, vars)
+sols = vpasolve(eqs, vars)
 toc
 
 % Plug in the solutions to solve for the eqilibrium probabilities
@@ -137,22 +130,4 @@ save('wCoef_7state_condensed.mat','sols',...
     'c6_1', 'c6_2', 'c6_3', 'c6_4', 'c6_5', 'c6_6', 'c6_7',...
     'c7_1', 'c7_2', 'c7_3', 'c7_4', 'c7_5', 'c7_6', 'c7_7',...
     'P1_eq', 'P2_eq','P3_eq','P4_eq','P5_eq','P6_eq','P7_eq');
-
-toc
-%%
-vars = sym.empty();
-for j = 1:length(c)
-    for i = 1:length(c)
-        temp(i) = c(i,j);
-        vars_temp(i) = temp(i);
-    end
-    vars = [vars, vars_temp]; % Builds column by column from c.
-end
-
-
-
-% This will not work, need to substitute values in by hand.
-% for k = 1:length(vars)
-%     vars(k) = sols.vars(k)
-% end
 
