@@ -105,10 +105,11 @@ K = [(-k12 - k13), k21, k31;...
 lambdaSorted = lambda(index,index);
 VecSorted = Vec(:,index);
 
+lam1 = double(lambdaSorted(1,1));
 lam2 = double(lambdaSorted(2,2));
 lam3 = double(lambdaSorted(3,3));
 
-evec1 = VecSorted(:,1);%We dont need this eigenvector
+evec1 = VecSorted(:,1);
 evec2 = VecSorted(:,2);
 evec3 = VecSorted(:,3);
 
@@ -239,19 +240,21 @@ p3_2_t2 = P3_eq + c2_2*v2_3*exp(lam2*tau2) + c3_2*v3_3*exp(lam3*tau2);
 p3_3_t2 = P3_eq + c2_3*v2_3*exp(lam2*tau2) + c3_3*v3_3*exp(lam3*tau2);
 
 cP = zeros(numel(A),numel(A),length(time));
-cP(1,1,:) = p1_1_t2 ;
-cP(2,1,:) = p2_1_t2 ;
-cP(3,1,:) = p3_1_t2 ;
-cP(1,2,:) = p1_2_t2 ;
-cP(2,2,:) = p2_2_t2 ;
-cP(3,2,:) = p3_2_t2 ;
-cP(1,3,:) = p1_3_t2 ;
-cP(2,3,:) = p2_3_t2 ;
-cP(3,3,:) = p3_3_t2 ;
+cP_t2(1,1,:) = p1_1_t2 ;
+cP_t2(2,1,:) = p2_1_t2 ;
+cP_t2(3,1,:) = p3_1_t2 ;
+cP_t2(1,2,:) = p1_2_t2 ;
+cP_t2(2,2,:) = p2_2_t2 ;
+cP_t2(3,2,:) = p3_2_t2 ;
+cP_t2(1,3,:) = p1_3_t2 ;
+cP_t2(2,3,:) = p2_3_t2 ;
+cP_t2(3,3,:) = p3_3_t2 ;
 
 %-------------------------------------------------------------------------
 % Iterate over all the Permutations of FRET States
 %-------------------------------------------------------------------------
+tic
+C4 = zeros(numel(time),numel(time));
 for i = 1:numel(A)
     for j = 1:numel(A)
         for k = 1:numel(A)
@@ -262,3 +265,5 @@ for i = 1:numel(A)
         end
     end
 end
+disp('    time to calculate C4');
+toc

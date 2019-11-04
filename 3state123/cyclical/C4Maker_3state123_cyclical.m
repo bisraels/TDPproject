@@ -20,7 +20,7 @@ function [C4,C4_diff,C2] = C4Maker_3state123_cyclical(t12,t13,t21,t23,t31,A1,A2,
 %--------------------------------------------------------------------------
 % User Prefrences
 %--------------------------------------------------------------------------
-verboseMode = 0; %Set to 1 to see alot of progress updates and print off.
+verboseMode = 1; %Set to 1 to see alot of progress updates and print off.
 clockMode = 1;
 saveMode = 0;
 plotMode = 0;
@@ -360,7 +360,6 @@ cP_t3(1,3,:) = double(P31(t3));
 cP_t3(2,3,:) = double(P32(t3));
 cP_t3(3,3,:) = double(P33(t3));
 
-
 %Display the amount of time a process           Took. Begins at the last tic.
 if clockMode == 1
     elapsedTime = toc;
@@ -392,6 +391,7 @@ for i = 1:numel(A)
         end
     end
 end
+class(C4)
 C4 = double(C4);
 %Display the amount of time a process           Took. Begins at the last tic.
 if clockMode == 1
