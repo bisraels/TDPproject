@@ -88,7 +88,7 @@ c3_3 = double(subs(c3_3));
 
 % substitute in numerical values for expansion coeff. and eigenvectors and
 % time
-time = 0:11;
+% time = 0:11;
 pline = p(:)
 Pline_numbers = double(subs(pline));
 %Recast back into original size
