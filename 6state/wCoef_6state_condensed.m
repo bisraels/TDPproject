@@ -33,7 +33,7 @@ eqs = [eq1, eq2, eq3, eq4, eq5, eq6, eq_sum];
 
 % Build list of vars - writing out by hand is prone to  mistakes
 vars = c(:);
-
+%%
 
 if length(vars) == (length(c)*length(c))
     disp('We have all the variables!')
