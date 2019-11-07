@@ -1,3 +1,6 @@
+clockMode = 1;
+plotMode = 1;
+
 
 %Number of states
 N = 3
@@ -133,3 +136,56 @@ C2_sim = P3_eq*A3*(A3*p3_3 + A2*p2_3 + A1*p1_3) +...
     P1_eq*A1*(A3*p3_1 + A2*p2_1 + A1*p1_1);
 disp('     Time to calculate C2 using one line...');
 toc
+
+
+%mean has already been subtracted
+A = [A1,A2,A3];
+Peq = [P1_eq,P2_eq,P3_eq];
+
+cP = zeros(numel(A),numel(A),length(time));
+cP(1,1,:) = p1_1;
+cP(2,1,:) = p2_1;
+cP(3,1,:) = p3_1;
+cP(1,2,:) = p1_2;
+cP(2,2,:) = p2_2;
+cP(3,2,:) = p3_2;
+cP(1,3,:) = p1_3;
+cP(2,3,:) = p2_3;
+cP(3,3,:) = p3_3;
+
+%--------------------------------------------------------------------------
+tic
+C2_sim2 = zeros(size(time));
+for i = 1:numel(A)
+    for j = 1:numel(A)
+                C2_sim1_temp = A(j) * squeeze(cP(j,i,:)) * A(i) * Peq(i);
+
+%         C2_sim1_temp = A(j) * reshape(cP(j,i,:),numel(cP)) * A(i) * Peq(i);
+        C2_sim2 = C2_sim2 + C2_sim1_temp;
+    end
+end
+disp('     Time to calculate C2 using loops and squeeze...');
+toc
+
+%--------------------------------------------------------------------------
+%  Plot two point TCF
+%--------------------------------------------------------------------------
+if plotMode == 1
+    figure(2)
+    clf;
+    set(gcf,'Color','w');
+    set(gcf,'Name','C2');
+    %subplot(1,2,1)
+    %TCF2pt = fplot(C2(t),[1e-3,1],'LineWidth',2);      % fplot() was making it hard to plot on loglog scale, so calculate for specfic time range
+    TCF2pt = plot(time,C2_sim,'LineWidth',2);
+    hold on;
+    TCF2pt2 = plot(time,C2_sim2,'r--','LineWidth',2);
+    
+    title('Two point TCF','FontSize',18)
+    xlabel('Time','FontSize',14);
+    ylabel('C^{(2)}(\tau)','FontSize',14);
+
+    ax = gca;
+    ax.XScale = 'log';
+    
+end

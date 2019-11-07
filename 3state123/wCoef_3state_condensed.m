@@ -228,7 +228,11 @@ if plotMode == 1
     
 end
 
-% Calculate the NxN conditional Probabilities
+%--------------------------------------------------------------------------
+% Calculate 4 point TCF
+%--------------------------------------------------------------------------
+
+% Calculate the NxN conditional Probabilities for tau2
 tau2 = 0;
 p1_1_t2 = P1_eq + c2_1*v2_1*exp(lam2*tau2) + c3_1*v3_1*exp(lam3*tau2);
 p1_2_t2 = P1_eq + c2_2*v2_1*exp(lam2*tau2) + c3_2*v3_1*exp(lam3*tau2);
@@ -268,3 +272,24 @@ for i = 1:numel(A)
 end
 disp('    time to calculate C4');
 toc
+
+%-------------------------------------------------------------------------
+ % Plot the 4 point TCF
+ %-------------------------------------------------------------------------
+ if plotMode == 1
+        figure(4);
+        surf(time, time, C4);
+        title('Four-point TCF: C^{(4)}','FontSize',18)
+        xlabel('Time (\tau_1)','FontSize',14);
+        ylabel('Time (\tau_3)','FontSize',14);
+        zlabel('C^{(4)}(\tau_1,\tau_2,\tau_3)','FontSize',14);
+        
+        view(28,36);
+        ax = gca;
+        ax.XScale = 'log';
+        ax.YScale = 'log';
+        
+        drawnow();
+        hold on;
+ end
+    
