@@ -1,36 +1,57 @@
 clockMode = 1;
 plotMode = 1;
-
+verboseMode = 1;
 
 %Number of states
 N = 3;
+if verboseMode == 1
+    disp(['N = ' num2str(N)]);
+end
 
 % Define symbolic matrix of c's for our constants
-c = sym('c', [N,N])
+c = sym('c', [N,N]);
 %c = 
 % [ c1_1, c1_2, c1_3]
 % [ c2_1, c2_2, c2_3]
 % [ c3_1, c3_2, c3_3]
+if verboseMode == 1
+    disp('c = ');
+    disp(c);
+end
 
 % Define symbolic matrix of the eigenvector components.
 % Transpose the matrix for proper matrix mulitplication
-v = sym('v',[N,N]).'
+v = sym('v',[N,N]).';
+if verboseMode == 1
+    disp('v = ');
+    disp(v);
+end
 % v = 
 % [ v1_1, v2_1, v3_1]
 % [ v1_2, v2_2, v3_2]
 % [ v1_3, v2_3, v3_3]
 
 % Make a symbolic vector of the eigenvalues and time
-lam_sym = exp(sym('lam',[N,1])*'time')
+lam = exp(sym('lam',[N,1])*'time');
+
+if verboseMode == 1
+    disp('lam = ');
+    disp(lam);
+end
 % lam_sym =
 %  exp(lam1*time)
 %  exp(lam2*time)
 %  exp(lam3*time)
 
-p_sym = v*(c.*lam_sym);
-pline_sym = p_sym(:)
+%make a symbolic figure
+p = v*(c.*lam);
+if verboseMode == 1
+pline = p(:);
+disp('pline = ')
+disp(pline);
+end
 
-% pline_sym = 
+% pline = 
 %  c1_1*v1_1*exp(lam1*time) + c2_1*v2_1*exp(lam2*time) + c3_1*v3_1*exp(lam3*time)
 %  c1_1*v1_2*exp(lam1*time) + c2_1*v2_2*exp(lam2*time) + c3_1*v3_2*exp(lam3*time)
 %  c1_1*v1_3*exp(lam1*time) + c2_1*v2_3*exp(lam2*time) + c3_1*v3_3*exp(lam3*time)
@@ -44,8 +65,8 @@ pline_sym = p_sym(:)
 %--------------------------------------------------------------------------
 % Pick random values for the rate constants and FRET states
 %--------------------------------------------------------------------------
-[k12,k13,k21,k23,k31,A1,A2,A3,k32,time] = paramSim_3state123_cyclical();
-
+[k12,k13,k21,k23,k31,A1,A2,A3,k32,~] = paramSim_3state123_cyclical();
+% time = time_sim();
 %--------------------------------------------------------------------------
 % Calculate the Eigenvalues and Eigenvectors of K matrix
 %--------------------------------------------------------------------------
@@ -60,9 +81,10 @@ lambdaSorted = lambda(index,index);
 VecSorted = Vec(:,index);
 
 % Assign numerical values to the N eigenvalue symbols
-lam1 = double(lambdaSorted(1,1));
-lam2 = double(lambdaSorted(2,2));
-lam3 = double(lambdaSorted(3,3));
+eval1 = double(lambdaSorted(1,1));
+eval2 = double(lambdaSorted(2,2));
+eval3 = double(lambdaSorted(3,3));
+evals = sum(lambdaSorted);
 %lam = sum(lambdaSorted);
 
 evec1 = VecSorted(:,1);
@@ -85,10 +107,13 @@ v3_3 = evec3(3);
 % Npts = 150;
 % time = [0:9,logspace(1,log10(3e6),Npts)]/1e6;
 
-%Fill in lam with eigenvalues and time variables
-Lam1 = double(subs(lam_sym(1)));
-Lam2 = double(subs(lam_sym(2)));
-Lam3 = double(subs(lam_sym(3)));
+clear('time');
+%Fill in lam with eigenvalues variables (NOT TIME)
+lam = exp(sym('lam',[N,1])*'time');
+
+Lam1 = subs(lam(1));
+Lam2 = subs(lam(2));
+Lam3 = subs(lam(3));
 LamVec = [Lam1;Lam2;Lam3]
 
 
@@ -113,27 +138,22 @@ c2_3 = double(subs(c2_3));
 c3_3 = double(subs(c3_3));
 
 
- C =[c1_1, c1_2, c1_3;...
-   c2_1, c2_2, c2_3, ;...
-   c3_1, c3_2, c3_3, ;]
+C = [...
+    c1_1, c1_2, c1_3;...
+    c2_1, c2_2, c2_3;...
+    c3_1, c3_2, c3_3;...
+    ];
 disp(C)
 
 V = VecSorted.';
-% time = 1:10;
-% P = V*(C.*LamVec)
-% lam_sym
-P_notime_sym = V*(C.*lam_sym)
 
+p_notime_sym = V*(C.*lam);
+p_notime_sym_line = p_notime_sym(:);
 
-% P = P(:)
-
-% substitute in numerical values for expansion coeff. and eigenvectors and
-% time
-% time = 0:11;
-% pline = p(:)
-
+%Define a time
+time = tim
 %Replace pline_sym with the time
-Pline = double(subs(P_notime_sym));
+Pline = double(subs(p_notime_sym_line));
 %Recast back into original size
 P = reshape(Pline, [N N numel(time)]);
 
@@ -157,15 +177,15 @@ A3 = A3 - Amean;
 
 %Set the conditional probabilities using the full expressions
 % % Pj_i = c1_i*v1_j*exp(lam1*itme) + c2_i*v2_j*exp(lam2*itme) + c3_i*v3_j*exp(lam3*itme);
-  p1_1 = c1_1*v1_1*exp(lam1*time) + c2_1*v2_1*exp(lam2*time) + c3_1*v3_1*exp(lam3*time);
-  p2_1 = c1_1*v1_2*exp(lam1*time) + c2_1*v2_2*exp(lam2*time) + c3_1*v3_2*exp(lam3*time);
-  p3_1 = c1_1*v1_3*exp(lam1*time) + c2_1*v2_3*exp(lam2*time) + c3_1*v3_3*exp(lam3*time);
-  p1_2 = c1_2*v1_1*exp(lam1*time) + c2_2*v2_1*exp(lam2*time) + c3_2*v3_1*exp(lam3*time);
-  p2_2 = c1_2*v1_2*exp(lam1*time) + c2_2*v2_2*exp(lam2*time) + c3_2*v3_2*exp(lam3*time);
-  p3_2 = c1_2*v1_3*exp(lam1*time) + c2_2*v2_3*exp(lam2*time) + c3_2*v3_3*exp(lam3*time);
-  p1_3 = c1_3*v1_1*exp(lam1*time) + c2_3*v2_1*exp(lam2*time) + c3_3*v3_1*exp(lam3*time);
-  p2_3 = c1_3*v1_2*exp(lam1*time) + c2_3*v2_2*exp(lam2*time) + c3_3*v3_2*exp(lam3*time);
-  p3_3 = c1_3*v1_3*exp(lam1*time) + c2_3*v2_3*exp(lam2*time) + c3_3*v3_3*exp(lam3*time);
+  p1_1 = c1_1*v1_1*exp(eval1*time) + c2_1*v2_1*exp(eval2*time) + c3_1*v3_1*exp(eval3*time);
+  p2_1 = c1_1*v1_2*exp(eval1*time) + c2_1*v2_2*exp(eval2*time) + c3_1*v3_2*exp(eval3*time);
+  p3_1 = c1_1*v1_3*exp(eval1*time) + c2_1*v2_3*exp(eval2*time) + c3_1*v3_3*exp(eval3*time);
+  p1_2 = c1_2*v1_1*exp(eval1*time) + c2_2*v2_1*exp(eval2*time) + c3_2*v3_1*exp(eval3*time);
+  p2_2 = c1_2*v1_2*exp(eval1*time) + c2_2*v2_2*exp(eval2*time) + c3_2*v3_2*exp(eval3*time);
+  p3_2 = c1_2*v1_3*exp(eval1*time) + c2_2*v2_3*exp(eval2*time) + c3_2*v3_3*exp(eval3*time);
+  p1_3 = c1_3*v1_1*exp(eval1*time) + c2_3*v2_1*exp(eval2*time) + c3_3*v3_1*exp(eval3*time);
+  p2_3 = c1_3*v1_2*exp(eval1*time) + c2_3*v2_2*exp(eval2*time) + c3_3*v3_2*exp(eval3*time);
+  p3_3 = c1_3*v1_3*exp(eval1*time) + c2_3*v2_3*exp(eval2*time) + c3_3*v3_3*exp(eval3*time);
 % % note: pj_eq = c1_i*v1_j (i.e. p2_eq = c1_1*v1_2 = c1_2*v1_2 = c1_3*v1_2)
 
 
@@ -237,15 +257,15 @@ end
 
 % Calculate the NxN conditional Probabilities for tau2
 tau2 = 0;
-p1_1_t2 = P1_eq + c2_1*v2_1*exp(lam2*tau2) + c3_1*v3_1*exp(lam3*tau2);
-p1_2_t2 = P1_eq + c2_2*v2_1*exp(lam2*tau2) + c3_2*v3_1*exp(lam3*tau2);
-p1_3_t2 = P1_eq + c2_3*v2_1*exp(lam2*tau2) + c3_3*v3_1*exp(lam3*tau2);
-p2_1_t2 = P2_eq + c2_1*v2_2*exp(lam2*tau2) + c3_1*v3_2*exp(lam3*tau2);
-p2_2_t2 = P2_eq + c2_2*v2_2*exp(lam2*tau2) + c3_2*v3_2*exp(lam3*tau2);
-p2_3_t2 = P2_eq + c2_3*v2_2*exp(lam2*tau2) + c3_3*v3_2*exp(lam3*tau2);
-p3_1_t2 = P3_eq + c2_1*v2_3*exp(lam2*tau2) + c3_1*v3_3*exp(lam3*tau2);
-p3_2_t2 = P3_eq + c2_2*v2_3*exp(lam2*tau2) + c3_2*v3_3*exp(lam3*tau2);
-p3_3_t2 = P3_eq + c2_3*v2_3*exp(lam2*tau2) + c3_3*v3_3*exp(lam3*tau2);
+p1_1_t2 = P1_eq + c2_1*v2_1*exp(eval2*tau2) + c3_1*v3_1*exp(eval3*tau2);
+p1_2_t2 = P1_eq + c2_2*v2_1*exp(eval2*tau2) + c3_2*v3_1*exp(eval3*tau2);
+p1_3_t2 = P1_eq + c2_3*v2_1*exp(eval2*tau2) + c3_3*v3_1*exp(eval3*tau2);
+p2_1_t2 = P2_eq + c2_1*v2_2*exp(eval2*tau2) + c3_1*v3_2*exp(eval3*tau2);
+p2_2_t2 = P2_eq + c2_2*v2_2*exp(eval2*tau2) + c3_2*v3_2*exp(eval3*tau2);
+p2_3_t2 = P2_eq + c2_3*v2_2*exp(eval2*tau2) + c3_3*v3_2*exp(eval3*tau2);
+p3_1_t2 = P3_eq + c2_1*v2_3*exp(eval2*tau2) + c3_1*v3_3*exp(eval3*tau2);
+p3_2_t2 = P3_eq + c2_2*v2_3*exp(eval2*tau2) + c3_2*v3_3*exp(eval3*tau2);
+p3_3_t2 = P3_eq + c2_3*v2_3*exp(eval2*tau2) + c3_3*v3_3*exp(eval3*tau2);
 
 cP_t2 = zeros(numel(A),numel(A),length(time));
 cP_t2(1,1,:) = p1_1_t2 ;
