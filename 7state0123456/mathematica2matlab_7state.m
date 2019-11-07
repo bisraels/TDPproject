@@ -24,8 +24,7 @@ sol = readtable('wcoef_7state_varSol.csv','ReadVariableNames',0);
 % convert table into cell
 sol_cell = table2cell(sol);
 
-disp(['Replacing the "us" in string by "_" ']...
-    ['Converting the long string into a sym 49 times.']);
+disp(['Replacing the "us" in string by "_" .Converting the long string into a sym 49 times.']);
 % Replace the 'us' in the vector component variables with an UnderScore.
 tic
 c1_1 = sol_cell{1,2};
