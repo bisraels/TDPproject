@@ -92,6 +92,8 @@ Lam3 = double(subs(lam_sym(3)));
 LamVec = [Lam1;Lam2;Lam3]
 
 
+
+
 %Load the algebraic solution for the expansion coefficients
 load('wCoef_3state_condensed_sol.mat',...
     'c1_1', 'c1_2', 'c1_3',...
@@ -118,12 +120,8 @@ c3_3 = double(subs(c3_3));
    c3_1, c3_2, c3_3, ;]
 disp(C)
 
-V = VecSorted.';
 % time = 1:10;
-% P = V*(C.*LamVec)
-% lam_sym
-P_notime_sym = V*(C.*lam_sym)
-
+P = V*(C.*LamVec)
 
 % P = P(:)
 
@@ -131,9 +129,8 @@ P_notime_sym = V*(C.*lam_sym)
 % time
 % time = 0:11;
 % pline = p(:)
-
 %Replace pline_sym with the time
-Pline = double(subs(P_notime_sym));
+Pline = double(subs(pline_sym));
 %Recast back into original size
 P = reshape(Pline, [N N numel(time)]);
 

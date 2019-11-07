@@ -1,12 +1,31 @@
+
+%Number of states
+N = 6
+
+% Define symbolic matrix of c's for our constants
+c = sym('c', [N,N])
+
+% Define symbolic matrix of the eigenvector components
+v = sym('v',[N,N]).' 
+
+% Make a symbolic vector of the eigenvalues and time
+lam = exp(sym('lam',[N,1])*'time')
+
+% time = 1:10;
+p = v*(c.*lam)
+
+
+%Simulate a K matrix for a 6-state system
 K = [-25,21,31,0,0,0;...
     12,-93,2852/91,42,52,0;...
     13,23,-(31+2852/91),0,0,0;...
     0,24,0,-42,0,0;...
     0,25,0,0,-108,65;...
-    0,0,0,0,56,-65]
-sum(K)
+    0,0,0,0,56,-65];
 
-[Vec, lambda] = eig(K)
+sum(K);
+
+[Vec, lambda] = eig(K);
 
 [lambdaSort, index] = sort(diag(lambda),'descend');   % sort just in case, it the program seems to output, closest to 0 -> most negative
 lambdaSorted = lambda(index,index);
@@ -74,8 +93,11 @@ v6_4 = evec6(4);
 v6_5 = evec6(5);
 v6_6 = evec6(6);
 
+
 %Load the algebraic solution to the expansion coefficients
-load('wCoef_6state_condensed.mat')
+load('wCoef_6state_condensed_solution.mat')
+tic
+%Substitute the symbolic eigenvector components for their number in double
 c1_1 = double(subs(c1_1));
 c1_2 = double(subs(c1_2));
 c1_3 = double(subs(c1_3));
@@ -118,7 +140,33 @@ c6_4 = double(subs(c6_4));
 c6_5 = double(subs(c6_5));
 c6_6 = double(subs(c6_6));
 
-C =[ c1_1, c1_2, c1_3;...
-    c2_1, c2_2, c2_3;...
-    c3_1, c3_2, c3_3]
+toc
+C =[c1_1, c1_2, c1_3, c1_4, c1_5, c1_6;...
+   c2_1, c2_2, c2_3, c2_4, c2_5, c2_6;...
+   c3_1, c3_2, c3_3, c3_4, c3_5, c3_6;...
+   c4_1, c4_2, c4_3, c4_4, c4_5, c4_6;...
+   c5_1, c5_2, c5_3, c5_4, c5_5, c5_6;...
+   c6_1, c6_2, c6_3, c6_4, c6_5, c6_6];
+disp(C)
 
+V = VecSorted.';
+
+N = 6;
+Npts = 150;
+time = [0:9,logspace(1,log10(3e6),Npts)]/1e6;
+
+lam = exp(sym('lam',[1,N])*'time')
+Lam1 = double(subs(lam(1)));
+Lam2 = double(subs(lam(2)));
+Lam3 = double(subs(lam(3)));
+Lam4 = double(subs(lam(4)));
+Lam5 = double(subs(lam(5)));
+Lam6 = double(subs(lam(6)));
+LamVec = [Lam1;Lam2;Lam3;Lam4;Lam5;Lam6];
+
+Npts = 150;
+time = [0:9,logspace(1,log10(3e6),Npts)]/1e6;
+
+
+% time = 1:10;
+% P = V*(C.*LamVec)
