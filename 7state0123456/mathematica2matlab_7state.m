@@ -32,7 +32,7 @@ c1_1 = strrep(c1_1, 'us','_');
 c1_1 = str2sym(c1_1);
 elapsedTime = toc;
 disp(['Time to do 1/49th = ' num2str(elapsedTime)]);
-return
+
 
 c1_2 = sol_cell{2,2};
 c1_2 = strrep(c1_2, 'us','_');
