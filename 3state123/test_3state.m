@@ -1,6 +1,8 @@
 clockMode = 1;
 plotMode = 1;
-verboseMode = 1;
+verboseMode = 0;
+
+plotCondProbMode = 0;
 
 %Number of states
 N = 3;
@@ -10,7 +12,7 @@ end
 
 % Define symbolic matrix of c's for our constants
 c = sym('c', [N,N]);
-%c = 
+%c =
 % [ c1_1, c1_2, c1_3]
 % [ c2_1, c2_2, c2_3]
 % [ c3_1, c3_2, c3_3]
@@ -26,7 +28,7 @@ if verboseMode == 1
     disp('v = ');
     disp(v);
 end
-% v = 
+% v =
 % [ v1_1, v2_1, v3_1]
 % [ v1_2, v2_2, v3_2]
 % [ v1_3, v2_3, v3_3]
@@ -46,12 +48,12 @@ end
 %make a symbolic figure
 p = v*(c.*lam);
 if verboseMode == 1
-pline = p(:);
-disp('pline = ')
-disp(pline);
+    pline = p(:);
+    disp('pline = ')
+    disp(pline);
 end
 
-% pline = 
+% pline =
 %  c1_1*v1_1*exp(lam1*time) + c2_1*v2_1*exp(lam2*time) + c3_1*v3_1*exp(lam3*time)
 %  c1_1*v1_2*exp(lam1*time) + c2_1*v2_2*exp(lam2*time) + c3_1*v3_2*exp(lam3*time)
 %  c1_1*v1_3*exp(lam1*time) + c2_1*v2_3*exp(lam2*time) + c3_1*v3_3*exp(lam3*time)
@@ -66,7 +68,6 @@ end
 % Pick random values for the rate constants and FRET states
 %--------------------------------------------------------------------------
 [k12,k13,k21,k23,k31,A1,A2,A3,k32,~] = paramSim_3state123_cyclical();
-% time = time_sim();
 %--------------------------------------------------------------------------
 % Calculate the Eigenvalues and Eigenvectors of K matrix
 %--------------------------------------------------------------------------
@@ -74,7 +75,7 @@ K = [(-k12 - k13), k21, k31;...
     k12, (-k21 - k23 ), k32;...
     k13, k23, (-k31-k32);];
 
-[Vec, lambda] = eig(K);   
+[Vec, lambda] = eig(K);
 
 [lambdaSort, index] = sort(diag(lambda),'descend');   % sort just in case, it the program seems to output, closest to 0 -> most negative
 lambdaSorted = lambda(index,index);
@@ -107,15 +108,6 @@ v3_3 = evec3(3);
 % Npts = 150;
 % time = [0:9,logspace(1,log10(3e6),Npts)]/1e6;
 
-clear('time');
-%Fill in lam with eigenvalues variables (NOT TIME)
-lam = exp(sym('lam',[N,1])*'time');
-
-Lam1 = subs(lam(1));
-Lam2 = subs(lam(2));
-Lam3 = subs(lam(3));
-LamVec = [Lam1;Lam2;Lam3]
-
 
 %Load the algebraic solution for the expansion coefficients
 load('wCoef_3state_condensed_sol.mat',...
@@ -138,24 +130,6 @@ c2_3 = double(subs(c2_3));
 c3_3 = double(subs(c3_3));
 
 
-C = [...
-    c1_1, c1_2, c1_3;...
-    c2_1, c2_2, c2_3;...
-    c3_1, c3_2, c3_3;...
-    ];
-disp(C)
-
-V = VecSorted.';
-
-p_notime_sym = V*(C.*lam);
-p_notime_sym_line = p_notime_sym(:);
-
-%Define a time
-time = tim
-%Replace pline_sym with the time
-Pline = double(subs(p_notime_sym_line));
-%Recast back into original size
-P = reshape(Pline, [N N numel(time)]);
 
 %At time t = infinity
 P1_eq = c1_1*v1_1;
@@ -175,21 +149,106 @@ A1 = A1 - Amean;
 A2 = A2 - Amean;
 A3 = A3 - Amean;
 
+time = time_sim();
 %Set the conditional probabilities using the full expressions
 % % Pj_i = c1_i*v1_j*exp(lam1*itme) + c2_i*v2_j*exp(lam2*itme) + c3_i*v3_j*exp(lam3*itme);
-  p1_1 = c1_1*v1_1*exp(eval1*time) + c2_1*v2_1*exp(eval2*time) + c3_1*v3_1*exp(eval3*time);
-  p2_1 = c1_1*v1_2*exp(eval1*time) + c2_1*v2_2*exp(eval2*time) + c3_1*v3_2*exp(eval3*time);
-  p3_1 = c1_1*v1_3*exp(eval1*time) + c2_1*v2_3*exp(eval2*time) + c3_1*v3_3*exp(eval3*time);
-  p1_2 = c1_2*v1_1*exp(eval1*time) + c2_2*v2_1*exp(eval2*time) + c3_2*v3_1*exp(eval3*time);
-  p2_2 = c1_2*v1_2*exp(eval1*time) + c2_2*v2_2*exp(eval2*time) + c3_2*v3_2*exp(eval3*time);
-  p3_2 = c1_2*v1_3*exp(eval1*time) + c2_2*v2_3*exp(eval2*time) + c3_2*v3_3*exp(eval3*time);
-  p1_3 = c1_3*v1_1*exp(eval1*time) + c2_3*v2_1*exp(eval2*time) + c3_3*v3_1*exp(eval3*time);
-  p2_3 = c1_3*v1_2*exp(eval1*time) + c2_3*v2_2*exp(eval2*time) + c3_3*v3_2*exp(eval3*time);
-  p3_3 = c1_3*v1_3*exp(eval1*time) + c2_3*v2_3*exp(eval2*time) + c3_3*v3_3*exp(eval3*time);
+p1_1 = c1_1*v1_1*exp(eval1*time) + c2_1*v2_1*exp(eval2*time) + c3_1*v3_1*exp(eval3*time);
+p2_1 = c1_1*v1_2*exp(eval1*time) + c2_1*v2_2*exp(eval2*time) + c3_1*v3_2*exp(eval3*time);
+p3_1 = c1_1*v1_3*exp(eval1*time) + c2_1*v2_3*exp(eval2*time) + c3_1*v3_3*exp(eval3*time);
+p1_2 = c1_2*v1_1*exp(eval1*time) + c2_2*v2_1*exp(eval2*time) + c3_2*v3_1*exp(eval3*time);
+p2_2 = c1_2*v1_2*exp(eval1*time) + c2_2*v2_2*exp(eval2*time) + c3_2*v3_2*exp(eval3*time);
+p3_2 = c1_2*v1_3*exp(eval1*time) + c2_2*v2_3*exp(eval2*time) + c3_2*v3_3*exp(eval3*time);
+p1_3 = c1_3*v1_1*exp(eval1*time) + c2_3*v2_1*exp(eval2*time) + c3_3*v3_1*exp(eval3*time);
+p2_3 = c1_3*v1_2*exp(eval1*time) + c2_3*v2_2*exp(eval2*time) + c3_3*v3_2*exp(eval3*time);
+p3_3 = c1_3*v1_3*exp(eval1*time) + c2_3*v2_3*exp(eval2*time) + c3_3*v3_3*exp(eval3*time);
 % % note: pj_eq = c1_i*v1_j (i.e. p2_eq = c1_1*v1_2 = c1_2*v1_2 = c1_3*v1_2)
 
 
-% Calculate C2_sim
+%-------------------------------------------------------------------------
+% Calculate the conditional probabilities using matrices
+%-------------------------------------------------------------------------
+
+clear('time');
+
+%Simulate a sym array
+lam = exp(sym('eval',[N,1])*'time');
+
+%Fill in lam with eigenvalues variables (NOT TIME)
+Lam1 = subs(lam(1));
+Lam2 = subs(lam(2));
+Lam3 = subs(lam(3));
+LamVec = [Lam1;Lam2;Lam3];
+
+C = [...
+    c1_1, c1_2, c1_3;...
+    c2_1, c2_2, c2_3;...
+    c3_1, c3_2, c3_3;...
+    ];
+if verboseMode == 1
+    disp('C = ');
+    disp(C);
+end
+
+V = VecSorted;
+% V = [...
+%     v1_1, v2_1, v3_1;...
+%     v1_2, v2_2, v3_2;...
+%     v1_3, v2_3, v3_3;
+%     ];
+if verboseMode == 1
+    disp('V = ');
+    disp(V);
+end
+
+p_notime_sym = V*(C.*LamVec);
+p_notime_sym_line = p_notime_sym(:);
+
+%Define a time
+time = time_sim();
+%Replace pline_sym with the time
+Pline = double(subs(p_notime_sym_line));
+%Recast back into original size
+P = reshape(Pline, [N N numel(time)]);
+
+%-------------------------------------------------------------------------
+% Plot the Conditional Probabilities
+%-------------------------------------------------------------------------
+if plotCondProbMode == 1
+    if plotMode == 1
+        
+        figure(3);
+        clf;
+        set(gcf,'Color','w');
+        hold on;
+        logx;
+        set(gca,'xscale','log');
+        
+        
+        title('Conditional Proababilities','FontSize',18)
+        xlabel('Time (sec)','FontSize',14);
+        ylabel('Probability','FontSize',14);
+        
+        plot(time,p1_1,'LineWidth',2,'LineStyle','-','DisplayName','p11');
+        plot(time,p1_2,'LineWidth',2,'LineStyle','-','DisplayName','p12');
+        plot(time,p1_3,'LineWidth',2,'LineStyle','-','DisplayName','p13');
+        
+        plot(time,p2_1,'LineWidth',2,'LineStyle','-','DisplayName','p21');
+        plot(time,p2_2,'LineWidth',3,'LineStyle','-','DisplayName','p22');
+        plot(time,p2_3,'LineWidth',2,'LineStyle','-','DisplayName','p23');
+        
+        plot(time,p3_1,'LineWidth',2,'LineStyle','-','DisplayName','p31');
+        plot(time,p3_2,'LineWidth',2,'LineStyle','-','DisplayName','p32');
+        plot(time,p3_3,'LineWidth',3,'LineStyle','-','DisplayName','p33');
+        
+        lgd = legend;
+        lgd.FontSize = 14;
+    end
+end
+
+%--------------------------------------------------------------------------
+% Calculate the Two-point TCF
+%--------------------------------------------------------------------------
+% Calculate C2_sim (METHOD 1)
 tic
 C2_sim = P3_eq*A3*(A3*p3_3 + A2*p2_3 + A1*p1_3) +...
     P2_eq*A2*(A3*p3_2 + A2*p2_2 + A1*p1_2) +...
@@ -197,7 +256,7 @@ C2_sim = P3_eq*A3*(A3*p3_3 + A2*p2_3 + A1*p1_3) +...
 disp('     Time to calculate C2 using one line...');
 toc
 
-
+% Calculate C2_sim (METHOD 2)
 %mean has already been subtracted
 A = [A1,A2,A3];
 Peq = [P1_eq,P2_eq,P3_eq];
@@ -213,18 +272,30 @@ cP(1,3,:) = p1_3;
 cP(2,3,:) = p2_3;
 cP(3,3,:) = p3_3;
 
-%--------------------------------------------------------------------------
 tic
 C2_sim2 = zeros(size(time));
 for i = 1:numel(A)
     for j = 1:numel(A)
-                C2_sim1_temp = A(j) * squeeze(cP(j,i,:)) * A(i) * Peq(i);
-
-%         C2_sim1_temp = A(j) * reshape(cP(j,i,:),numel(cP)) * A(i) * Peq(i);
-        C2_sim2 = C2_sim2 + C2_sim1_temp;
+        C2_sim2_temp = A(j) * squeeze(cP(j,i,:)) * A(i) * Peq(i);
+        
+        %         C2_sim1_temp = A(j) * reshape(cP(j,i,:),numel(cP)) * A(i) * Peq(i);
+        C2_sim2 = C2_sim2 + C2_sim2_temp;
     end
 end
 disp('     Time to calculate C2 using loops and squeeze...');
+toc
+
+% Calculate C2_sim (METHOD 3)
+tic
+C2_sim3 = zeros(size(time));
+for i = 1:numel(A)
+    for j = 1:numel(A)
+        C2_sim3_temp = A(j) * squeeze(P(j,i,:)) * A(i) * Peq(i);
+        %         C2_sim1_temp = A(j) * reshape(cP(j,i,:),numel(cP)) * A(i) * Peq(i);
+        C2_sim3 = C2_sim3 + C2_sim3_temp;
+    end
+end
+disp('     Time to calculate C2 using loops and squeeze (method 3)...');
 toc
 
 %--------------------------------------------------------------------------
@@ -237,14 +308,15 @@ if plotMode == 1
     set(gcf,'Name','C2');
     %subplot(1,2,1)
     %TCF2pt = fplot(C2(t),[1e-3,1],'LineWidth',2);      % fplot() was making it hard to plot on loglog scale, so calculate for specfic time range
-    TCF2pt = plot(time,C2_sim,'LineWidth',2);
+    TCF2pt = plot(time,C2_sim,'LineWidth',2,'DisplayName','C2 one line');
     hold on;
-    TCF2pt2 = plot(time,C2_sim2,'r--','LineWidth',2);
+    TCF2pt2 = plot(time,C2_sim2,'r--','LineWidth',2,'DisplayName','C2 loops');
+        TCF2pt3 = plot(time,C2_sim3,'g:','LineWidth',2,'DisplayName','C2 loops matrix');
     
     title('Two point TCF','FontSize',18)
     xlabel('Time','FontSize',14);
     ylabel('C^{(2)}(\tau)','FontSize',14);
-
+    
     ax = gca;
     ax.XScale = 'log';
     
@@ -293,27 +365,75 @@ for i = 1:numel(A)
         end
     end
 end
-disp('    time to calculate C4');
+disp('    time to calculate C4 using loops and squeeze');
 toc
 
 %-------------------------------------------------------------------------
- % Plot the 4 point TCF
- %-------------------------------------------------------------------------
- if plotMode == 1
-        figure(4);
-        surf(time, time, C4);
-        title('Four-point TCF: C^{(4)}','FontSize',18)
-        xlabel('Time (\tau_1)','FontSize',14);
-        ylabel('Time (\tau_3)','FontSize',14);
-        zlabel('C^{(4)}(\tau_1,\tau_2,\tau_3)','FontSize',14);
-        
-        whitebg;
-        
-        view(28,36);
-        ax = gca;
-        ax.XScale = 'log';
-        ax.YScale = 'log';
-        
-        drawnow();
-        hold on;
- end
+% Iterate over all the Permutations of FRET States (MAtrix Methods)
+%-------------------------------------------------------------------------
+%Define a time
+time_holder = time;
+time = 0;
+%Replace pline_sym with the time
+Pline_tau2 = double(subs(p_notime_sym_line));
+%Recast back into original size
+P_tau2 = reshape(Pline_tau2, [N N numel(time)]);
+time = time_holder;
+
+tic
+C4_sim2 = zeros(numel(time),numel(time));
+for i = 1:numel(A)
+    for j = 1:numel(A)
+        for k = 1:numel(A)
+            for l = 1:numel(A)
+                C4term_val =  A(l) *squeeze(P(l,k,:)) * A(k) * P_tau2(k,j) * A(j) * squeeze(P(j,i,:))'* A(i) * Peq(i);
+                C4_sim2 = C4_sim2 + C4term_val;
+            end
+        end
+    end
+end
+disp('    time to calculate C4 using loops and squeeze (Matrix Method)');
+toc
+
+
+tic
+C4_sim3 = zeros(numel(time),numel(time));
+for i = 1:numel(A)
+    for j = 1:numel(A)
+        for k = 1:numel(A)
+            for l = 1:numel(A)
+                C4term_val =  A(l) *reshape(P(l,k,:),[1,numel(time)]) * A(k) * P_tau2(k,j) * A(j) * reshape(P(j,i,:),[1,numel(time)])'* A(i) * Peq(i);
+                C4_sim3 = C4_sim3 + C4term_val;
+            end
+        end
+    end
+end
+disp('    time to calculate C4 using loops and squeeze (Matrix Method)');
+toc
+
+%-------------------------------------------------------------------------
+% Plot the 4 point TCF
+%-------------------------------------------------------------------------
+if plotMode == 1
+    figure(4);
+    clf;
+    surf(time, time, C4);
+    hold on
+    
+    mesh(time,time,C4_sim2);
+    
+    title('Four-point TCF: C^{(4)}','FontSize',18)
+    xlabel('Time (\tau_1)','FontSize',14);
+    ylabel('Time (\tau_3)','FontSize',14);
+    zlabel('C^{(4)}(\tau_1,\tau_2,\tau_3)','FontSize',14);
+    
+    set(gcf,'color','w');
+    
+    view(28,36);
+    ax = gca;
+    ax.XScale = 'log';
+    ax.YScale = 'log';
+    
+    drawnow();
+    hold on;
+end
