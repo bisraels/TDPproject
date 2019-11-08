@@ -236,7 +236,7 @@ if plotCondProbMode == 1
         plot(time,p2_2,'LineWidth',3,'LineStyle','-','DisplayName','p22');
         plot(time,p2_3,'LineWidth',2,'LineStyle','-','DisplayName','p23');
         
-        plot(time,p3_1,'LineWidth',2,'LineStyle','-','DisplayName','p31');
+        plot(time,p3_1,'LineWidth',2,'LineStyle','-','DisplayName','p31') 
         plot(time,p3_2,'LineWidth',2,'LineStyle','-','DisplayName','p32');
         plot(time,p3_3,'LineWidth',3,'LineStyle','-','DisplayName','p33');
         
