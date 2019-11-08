@@ -24,12 +24,14 @@ sol = readtable('wcoef_7state_varSol.csv','ReadVariableNames',0);
 % convert table into cell
 sol_cell = table2cell(sol);
 
+disp(['Replacing the "us" in string by "_" .Converting the long string into a sym 49 times.']);
 % Replace the 'us' in the vector component variables with an UnderScore.
 tic
 c1_1 = sol_cell{1,2};
 c1_1 = strrep(c1_1, 'us','_');
 c1_1 = str2sym(c1_1);
-toc
+elapsedTime = toc;
+disp(['Time to do 1/49th = ' num2str(elapsedTime)]);
 
 
 c1_2 = sol_cell{2,2};
@@ -55,10 +57,10 @@ c1_6 = str2sym(c1_6);
 c1_7 = sol_cell{7,2};
 c1_7 = strrep(c1_7, 'us','_');
 c1_7 = str2sym(c1_7);
-toc
 
+elapsedTime = toc;
+disp(['Time to do 7/49th = ' num2str(elapsedTime)]);
 
-tic
 c2_1 = sol_cell{8,2};
 c2_1 = strrep(c2_1, 'us','_');
 c2_1 = str2sym(c2_1);
@@ -69,7 +71,7 @@ c2_2 = str2sym(c2_2);
 
 c2_3 = sol_cell{10,2};
 c2_3 = strrep(c2_3, 'us','_');
-c2_1 = str2sym(c2_1);
+c2_3 = str2sym(c2_3);
 
 c2_4 = sol_cell{11,2};
 c2_4 = strrep(c2_4, 'us','_');
@@ -86,10 +88,10 @@ c2_6 = str2sym(c2_6);
 c2_7 = sol_cell{14,2};
 c2_7 = strrep(c2_7, 'us','_');
 c2_7 = str2sym(c2_7);
-toc
 
+elapsedTime = toc;
+disp(['Time to do 2/7th = ' num2str(elapsedTime)]);
 
-tic
 c3_1 = sol_cell{15,2};
 c3_1 = strrep(c3_1, 'us','_');
 c3_1 = str2sym(c3_1);
@@ -117,10 +119,11 @@ c3_6 = str2sym(c3_6);
 c3_7 = sol_cell{21,2};
 c3_7 = strrep(c3_7, 'us','_');
 c3_7 = str2sym(c3_7);
-toc
+
+elapsedTime = toc;
+disp(['Time to do 3/7th = ' num2str(elapsedTime)]);
 
 
-tic
 c4_1 = sol_cell{22,2};
 c4_1 = strrep(c4_1, 'us','_');
 c4_1 = str2sym(c4_1);
@@ -148,10 +151,12 @@ c4_6 = str2sym(c4_6);
 c4_7 = sol_cell{28,2};
 c4_7 = strrep(c4_7, 'us','_');
 c4_7 = str2sym(c4_7);
-toc
+
+elapsedTime = toc;
+disp(['Time to do 4/7th = ' num2str(elapsedTime)]);
 
 
-tic
+
 c5_1 = sol_cell{29,2};
 c5_1 = strrep(c5_1, 'us','_');
 c5_1 = str2sym(c5_1);
@@ -179,10 +184,11 @@ c5_6 = str2sym(c5_6);
 c5_7 = sol_cell{35,2};
 c5_7 = strrep(c5_7, 'us','_');
 c5_7 = str2sym(c5_7);
-toc
+
+elapsedTime = toc;
+disp(['Time to do 5/7th = ' num2str(elapsedTime)]);
 
 
-tic
 c6_1 = sol_cell{36,2};
 c6_1 = strrep(c6_1, 'us','_');
 c6_1 = str2sym(c6_1);
@@ -210,10 +216,11 @@ c6_6 = str2sym(c6_6);
 c6_7 = sol_cell{42,2};
 c6_7 = strrep(c6_7, 'us','_');
 c6_7 = str2sym(c6_7);
-toc
+
+elapsedTime = toc;
+disp(['Time to do 6/7th = ' num2str(elapsedTime)]);
 
 
-tic
 c7_1 = sol_cell{43,2};
 c7_1 = strrep(c7_1, 'us','_');
 c7_1 = str2sym(c7_1);
@@ -241,7 +248,9 @@ c7_6 = str2sym(c7_6);
 c7_7 = sol_cell{49,2};
 c7_7 = strrep(c7_7, 'us','_');
 c7_7 = str2sym(c7_7);
-toc
+
+elapsedTime = toc;
+disp(['Time to do 7/7th = ' num2str(elapsedTime)]);
 
 
 
