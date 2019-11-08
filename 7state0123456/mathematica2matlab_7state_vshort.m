@@ -13,34 +13,25 @@
 % MODIFICATION LOG:
 %__________________________________________________________________________
 
-%% Read the table
+
 tic
 
 % Import .csv file with no heading
 sol = readtable('wcoef_7state_varSol.csv','ReadVariableNames',0);
 % First column tells you the variable name (for bookkeeping purposes only  - don't use this!)
 % Second column is the solution we want.
-elapsedTime = toc;
-disp(['Took ' num2str(elapsedTime) ' to read the .csv file with readtable']);
 
 % convert table into cell
 sol_cell = table2cell(sol);
-
 
 disp(['Replacing the "us" in string by "_" .Converting the long string into a sym 49 times.']);
 % Replace the 'us' in the vector component variables with an UnderScore.
 tic
 c1_1 = sol_cell{1,2};
 c1_1 = strrep(c1_1, 'us','_');
-elapsedTime = toc;
-disp(['Took ' num2str(elapsedTime) ' to replace "us" with underscore']);
-
-tic
 c1_1 = str2sym(c1_1);
 elapsedTime = toc;
 disp(['Time to do 1/49th = ' num2str(elapsedTime)]);
-
-save('wcoef_7state_c1_1.mat','c1_1');
 
 
 c1_2 = sol_cell{2,2};
