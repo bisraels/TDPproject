@@ -395,6 +395,22 @@ end
 disp('    time to calculate C4 using loops and squeeze (Matrix Method)');
 toc
 
+
+tic
+C4_sim3 = zeros(numel(time),numel(time));
+for i = 1:numel(A)
+    for j = 1:numel(A)
+        for k = 1:numel(A)
+            for l = 1:numel(A)
+                C4term_val =  A(l) *reshape(P(l,k,:),[1,numel(time)]) * A(k) * P_tau2(k,j) * A(j) * reshape(P(j,i,:),[1,numel(time)])'* A(i) * Peq(i);
+                C4_sim3 = C4_sim3 + C4term_val;
+            end
+        end
+    end
+end
+disp('    time to calculate C4 using loops and squeeze (Matrix Method)');
+toc
+
 %-------------------------------------------------------------------------
 % Plot the 4 point TCF
 %-------------------------------------------------------------------------
