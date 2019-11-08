@@ -1,16 +1,9 @@
-%--------------------------------------------------------------------------
-% User Options
-%--------------------------------------------------------------------------
-
 clockMode = 1;
 plotMode = 1;
 verboseMode = 0;
 
 plotCondProbMode = 0;
 
-%--------------------------------------------------------------------------
-% Build the symbolic conditional probabilities
-%--------------------------------------------------------------------------
 %Number of states
 N = 3;
 if verboseMode == 1
@@ -41,7 +34,7 @@ end
 % [ v1_3, v2_3, v3_3]
 
 % Make a symbolic vector of the eigenvalues and time
-lam = exp(sym('eval',[N,1])*'time');
+lam = exp(sym('lam',[N,1])*'time');
 
 if verboseMode == 1
     disp('lam = ');
@@ -75,7 +68,6 @@ end
 % Pick random values for the rate constants and FRET states
 %--------------------------------------------------------------------------
 [k12,k13,k21,k23,k31,A1,A2,A3,k32,~] = paramSim_3state123_cyclical();
-
 %--------------------------------------------------------------------------
 % Calculate the Eigenvalues and Eigenvectors of K matrix
 %--------------------------------------------------------------------------
@@ -208,19 +200,14 @@ if verboseMode == 1
     disp(V);
 end
 
-%Make a matrix of conditional probabilites as a funtion of time
 p_notime_sym = V*(C.*LamVec);
-
-%transform the NxN matrix into a (N*N)x1 matrix
 p_notime_sym_line = p_notime_sym(:);
 
 %Define a time
 time = time_sim();
-
 %Replace pline_sym with the time
 Pline = double(subs(p_notime_sym_line));
-
-%Recast 9xnumel(time) matrix back into original size (NxNxnumel(t))
+%Recast back into original size
 P = reshape(Pline, [N N numel(time)]);
 
 %-------------------------------------------------------------------------
@@ -429,7 +416,7 @@ for i = 1:numel(A)
     for j = 1:numel(A)
         for k = 1:numel(A)
             for l = 1:numel(A)
-                C4term_val =  A(l) *reshape(P(l,k,:),[1,Npts])' * A(k) *  P_tau2(k,j) * A(j) * reshape(P(j,i,:),[1,numel(time)])* A(i) * Peq(i);
+                C4term_val =  A(l) *reshape(P(l,k,:),[1,Npts]) * A(k) * P_tau2(k,j) * A(j) * reshape(P(j,i,:),[1,numel(time)])'* A(i) * Peq(i);
                 C4_sim3 = C4_sim3 + C4term_val;
             end
         end
@@ -447,10 +434,9 @@ if plotMode == 1
     surf(time, time, C4,'DisplayName','Conditional Prob');
     hold on
     
-    mesh(time,time,C4_sim2,'DisplayName','loops/squeeze');
-    mesh(time,time,C4_sim3,'DisplayName','loops reshape');
+    mesh(time,time,C4_sim2,'DisplayName','Conditional Prob');
+    mesh(time,time,C4_sim3);
     
-    legend();
     title('Four-point TCF: C^{(4)}','FontSize',18)
     xlabel('Time (\tau_1)','FontSize',14);
     ylabel('Time (\tau_3)','FontSize',14);

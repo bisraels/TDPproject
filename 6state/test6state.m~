@@ -71,8 +71,8 @@ tic
 
 elapsedTime = toc;
 if clockMode == 1
-    task_str = ['solve the ' num2str(N) 'N-state eigensystem.'];
-    disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
+    ta
+disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
 
 [lambdaSort, index] = sort(diag(lambda),'descend');   % sort just in case, it the program seems to output, closest to 0 -> most negative
@@ -190,10 +190,7 @@ c6_5 = double(subs(c6_5));
 c6_6 = double(subs(c6_6));
 
 elapsedTime = toc;
-if clockMode == 1
-    task_str = 'calculate cj_i by substituting in the eigenvector components';
-    disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
-end
+disp(['Took ' num2str(elapsedTime) ' seconds to calculate cj_i by substituting in the eigenvector components']);
 %Takes about 3 seconds to sub in all the values
 
 
@@ -254,7 +251,7 @@ for i = 1:numel(A)
 end
 elapsedTime = toc;
 disp(['Took ' num2str(elapsedTime) ' seconds to calculate C2 for N = ' num2str(N)]);
-%Takes about 2 msec
+%Takes about 
 
 %--------------------------------------------------------------------------
 %  Plot two point TCF
@@ -295,7 +292,7 @@ for i = 1:numel(A)
 end
 elapsedTime = toc;
 disp(['Took ' num2str(elapsedTime) ' seconds to calculate C4 for N = ' num2str(N)]);
-%Takes about 7 msec
+%Takes about 
 
 %-------------------------------------------------------------------------
 % Plot the 4 point TCF
