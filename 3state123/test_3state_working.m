@@ -236,7 +236,7 @@ if plotCondProbMode == 1
         plot(time,p2_2,'LineWidth',3,'LineStyle','-','DisplayName','p22');
         plot(time,p2_3,'LineWidth',2,'LineStyle','-','DisplayName','p23');
         
-        plot(time,p3_1,'LineWidth',2,'LineStyle','-','DisplayName','p31') 
+        plot(time,p3_1,'LineWidth',2,'LineStyle','-','DisplayName','p31');
         plot(time,p3_2,'LineWidth',2,'LineStyle','-','DisplayName','p32');
         plot(time,p3_3,'LineWidth',3,'LineStyle','-','DisplayName','p33');
         
@@ -298,19 +298,6 @@ end
 disp('     Time to calculate C2 using loops and squeeze (method 3)...');
 toc
 
-% Calculate C2_sim (METHOD 4)
-tic
-Npts = numel(time);
-C2_sim3 = zeros(size(time));
-for i = 1:numel(A)
-    for j = 1:numel(A)
-        C2_sim3_temp = A(j) * reshape(P(j,i,:),[1,Npts]) * A(i) * Peq(i);
-        %         C2_sim1_temp = A(j) * reshape(cP(j,i,:),numel(cP)) * A(i) * Peq(i);
-        C2_sim3 = C2_sim3 + C2_sim3_temp;
-    end
-end
-disp('     Time to calculate C2 using loops and reshape (method 4)...');
-toc
 %--------------------------------------------------------------------------
 %  Plot two point TCF
 %--------------------------------------------------------------------------
@@ -410,19 +397,18 @@ toc
 
 
 tic
-Npts = numel(time);
 C4_sim3 = zeros(numel(time),numel(time));
 for i = 1:numel(A)
     for j = 1:numel(A)
         for k = 1:numel(A)
             for l = 1:numel(A)
-                C4term_val =  A(l) *reshape(P(l,k,:),[1,Npts]) * A(k) * P_tau2(k,j) * A(j) * reshape(P(j,i,:),[1,numel(time)])'* A(i) * Peq(i);
+                C4term_val =  A(l) *reshape(P(l,k,:),[1,numel(time)]) * A(k) * P_tau2(k,j) * A(j) * reshape(P(j,i,:),[1,numel(time)])'* A(i) * Peq(i);
                 C4_sim3 = C4_sim3 + C4term_val;
             end
         end
     end
 end
-disp('    time to calculate C4 using loops and reshape (Matrix Method)');
+disp('    time to calculate C4 using loops and squeeze (Matrix Method)');
 toc
 
 %-------------------------------------------------------------------------
@@ -431,11 +417,10 @@ toc
 if plotMode == 1
     figure(4);
     clf;
-    surf(time, time, C4,'DisplayName','Conditional Prob');
+    surf(time, time, C4);
     hold on
     
-    mesh(time,time,C4_sim2,'DisplayName','Conditional Prob');
-    mesh(time,time,C4_sim3);
+    mesh(time,time,C4_sim2);
     
     title('Four-point TCF: C^{(4)}','FontSize',18)
     xlabel('Time (\tau_1)','FontSize',14);
