@@ -208,8 +208,10 @@ C =[c1_1, c1_2, c1_3, c1_4, c1_5, c1_6;...
    c4_1, c4_2, c4_3, c4_4, c4_5, c4_6;...
    c5_1, c5_2, c5_3, c5_4, c5_5, c5_6;...
    c6_1, c6_2, c6_3, c6_4, c6_5, c6_6];
-disp(C)
-
+if verboseMode == 1
+disp('C = ');
+    disp(C)
+end
 V = VecSorted;
 
 N = 6;
