@@ -11,21 +11,22 @@
 %           P(j,i,t) is the probability of going from i -> j in time t
 %
 % MODLOG:  BI 20191112 Inverse done with '\' not inv()
+%          CA 
 %__________________________________________________________________________
 
-function k2P(K)
+function [p,P] = k2P(K,time)
 switch nargin
     case 0
-        %         Simulate a K matrix
-        %         3 state
-        %         k12 = 12; k13 = 13; k21 = 21; k31 = 31; k23 = 23;
-        %         k32 = k12*k23*k31/(k13*k21);
-        %
-        %         K = [(-k12 - k13), k21, k31;...
-        %             k12, (-k21 - k23 ), k32;...
-        %             k13, k23, (-k31-k32);];
-        %
-        %         8state
+%                 Simulate a K matrix
+%                 3 state
+                k12 = 12; k13 = 13; k21 = 21; k31 = 31; k23 = 23;
+                k32 = k12*k23*k31/(k13*k21);
+        
+                K = [(-k12 - k13), k21, k31;...
+                    k12, (-k21 - k23 ), k32;...
+                    k13, k23, (-k31-k32);];
+        
+%                 8state
         K = [...
             -(12 + 13), 21, 31, 0, 0, 0, 0, 0;...
             12, -(21 + 23 + 24 + 25), (12*23*31/(13*21)), 42, 52, 0, 0, 0;...
@@ -37,6 +38,7 @@ switch nargin
             0, 0, 0, 0, 0, 68, 78, -(86 + 87);...
             ];
         
+      time = time_sim;
 end
 % Determine the number of states in the system
 N = length(K);
@@ -56,11 +58,11 @@ elapsedTime = toc;
 disp(['Time to find inverse of V = ' num2str(elapsedTime)]);
 
 % Use identity matrix to define the Initial conditions (Boundary conditions)
-cond = eye(N);
+InitCond = eye(N);
 
 % Find the matrix of all possible initial conditions
 tic
-C  = V \ cond; %V_inv * cond;
+C  = V \ InitCond; %V_inv * cond;
 elapsedTime = toc;
 disp(['Time to find C matrix = ' num2str(elapsedTime)]);
 % Format:
@@ -83,14 +85,18 @@ exp_LamT = diag(exp(Lam * t));
 % elapsedTime = toc;
 % disp(['Time to evaluate cP matrix as function of t = ' num2str(elapsedTime)]);
 
+
+  
 tic
-P = vpa(subs(V * exp_LamT * V_inv * cond));
+p = vpa(subs(V * exp_LamT * V_inv * InitCond));
+
 %P(j,i) is the probability of going from i --> j in time t
 elapsedTime = toc;
 disp(['Time to evaluate P(j,i) function of t = ' num2str(elapsedTime)]);
 
 % %Note: To substitute in time, do so like this:
+t = time;
 % t = 0:.1:1;
 % tic
-% P = reshape(subs(P(:)),[N N numel(t)])
+P = reshape(subs(p(:)),[N N numel(t)]);
 % toc
