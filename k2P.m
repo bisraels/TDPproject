@@ -84,7 +84,7 @@ exp_LamT = diag(exp(Lam * t));
 % disp(['Time to evaluate cP matrix as function of t = ' num2str(elapsedTime)]);
 
 tic
-P(t) = vpa(subs(V * exp_LamT * V_inv * cond));
+P = vpa(subs(V * exp_LamT * V_inv * cond));
 %P(j,i) is the probability of going from i --> j in time t
 elapsedTime = toc;
 disp(['Time to evaluate P(j,i) function of t = ' num2str(elapsedTime)]);
