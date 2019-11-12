@@ -65,9 +65,9 @@ P(t) = [P0(t); P1(t); P2(t); P3(t); P4(t)];
 % ODE to solve
 % eqn = diff(P(t),t)== K * P(t);
 
-t0 = 599;
-tf = 600;
-tspan = [t0 tf];
+t0 = .1;
+tf = 1;
+tspan = [t0 ,tf];
 tic
 
 cond0 = [1 0 0 0 0];

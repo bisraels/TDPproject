@@ -264,7 +264,7 @@ c7_7 = str2sym(c7_7);
 
 elapsedTime = toc;
 disp(['Time to do 7/7th = ' num2str(elapsedTime)]);
-
+%Took 92 hours (331,681 seconds)
 
 
 
