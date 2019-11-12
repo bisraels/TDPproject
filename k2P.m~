@@ -1,0 +1,78 @@
+%__________________________________________________________________________
+% AUTHOR:   Brett Israels and Claire Albrecht
+%
+% CREATED:  November 2019
+%
+% PURPOSE:  Solve the master equation for a rate matrix K
+%
+% INPUT     k (rate matrix)
+%
+% OUTPUT:   P (matrix of conditional probabilites)
+%           P(j,i,t) is the probability of going from i -> j in time t
+%
+% MODLOG:  BI 20191112 Inverse done with '\' not inv()
+%__________________________________________________________________________
+
+% function k2P(k)
+% switch nargin
+%     case 0
+        %Simulate a K matrix
+        k12 = 12; k13 = 13; k21 = 21; k31 = 31; k23 = 23;
+        k32 = k12*k23*k31/(k13*k21);
+        
+        K = [(-k12 - k13), k21, k31;...
+            k12, (-k21 - k23 ), k32;...
+            k13, k23, (-k31-k32);];
+% end
+% Determine the number of states in the system
+N = length(K);
+
+%--------------------------------------------------------------------------
+% Calculate the Eigenvalues and Eigenvectors of K matrix
+%--------------------------------------------------------------------------
+[Evec, Lam_unsorted] = eig(K);
+
+[Lam,ind] = sort(diag(Lam_unsorted),'descend'); %Lam is numerical eigenvalue
+V = Evec(:,ind);        % V is the mode matrix (Each column is an eigenvector)
+
+% Find the inverse of the matrix of eigenvectors
+tic
+V_inv = inv(V);
+elapsedTime = toc;
+disp(['Time to find inverse of V = ' num2str(elapsedTime)]);
+
+% Use identity matrix to define the Initial conditions (Boundary conditions)
+cond = eye(N);
+
+% Find the matrix of all possible initial conditions
+tic
+C  = V \ cond; %V_inv * cond;
+elapsedTime = toc;
+disp(['Time to find C matrix = ' num2str(elapsedTime)]);
+% Format:
+%      c_mat = c1_1, c1_2, ..., c1_n;
+%              c2_1, c2_2, ..., c2_n;
+%               .    .           .
+%               .      .         .
+%               .        .       .
+%              cn_1     ...     cn_n
+%
+
+%--------------------------------------------------------------------------
+% Solve for the conditional probabilities
+%--------------------------------------------------------------------------
+syms t
+
+exp_LamT = diag(exp(Lam * t));
+% tic
+% cP(t) = vpa(subs(V * exp_LamT * V_inv * cond));
+% elapsedTime = toc;
+% disp(['Time to evaluate cP matrix as function of t = ' num2str(elapsedTime)]);
+
+tic
+P = vpa(subs(V * exp_LamT * V_inv * cond));
+%P(j,i) is the probability of going from i --> j in time t
+elapsedTime = toc;
+disp(['Time to evaluate P(j,i) function of t = ' num2str(elapsedTime)]);
+
+%Note: To substitute 

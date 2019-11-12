@@ -13,6 +13,7 @@
 % MODIFICATION LOG:
 %__________________________________________________________________________
 
+saveMode = 0;
 
 N = 7;
 
@@ -33,7 +34,10 @@ disp(['Time to find inverse of V = ' num2str(elapsedTime)]);
 
 
 % Find the matrix of all possible initial conditions
-c_mat  = V_inv * cond;
+tic
+c_mat  = V_inv * cond;  
+% c_mat = V \ cond;%This way is supposed to be faster. But you need V_inv
+% later
 elapsedTime = toc;
 disp(['Time to find c matrix = ' num2str(elapsedTime)]);
 % Format: 
@@ -137,8 +141,9 @@ elapsedTime = toc;
 disp(['Time to evaluate C matrix = ' num2str(elapsedTime)]);
 
 
+if saveMode == 1
 save('wcoef_matSolve_7state_cMatrix.mat','c_mat')
-
+end
 
 %%
 % Can also solve for cP(t) in this method.
