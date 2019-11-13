@@ -4,7 +4,7 @@
 
 clockMode = 1;
 plotMode = 1;
-verboseMode = 0;
+verboseMode = 1;
 
 plotCondProbMode = 0;
 
@@ -74,10 +74,10 @@ end
 %--------------------------------------------------------------------------
 % Pick random values for the rate constants and FRET states
 %--------------------------------------------------------------------------
-% [k12,k13,k21,k23,k31,A1,A2,A3,k32,~] = paramSim_3state123_cyclical();
-
-k12 = 12; k13 = 13; k21 = 21; k31 = 31; k23 = 23;
-k32 = k12*k23*k31/(k13*k21);
+[k12,k13,k21,k23,k31,A1,A2,A3,k32,~] = paramSim_3state123_cyclical();
+% 
+% k12 = 12; k13 = 13; k21 = 21; k31 = 31; k23 = 23;
+% k32 = k12*k23*k31/(k13*k21);
 
 %--------------------------------------------------------------------------
 % Calculate the Eigenvalues and Eigenvectors of K matrix

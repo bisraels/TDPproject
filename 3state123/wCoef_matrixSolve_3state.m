@@ -119,3 +119,5 @@ elapsedTime = toc;
 disp(['Time to evaluate cPj_i function of t = ' num2str(elapsedTime)]);
 
 
+
+P = vpa(subs(V * exp_LamT * V_inv * cond));
