@@ -243,43 +243,46 @@ if plotCondProbMode == 1
         logx;
         set(gca,'xscale','log');
         
-         [sample_description, ~] = sample_descriptionGetter();
+        [sample_description, ~] = sample_descriptionGetter();
         title_str = ['Conditional Proababilities: P_{i\rightarrowj}(t)' ...
             10 sample_description];
         title(title_str,'fontsize',14);
-%         title('Conditional Proababilities','FontSize',18)
+        %         title('Conditional Proababilities','FontSize',18)
         xlabel('Time (sec)','FontSize',14);
         ylabel('Probability','FontSize',14);
-        
         
         % 1 := C    Coiled
         % 2 := PC   Partially Coiled
         % 3 := FE   Fully Extended
         
-        colorMap = [[0, 0.4470, 0.7410;...
-          	[0.8500, 0.3250, 0.0980;...
-          	[0.9290, 0.6940, 0.1250];
-        plot(time,p1_1,'color','r','LineWidth',2,'LineStyle','-','DisplayName','P_{C}\rightarrow_{C}');
-        plot(time,p1_2,'color','b','LineWidth',2,'LineStyle',':','DisplayName','P_{I}\rightarrow_{C}');
-        plot(time,p1_3,'color','g','LineWidth',2,'LineStyle','--','DisplayName','P_{E}\rightarrow_{C}');
+        state_1_color = 'k';%[0, 0.4470, 0.7410];        % "C"
+        state_2_color = 'b';%[0.8500, 0.3250, 0.0980];   % "I"
+        state_3_color = 'r';%[0.9290, 0.6940, 0.1250];   % "FE"
         
-        lgd = legend;
-        lgd.FontSize = 14;
+        timeUB = 1e-2;
+        %Begin in state 1 -block
+        plot(time,p1_1,'color',state_1_color,'LineWidth',3,'LineStyle','-','DisplayName','P_{{\color{black}C}}\rightarrow_{C}');
+        text(timeUB,p1_1(end)+0.05,'P_C^{Eq}','FontSize',18);
+        plot(time,p2_1,'color',state_1_color,'LineWidth',3,'LineStyle',':','DisplayName','P_{C}\rightarrow_{I}');
+        plot(time,p3_1,'color',state_1_color,'LineWidth',3,'LineStyle','--','DisplayName','P_{C}\rightarrow_{FE}')
         
-        plot(time,p2_1,'color','r','LineWidth',2,'LineStyle','-','DisplayName','P_{C}\rightarrow_{I}');
-        plot(time,p2_2,'color','b','LineWidth',2,'LineStyle',':','DisplayName','P_{I}\rightarrow_{I}');
-        plot(time,p2_3,'color','g','LineWidth',2,'LineStyle','--','DisplayName','P_{E}\rightarrow_{I}');
+        %Begin in state-2
+        plot(time,p1_2,'color',state_2_color,'LineWidth',3,'LineStyle','-','DisplayName','P_{I}\rightarrow_{C}');
+        plot(time,p2_2,'color',state_2_color,'LineWidth',3,'LineStyle',':','DisplayName','P_{I}\rightarrow_{I}');
+        text(timeUB,p2_2(end)+0.05,'P_I^{Eq}','FontSize',18);
+        plot(time,p3_2,'color',state_2_color,'LineWidth',3,'LineStyle','--','DisplayName','P_{I}\rightarrow_{FE}');
         
-        plot(time,p3_1,'color','r','LineWidth',2,'LineStyle','-','DisplayName','P_{C}\rightarrow_{E}') 
-        plot(time,p3_2,'color','b','LineWidth',2,'LineStyle',':','DisplayName','P_{I}\rightarrow_{E}');
-        plot(time,p3_3,'color','g','LineWidth',2,'LineStyle','--','DisplayName','P_{E}\rightarrow_{E}');
+        %Begin in state-3
+        plot(time,p1_3,'color',state_3_color,'LineWidth',3,'LineStyle','-','DisplayName','P_{FE}\rightarrow_{C}');
+        plot(time,p2_3,'color',state_3_color,'LineWidth',3,'LineStyle',':','DisplayName','P_{FE}\rightarrow_{I}');
+        plot(time,p3_3,'color',state_3_color,'LineWidth',3,'LineStyle','--','DisplayName','P_{FE}\rightarrow_{FE}');
+        text(timeUB,p3_3(end)+0.05,'P_{FE}^{Eq}','FontSize',18);
         
         
         lgd = legend;
         lgd.FontSize = 14;
         lgd.Location = 'bestoutside';
-        xlim([-inf,1e-2]);
-        
+        xlim([-inf,timeUB]);
         set(gca,'FontSize',14);
         
     end
@@ -300,14 +303,14 @@ end
 %mean has already been subtracted
 A = [A1,A2,A3];
 PCq = [P1_eq,P2_eq,P3_eq];
-% 
+%
 % cP = zeros(numel(A),numel(A),length(time));
 % cP(1,1,:) = p1_1;
 % cP(2,1,:) = p2_1;
 % cP(3,1,:) = p3_1;
-% cP(1,2,:) = p1_2;
-% cP(2,2,:) = p2_2;
-% cP(3,2,:) = p3_2;
+% cP(1,3,:) = p1_2;
+% cP(2,3,:) = p2_2;
+% cP(3,3,:) = p3_2;
 % cP(1,3,:) = p1_3;
 % cP(2,3,:) = p2_3;
 % cP(3,3,:) = p3_3;
@@ -317,7 +320,7 @@ PCq = [P1_eq,P2_eq,P3_eq];
 % for i = 1:numel(A)
 %     for j = 1:numel(A)
 %         C2_sim2_temp = A(j) * squeeze(cP(j,i,:)) * A(i) * PCq(i);
-%         
+%
 %         %         C2_sim1_temp = A(j) * reshape(cP(j,i,:),numel(cP)) * A(i) * PCq(i);
 %         C2_sim2 = C2_sim2 + C2_sim2_temp;
 %     end
@@ -359,12 +362,12 @@ if plotMode == 1
     clf;
     set(gcf,'Color','w');
     set(gcf,'Name','C2');
-    %subplot(1,2,1)
+    %subplot(1,3,1)
     %TCF2pt = fplot(C2(t),[1e-3,1],'LineWidth',2);      % fplot() was making it hard to plot on loglog scale, so calculate for sPCcfic time range
-%     TCF2pt = plot(time,C2_sim,'LineWidth',2,'DisplayName','C2 one line');
+    %     TCF2pt = plot(time,C2_sim,'LineWidth',3,'DisplayName','C2 one line');
     hold on;
-%     TCF2pt2 = plot(time,C2_sim2,'r--','LineWidth',2,'DisplayName','C2 loops');
-        TCF2pt3 = plot(time,C2_sim3,'g:','LineWidth',2,'DisplayName','C2 loops matrix');
+    %     TCF2pt2 = plot(time,C2_sim2,'r--','LineWidth',3,'DisplayName','C2 loops');
+    TCF2pt3 = plot(time,C2_sim3,'g:','LineWidth',3,'DisplayName','C2 loops matrix');
     
     title('Two point TCF','FontSize',18)
     xlabel('Time','FontSize',14);
@@ -396,9 +399,9 @@ cP_t2 = zeros(numel(A),numel(A),length(time));
 cP_t2(1,1,:) = p1_1_t2 ;
 cP_t2(2,1,:) = p2_1_t2 ;
 cP_t2(3,1,:) = p3_1_t2 ;
-cP_t2(1,2,:) = p1_2_t2 ;
-cP_t2(2,2,:) = p2_2_t2 ;
-cP_t2(3,2,:) = p3_2_t2 ;
+cP_t2(1,3,:) = p1_2_t2 ;
+cP_t2(2,3,:) = p2_2_t2 ;
+cP_t2(3,3,:) = p3_2_t2 ;
 cP_t2(1,3,:) = p1_3_t2 ;
 cP_t2(2,3,:) = p2_3_t2 ;
 cP_t2(3,3,:) = p3_3_t2 ;
