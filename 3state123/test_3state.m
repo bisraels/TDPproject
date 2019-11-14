@@ -4,7 +4,7 @@
 
 clockMode = 1;
 plotMode = 1;
-verboseMode = 0;
+verboseMode = 1;
 
 plotCondProbMode = 1;
 
