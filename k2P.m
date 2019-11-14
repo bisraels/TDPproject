@@ -88,7 +88,6 @@ exp_LamT = diag(exp(Lam * t));
 % disp(['Time to evaluate cP matrix as function of t = ' num2str(elapsedTime)]);
 
 
-  
 tic
 p = vpa(subs(V * exp_LamT * V_inv * InitCond));
 
