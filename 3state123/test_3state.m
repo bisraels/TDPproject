@@ -4,7 +4,7 @@
 
 clockMode = 1;
 plotMode = 1;
-verboseMode = 0;
+verboseMode = 1;
 
 plotCondProbMode = 0;
 
@@ -75,6 +75,9 @@ end
 % Pick random values for the rate constants and FRET states
 %--------------------------------------------------------------------------
 [k12,k13,k21,k23,k31,A1,A2,A3,k32,~] = paramSim_3state123_cyclical();
+% 
+% k12 = 12; k13 = 13; k21 = 21; k31 = 31; k23 = 23;
+% k32 = k12*k23*k31/(k13*k21);
 
 %--------------------------------------------------------------------------
 % Calculate the Eigenvalues and Eigenvectors of K matrix
@@ -209,16 +212,16 @@ if verboseMode == 1
 end
 
 %Make a matrix of conditional probabilites as a funtion of time
-p_notime_sym = V*(C.*LamVec);
+p = V*(C.*LamVec);
 
 %transform the NxN matrix into a (N*N)x1 matrix
-p_notime_sym_line = p_notime_sym(:);
+p_line = p(:);
 
 %Define a time
 time = time_sim();
 
 %Replace pline_sym with the time
-Pline = double(subs(p_notime_sym_line));
+Pline = double(subs(p_line));
 
 %Recast 9xnumel(time) matrix back into original size (NxNxnumel(t))
 P = reshape(Pline, [N N numel(time)]);
@@ -401,7 +404,7 @@ toc
 time_holder = time;
 time = 0;
 %Replace pline_sym with the time
-Pline_tau2 = double(subs(p_notime_sym_line));
+Pline_tau2 = double(subs(p_line));
 %Recast back into original size
 P_tau2 = reshape(Pline_tau2, [N N numel(time)]);
 time = time_holder;

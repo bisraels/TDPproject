@@ -13,9 +13,8 @@
 % MODIFICATION LOG:
 %__________________________________________________________________________
 
-saveMode = 0;
 
-N = 7;
+N = 8;
 
 % Define matrix of c's for our constants
 c = sym('c', [N,N]);
@@ -34,10 +33,7 @@ disp(['Time to find inverse of V = ' num2str(elapsedTime)]);
 
 
 % Find the matrix of all possible initial conditions
-tic
-c_mat  = V_inv * cond;  
-% c_mat = V \ cond;%This way is supposed to be faster. But you need V_inv
-% later
+c_mat  = V_inv * cond;
 elapsedTime = toc;
 disp(['Time to find c matrix = ' num2str(elapsedTime)]);
 % Format: 
@@ -49,18 +45,22 @@ disp(['Time to find c matrix = ' num2str(elapsedTime)]);
 %              cn_1     ...     cn_n
 %
 % Select by COLUMNS for each equation.
+save('wcoef_matSolve_8state_cMatrix.mat','c_mat')
 
 
 
-%% Check results with arbitrary matrix
+%% Check results with arbitrary 8 state matrix
 
-K = [-(12 + 13), 21, 31, 0, 0, 0, 0;...
-    12, -(21 + 23 + 24 + 25), (12*23*31/(13*21)), 42, 52, 0, 0;...
-    13, 23, -(31 + ((12*23*31/(13*21)))), 0, 0, 0, 0;...
-    0, 24, 0, -42, 0, 0, 0;... 
-    0, 25, 0, 0, -(52 + 56), 65, 0;...
-    0, 0, 0, 0, 56, -(65 + 67), 76;...
-    0, 0, 0, 0, 0, 67, -76];
+K = [...
+    -(12 + 13), 21, 31, 0, 0, 0, 0, 0;...
+    12, -(21 + 23 + 24 + 25), (12*23*31/(13*21)), 42, 52, 0, 0, 0;...
+    13, 23, -(31 + ((12*23*31/(13*21)))), 0, 0, 0, 0, 0;...
+    0, 24, 0, -42, 0, 0, 0, 0;... 
+    0, 25, 0, 0, -(52 + 56), 65, 0, 0;...
+    0, 0, 0, 0, 56, -(65 + 67 + 68), 76, 86;...
+    0, 0, 0, 0, 0, 67, -(76+78), 87;...
+    0, 0, 0, 0, 0, 68, 78, -(86 + 87);...
+    ];
 
 [evec, lam] = eig(K);   % Need to sort these to test this solution properly.
 
@@ -141,9 +141,7 @@ elapsedTime = toc;
 disp(['Time to evaluate C matrix = ' num2str(elapsedTime)]);
 
 
-if saveMode == 1
-save('wcoef_matSolve_7state_cMatrix.mat','c_mat')
-end
+
 
 %%
 % Can also solve for cP(t) in this method.

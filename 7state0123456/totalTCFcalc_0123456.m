@@ -108,6 +108,7 @@ K = [-(k01+k02+k03+k04+k05+k06), k10,           k20,              k30,          
         k04,             k14,                   k24,              k34,    -(k40+k41+k42+k43+k45+k46),  k54,               k64;...
         k05,             k15,                   k25,              k35,              k45,      -(k50+k51+k52+k53+k54+k56)  k65;...
         k06,             k16,                   k26,              k36,              k46,               k56,     -(k60+k61+k62+k63+k64+k65)];
+   
     
 % K(4,4) =  -(k30+k31+k32+k34+k35+36) % I don't know why this sums to -56
 % when only k31 is non-zero and it is 20
