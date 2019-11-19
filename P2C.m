@@ -1,6 +1,6 @@
 % function P2C2()
 
-N = 3;
+N = 2;
 
 % Make a symbolic column vector of the discrete probability
 Peq = sym('P%d_eq',[N 1],'positive')  ; %Peq(i) = Pi_eq
@@ -30,7 +30,7 @@ p = v*(c.*lam);
 %     P1_eq*A1*(A3*p3_1 + A2*p2_1 + A1*p1_1);
 
 %--------------------------------------------------------------------------
-% Calculate 2 point TCF
+% Calculate 2 point TCF (Sums using loops)
 %--------------------------------------------------------------------------
 
 if exist('C2','var')
@@ -41,16 +41,24 @@ syms C2;
 for i = 1:numel(A)
     for j = 1:numel(A)
         if i == 1 && j == 1
-            %             C2 = A(j)*p(j,i)*A(i)*Peq(i);   %Long form with eigenvectors, eigenvalues, and expansion coeficcients
+%                         C2 = A(j)*p(j,i)*A(i)*Peq(i);   %Long form with eigenvectors, eigenvalues, and expansion coeficcients
             C2 = A(j)*cP(j,i)*A(i)*Peq(i); %short form with just P3_3
         else
-            %             C2temp = A(j)*p(j,i)*A(i)*Peq(i);
+%                         C2temp = A(j)*p(j,i)*A(i)*Peq(i);
             C2temp = A(j)*cP(j,i)*A(i)*Peq(i);
             C2 =  C2 + C2temp;
         end
     end
 end
+%--------------------------------------------------------------------------
+% Calculate 2 point TCF (Matrix)
+%--------------------------------------------------------------------------
 
+Amat = A.*eye(numel(A));
+% C2test = Amat*p*Amat*Peq;
+C2test = sum(Amat*cP*Amat*Peq);
+
+% return
 %--------------------------------------------------------------------------
 % Calculate 4 point TCF
 %--------------------------------------------------------------------------
