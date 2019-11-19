@@ -238,6 +238,7 @@ end
 %-------------------------------------------------------------------------
 
 %Make a matrix C of expansion coefficient components
+% There is no simpler way to do this as far as we know
 C =[...
    C1_1, C1_2, C1_3, C1_4, C1_5, C1_6, C1_7;...
    C2_1, C2_2, C2_3, C2_4, C2_5, C2_6, C2_7;...
@@ -249,6 +250,7 @@ C =[...
    ];
 disp(C)
 
+%make a modal matrix`
 V = VecSorted;
 
 clear('time');
