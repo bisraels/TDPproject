@@ -11,22 +11,22 @@
 %           P(j,i,t) is the probability of going from i -> j in time t
 %
 % MODLOG:  BI 20191112 Inverse done with '\' not inv() (faster)
-%          CA 
+%          CA
 %__________________________________________________________________________
 
 function [P] = k2P(K,time)
 switch nargin
     case 0
-%                 Simulate a K matrix
-%                 3 state
-%                 k12 = 12; k13 = 13; k21 = 21; k31 = 31; k23 = 23;
-%                 k32 = k12*k23*k31/(k13*k21);
-%         
-%                 K = [(-k12 - k13), k21, k31;...
-%                     k12, (-k21 - k23 ), k32;...
-%                     k13, k23, (-k31-k32);];
-%         
-%                 8state
+        %                 Simulate a K matrix
+        %                 3 state
+        %                 k12 = 12; k13 = 13; k21 = 21; k31 = 31; k23 = 23;
+        %                 k32 = k12*k23*k31/(k13*k21);
+        %
+        %                 K = [(-k12 - k13), k21, k31;...
+        %                     k12, (-k21 - k23 ), k32;...
+        %                     k13, k23, (-k31-k32);];
+        %
+        %                 8state
         K = [...
             -(12 + 13), 21, 31, 0, 0, 0, 0, 0;...
             12, -(21 + 23 + 24 + 25), (12*23*31/(13*21)), 42, 52, 0, 0, 0;...
@@ -39,8 +39,8 @@ switch nargin
             ];
         
         Npts = 150;
-time = [0:9,logspace(1,log10(3e6),Npts)]/1e6;
-
+        time = [0:9,logspace(1,log10(3e6),Npts)]/1e6;
+        
     case 1 %If you give it 1 arguement , assume the gp32 = 0.
         time = 0;
 end
