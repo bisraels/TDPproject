@@ -45,6 +45,8 @@ A = diag([A1; A2; A3; A4; A5; A6; A7]);
 
 c2 = sum(A * p * A * peq);
 
+
+%%
 syms tau1 tau2 tau3
 t = tau1;
 p_tau1 = subs(p);  % Same as for tau 3

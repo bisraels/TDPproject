@@ -173,47 +173,45 @@ sigma_A5 = 0.1;
 sigma_A6 = 0.1;
 sigma_A7 = 0.1;
 sigma_A8 = 0.1;
-% sigma_A9 = 0.1;
-
-sigma_A = [sigma_A1; sigma_A2; sigma_A3; sigma_A4; sigma_A5; sigma_A6; sigma_A7; sigma_A8];
+sigma_A9 = 0.1;
 
 % Need to set bounds for each time constant
 % Set DNA-only states from data fitting of 3state model
-t12_bounds = [1e-6,3000e-6];        %Paramater #1 is high--> med
-t13_bounds = [100e-6,500e-3];       %Paramater #2 is high --> low
-t21_bounds = [1e-6,1e-3];           %Paramater #3 is med --> high
-t23_bounds = [1e-6,10e-3];          %Paramater #4 is med --> low
-t31_bounds = [10e-6,10e-3];         %Paramater #5 is low --> Medium = [1e-3,10e-3];%Paramater #5 %t32 is low --> Medium
+t12_bounds = [1e-6,3000e-6];  %Paramater #1 is high--> med
+t13_bounds = [100e-6,500e-3];    %Paramater #2 is high --> low
+t21_bounds = [1e-6,1e-3];%Paramater #3 is med --> high
+t23_bounds = [1e-6,10e-3];%Paramater #4 is med --> low
+t31_bounds = [10e-6,10e-3];  %Paramater #5 is low --> Medium = [1e-3,10e-3];%Paramater #5 %t32 is low --> Medium
 % *t32 wll be determined by the others in loop
 
 % Protein binding time constants:
-t24_bounds = [1e-6, 1e-1];
-t42_bounds = [1e-6, 1e-1];
-t25_bounds = [1e-6, 1e-1];
-t52_bounds = [1e-6, 1e-1];
-t56_bounds = [1e-6, 1e-1];
+% t24_bounds = 
+% t42_bounds = 
+% t25_bounds = 
+% t52_bounds = 
+% t56_bounds = 
 % * t65_bounds will be determined by others in loop
-t63_bounds = [1e-6, 1e-1];
-t36_bounds = [1e-6, 1e-1];
-t37_bounds = [1e-6, 1e-1];
-t73_bounds = [1e-6, 1e-1];
-t68_bounds = [1e-6, 1e-1];
-t86_bounds = [1e-6, 1e-1];
-t89_bounds = [1e-6, 1e-1];
-t98_bounds = [1e-6, 1e-1];
+% t63_bounds = 
+% t36_bounds = 
+% t37_bounds = 
+% t73_bounds = 
+% t68_bounds = 
+% t86_bounds = 
+% t89_bounds = 
+% t98_bounds = 
 % * t96_bounds will be determined by others in loop
-t69_bounds = [1e-6, 1e-1];
+% t69_bounds = 
 
 % Define bounds of FRET parameters
-A1_bounds = [0.65,1];   % Compact       (higest FRET)            %Paramater #6 % HIGH fret State
-A2_bounds = [0.3,0.65]; % Not extended  (Intermediate FRET)      %Paramater #7 % Med FRET state
-A3_bounds = [0,0.3];    % Extended      (lowest FRET)            %Paramater #8 %Low FRET state
-A4_bounds = [0.3,0.65]; % Not extended
-A5_bounds = [0.3,0.65]; % Not extended
-A6_bounds = [0,0.3];    % Extended
-A7_bounds = [0,0.3];    % Extended
-A8_bounds = [0,0.3];    % Extended
-% A9_bounds = [0,0.3]
+A1_bounds = [0.65,1];%Paramater #6 % HIGH fret State
+A2_bounds = [0.3,0.65];%Paramater #7 % Med FRET state
+A3_bounds = [0,0.3];%Paramater #8 %Low FRET state
+% A4_bounds = 
+% A5_bounds = 
+% A6_bounds =
+% A7_bounds =
+% A8_bounds = 
+% A9_bounds = 
 
 boundsArray = [t12_bounds; t13_bounds; t21_bounds; t23_bounds; t31_bounds;...
     t24_bounds; t42_bounds; t25_bounds; t52_bounds; t56_bounds t63_bounds;...
@@ -534,48 +532,38 @@ for construct_idx = 1:NconstructFolderNames
         genNum = 1;
         tic
         for pop_idx = 1:NmembersInitPop
-            t12 = population(pop_idx,1);  k12 = 1/t12;
-            t13 = population(pop_idx,2);
-            t21 = population(pop_idx,3);
-            t23 = population(pop_idx,4);
-            t31 = population(pop_idx,5);
-            t24 = population(pop_idx,6);
-            t42 = population(pop_idx,7);
-            t25 = population(pop_idx,8);
-            t52 = population(pop_idx,9);
-            t56 = population(pop_idx,10);
-            % * t65_bounds will be determined by others in loop
-            t63 = population(pop_idx,11);
-            t36 = population(pop_idx,12);
-            t37 = population(pop_idx,13);
-            t73 = population(pop_idx,14);
-            t68 = population(pop_idx,15);
-            t86 = population(pop_idx,16);
-%             t89 = population(pop_idx,17);
-%             t98 = population(pop_idx,18);
-            % * t96_bounds will be determined by others in loop
-%             t69 = population(pop_idx,20);
-            
-            A1 = population(pop_idx,21);
-            A2 = population(pop_idx,22);
-            A3 = population(pop_idx,23);
-            A4 = population(pop_idx,24);
-            A5 = population(pop_idx,25);
-            A6 = population(pop_idx,26);
-            A7 = population(pop_idx,27);
-            A8 = population(pop_idx,28);
-%             A9 = population(pop_idx,29);
-            
-          if plotMode == 1
-                %--------------------------------------------------------------------------
-                % gen1: Plot the array of initial guesses             (PART 3: Gen1)
-                %--------------------------------------------------------------------------
-                if plot_Gen1_memberGuessesMode == 1
-                    %--------------------------------------------------------------------------
-                    % (1) Optimization Target #1: 1-D FRET HISTOGRAM  (PART 3: Gen1)
-                    %--------------------------------------------------------------------------
-                    if fitHistMode == 1
-                        Peq = histMaker_Nstate(p, A, sigma_A);
+%             t12 = population(pop_idx,1);
+%             t13 = population(pop_idx,2);
+%             t21 = population(pop_idx,3);
+%             t23 = population(pop_idx,4);
+%             t31 = population(pop_idx,5);
+%             t24 = population(pop_idx,6)
+%             t42 = population(pop_idx,7)
+%             t25 = population(pop_idx,8)
+%             t52 = population(pop_idx,9)
+%             t56 = population(pop_idx,10)
+%             * t65_bounds will be determined by others in loop
+%             t63 = population(pop_idx,11)
+%             t36 = population(pop_idx,12)
+%             t37 = population(pop_idx,13)
+%             t73 = population(pop_idx,14)
+%             t68 = population(pop_idx,15)
+%             t86 = population(pop_idx,16)
+%             t89 = population(pop_idx,17)
+%             t98 = population(pop_idx,18)
+%             * t96_bounds will be determined by others in loop
+%             t69 = population(pop_idx,20)
+%             
+%             A1 = population(pop_idx,21);
+%             A2 = population(pop_idx,22);
+%             A3 = population(pop_idx,23);
+%             A4 = population(pop_idx,24)
+%             A5 = population(pop_idx,25)
+%             A6 = population(pop_idx,26)
+%             A7 = population(pop_idx,27)
+%             A8 = population(pop_idx,28)
+%             A9 = population(pop_idx,29)
+
 
 
 
