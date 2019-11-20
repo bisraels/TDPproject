@@ -3,30 +3,30 @@
 %
 % CREATED:  November 2019
 %
-% PURPOSE:  Solve the master equation for a rate matrix K
+% PURPOSE:  Solve the master equation for a rate matrix K numerically
 %
 % INPUT     k (rate matrix)
 %
 % OUTPUT:   P (matrix of conditional probabilites)
 %           P(j,i,t) is the probability of going from i -> j in time t
 %
-% MODLOG:  BI 20191112 Inverse done with '\' not inv()
-%          CA 
+% MODLOG:  BI 20191112 Inverse done with '\' not inv() (faster)
+%          CA
 %__________________________________________________________________________
 
 function [P] = k2P(K,time)
 switch nargin
     case 0
-%                 Simulate a K matrix
-%                 3 state
-%                 k12 = 12; k13 = 13; k21 = 21; k31 = 31; k23 = 23;
-%                 k32 = k12*k23*k31/(k13*k21);
-%         
-%                 K = [(-k12 - k13), k21, k31;...
-%                     k12, (-k21 - k23 ), k32;...
-%                     k13, k23, (-k31-k32);];
-%         
-%                 8state
+        %                 Simulate a K matrix
+        %                 3 state
+        %                 k12 = 12; k13 = 13; k21 = 21; k31 = 31; k23 = 23;
+        %                 k32 = k12*k23*k31/(k13*k21);
+        %
+        %                 K = [(-k12 - k13), k21, k31;...
+        %                     k12, (-k21 - k23 ), k32;...
+        %                     k13, k23, (-k31-k32);];
+        %
+        %                 8state
         K = [...
             -(12 + 13), 21, 31, 0, 0, 0, 0, 0;...
             12, -(21 + 23 + 24 + 25), (12*23*31/(13*21)), 42, 52, 0, 0, 0;...
@@ -38,8 +38,10 @@ switch nargin
             0, 0, 0, 0, 0, 68, 78, -(86 + 87);...
             ];
         
-      time = time_sim;
-    case 1
+        Npts = 150;
+        time = [0:9,logspace(1,log10(3e6),Npts)]/1e6;
+        
+    case 1 %If you give it 1 arguement , assume the gp32 = 0.
         time = 0;
 end
 % Determine the number of states in the system
@@ -64,7 +66,7 @@ InitCond = eye(N);
 
 % Find the matrix of all possible initial conditions
 tic
-C  = V \ InitCond; %V_inv * cond;
+C  = V \ InitCond; %V_inv * InitCond;
 elapsedTime = toc;
 disp(['Time to find C matrix = ' num2str(elapsedTime)]);
 % Format:
@@ -83,13 +85,13 @@ syms t
 
 exp_LamT = diag(exp(Lam * t));
 % tic
-% cP(t) = vpa(subs(V * exp_LamT * V_inv * cond));
+% cP(t) = vpa(subs(V * exp_LamT * V_inv * InitCond));
 % elapsedTime = toc;
 % disp(['Time to evaluate cP matrix as function of t = ' num2str(elapsedTime)]);
 
 
-  
 tic
+%equivalent to P = U * exp(lam*t) * C
 p = vpa(subs(V * exp_LamT * V_inv * InitCond));
 
 %P(j,i) is the probability of going from i --> j in time t

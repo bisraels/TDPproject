@@ -39,8 +39,6 @@ eq_sum = p1_eq + p2_eq + p3_eq == 1;
 eqns = [eqn1,eqn2,eqn3,eqn4,eqn5,eqn6,eqn7,eqn8,eqn9,eq_sum];
 vars = [c1_1, c1_2, c1_3, c2_1, c2_2, c2_3, c3_1, c3_2, c3_3];
 
-eqns
-vars
 sol = solve(eqns,vars)
 
 p1_eq = (sol.c1_1)*v1_1;

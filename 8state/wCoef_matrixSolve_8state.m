@@ -36,6 +36,7 @@ disp(['Time to find inverse of V = ' num2str(elapsedTime)]);
 c_mat  = V_inv * cond;
 elapsedTime = toc;
 disp(['Time to find c matrix = ' num2str(elapsedTime)]);
+
 % Format: 
 %      c_mat = c1_1, c1_2, ..., c1_n;
 %              c2_1, c2_2, ..., c2_n;

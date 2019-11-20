@@ -13,6 +13,7 @@
 % MODIFICATION LOG:
 %__________________________________________________________________________
 
+saveMode = 0;
 
 N = 3;
 
@@ -20,20 +21,21 @@ N = 3;
 c = sym('c', [N,N]);
 
 % Define matrix of the eigenvector components
-V = sym('v',[N,N]).' ;
+v = sym('v',[N,N]).' ;
 
 % Use identity matrix to define the possible conditions
-cond = eye(N);
+P0 = eye(N);
 
 % Find the inverse of the matrix of eigenvectors
 tic
-V_inv = inv(V);
+v_inv = inv(v);
 elapsedTime = toc;
 disp(['Time to find inverse of V = ' num2str(elapsedTime)]);
 
-
+tic
 % Find the matrix of all possible initial conditions
-c_mat  = V_inv * cond;
+% c_mat  = v_inv * P0;    %Slower
+c_mat  = P0 \ v;          %Faster
 elapsedTime = toc;
 disp(['Time to find c matrix = ' num2str(elapsedTime)]);
 % Format: 
@@ -45,8 +47,9 @@ disp(['Time to find c matrix = ' num2str(elapsedTime)]);
 %              cn_1     ...     cn_n
 %
 % Select by COLUMNS for each equation.
+if saveMode ==1 
 save('wcoef_matSolve_3state_cMatrix.mat','c_mat')
-
+end
 %--------------------------------------------------------------------------
 % Pick random values for the rate constants and FRET states
 %--------------------------------------------------------------------------
@@ -109,15 +112,15 @@ exp_LamT = diag(exp(lam_sort * t));
 tic
 
 % Prob: 1  --> j
-cPj_1(t) = vpa(subs(V * exp_LamT * V_inv * cond(:,1)));
+cPj_1(t) = vpa(subs(v * exp_LamT * v_inv * P0(:,1)));
 % Prob: 2  --> j
-cPj_2(t) = vpa(subs(V * exp_LamT * V_inv * cond(:,2)));
+cPj_2(t) = vpa(subs(v * exp_LamT * v_inv * P0(:,2)));
 % Prob: 3  --> j
-cPj_3(t) = vpa(subs(V * exp_LamT * V_inv * cond(:,3)));
+cPj_3(t) = vpa(subs(v * exp_LamT * v_inv * P0(:,3)));
 
 elapsedTime = toc;
 disp(['Time to evaluate cPj_i function of t = ' num2str(elapsedTime)]);
 
 
 
-P = vpa(subs(V * exp_LamT * V_inv * cond));
+P = vpa(subs(v * exp_LamT * v_inv * P0));
