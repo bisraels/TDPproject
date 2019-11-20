@@ -6,7 +6,7 @@
 % PURPOSE:  Create histograms for any model
 %
 % INPUT:    (1) Conditional Prpbability matrix (P, from k2P)
-%           (2) The FRET values for the model  (A)
+%           (2) The FRET value s for the model  (A)
 %
 % OUTPUT:   (1) FRET Histogram
 %
@@ -14,12 +14,40 @@
 %
 %--------------------------------------------------------------------------
 
+% global plotMode verboseMode
+
+
+function [Peq] = histMaker_Nstate(p, A, sigma_A)
+%--------------------------------------------------------------------------
+% PARAMETERS TO GET THE FUNCTION WORKING:
+
 plotMode = 1;
 verboseMode = 1;
+% % A = sym('A',[N,1]);
+% A = [0.1; 0.2; 0.3; 0.4; 0.5; 0.6; 0.7]; % example to get working
+% syms t
+% 
+% K = [-25,  21,     31,         0,     0,       0,       0;...   %1
+%     12,    -93,    2852/91,    42,    52,      0,       0;...   %2
+%     13,    23,  -(31+2852/91), 0,     0,       0,       0;...   %3
+%     0,     24,  0,             -42,   0,       0,       0;...   %4
+%     0,     25,  0,              0,    -108,    65,      0;...   %5
+%     0,     0,   0,              0,      56,  -(65+67),  76;...  %6
+%     0,     0,   0,              0,       0,     67,     -(76)]; %7
+% p = k2P(K,t);
+% sigma_A1 = 0.15;
+% sigma_A2 = 0.1;
+% sigma_A3 = 0.1;
+% sigma_A4 = 0.1;
+% sigma_A5 = 0.1;
+% sigma_A6 = 0.1;
+% sigma_A7 = 0.1;
+% sigma_A = [sigma_A1; sigma_A2; sigma_A3; sigma_A4; sigma_A5; sigma_A6; sigma_A7];
 
-% function [Peq] = histMaker_Nstate(p, A, sigma_A)
+%--------------------------------------------------------------------------
 
-long_time = 300;
+
+long_time = 3000000;
 time = long_time;
 t = time;
 peq = diag(p);
@@ -27,15 +55,17 @@ Peq = double(subs(peq));
 
 if verboseMode == 1
     if (sum(Peq) - 1)  < 1e-9
-        disp('Equilibrium probabilities sum to 1!')
+        disp('Equilibrium probabilities sum to 1! (within 1e-9 error)')
     else
-        disp('Equilibrium probabilities do NOT sum to 1!')
+        disp('Equilibrium probabilities do NOT sum to 1! (within 1e-9 error)')
+        disp('The difference from one is:')
+        disp(sum(Peq)  - 1)
+       
     end
 end
 
 N = length(Peq);
 
-A = sym('A',[N,1]);
 
 if plotMode == 1
     figure(1);
@@ -86,5 +116,5 @@ if plotMode == 1
     
 end
 
-% end
+end
 
