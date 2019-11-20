@@ -14,10 +14,11 @@ Peq = P(:,1,end);   %The first element of each row is Pj,1(inf) (eq pop)
 
 %Make a symbolic row vector of the FRET Values
 % A = sym('A%d',[1 N],'positive');         %A(i) = Ai
-A = rand(1,N);
+A = linspace(0,1,N);
 
 % Make a symbolic matrix of the conditional probability
 % cP = sym('P',[N N]);        %cP(m,n) = Pm_n
+
 
 %--------------------------------------------------------------------------
 % Calculate 2 point TCF (with loop)
@@ -25,6 +26,9 @@ A = rand(1,N);
 time = time_sim;
 Npts = numel(time);
 C2_sim = zeros(size(time));
+%Subtract the mean FRET 
+Amean = sum(Peq.*A');
+A = A - Amean;
 tic
 for i = 1:numel(A)
     for j = 1:numel(A)
@@ -40,8 +44,17 @@ disp(['Time to calculate C2 for N = ' num2str(N) ' = ' num2str(elapsedTime) ' se
 %--------------------------------------------------------------------------
 % Calculate 2 point TCF (with matrix)
 %--------------------------------------------------------------------------
+%%
+A = linspace(0,1,N);
 Amat = A.*eye(N);
-C2test = sum(Amat*P*Amat*Peq);
+Amat3D = ones(N,N,length(time));
+Peq2D = ones(N,length(time));
+for i = 1:length(time)
+    Amat3D(:,:,i) = Amat;
+    Peq2D(:,i) = Peq;
+end
+% C2test = sum(Amat*P*Amat*Peq);
+C2test = sum(Amat3D*P*Amat3D*Peq2D);
 
 
 

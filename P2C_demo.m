@@ -55,9 +55,16 @@ end
 %--------------------------------------------------------------------------
 
 Amat = A.*eye(N);
-C2test = sum(Amat*cP*Amat*Peq)
+C2test = sum(Amat*cP*Amat*Peq);
+time = time_sim;
+Amat3D = Amat;
+Peq2D = Peq;
+for i = 1:length(time)-1
+    Amat3D = cat(3,Amat3D,Amat);
+    Peq2D(:,i) = cat(Peq2D,Peq);
+end
 
-
+% C2 = Amat3D
 %--------------------------------------------------------------------------
 % Calculate 4 point TCF
 %--------------------------------------------------------------------------
