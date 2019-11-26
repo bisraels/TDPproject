@@ -173,44 +173,46 @@ sigma_A5 = 0.1;
 sigma_A6 = 0.1;
 sigma_A7 = 0.1;
 sigma_A8 = 0.1;
-sigma_A9 = 0.1;
+% sigma_A9 = 0.1;
+
+sigma_A = [sigma_A1; sigma_A2; sigma_A3; sigma_A4; sigma_A5; sigma_A6; sigma_A7; sigma_A8];
 
 % Need to set bounds for each time constant
 % Set DNA-only states from data fitting of 3state model
-t12_bounds = [1e-6,3000e-6];  %Paramater #1 is high--> med
-t13_bounds = [100e-6,500e-3];    %Paramater #2 is high --> low
-t21_bounds = [1e-6,1e-3];%Paramater #3 is med --> high
-t23_bounds = [1e-6,10e-3];%Paramater #4 is med --> low
-t31_bounds = [10e-6,10e-3];  %Paramater #5 is low --> Medium = [1e-3,10e-3];%Paramater #5 %t32 is low --> Medium
+t12_bounds = [1e-6,3000e-6];        %Paramater #1 is high--> med
+t13_bounds = [100e-6,500e-3];       %Paramater #2 is high --> low
+t21_bounds = [1e-6,1e-3];           %Paramater #3 is med --> high
+t23_bounds = [1e-6,10e-3];          %Paramater #4 is med --> low
+t31_bounds = [10e-6,10e-3];         %Paramater #5 is low --> Medium = [1e-3,10e-3];%Paramater #5 %t32 is low --> Medium
 % *t32 wll be determined by the others in loop
 
 % Protein binding time constants:
-t24_bounds = [1e-6, 1e-1]
-t42_bounds = [1e-6, 1e-1]
-t25_bounds = [1e-6, 1e-1]
-t52_bounds = [1e-6, 1e-1]
-t56_bounds = [1e-6, 1e-1]
-* t65_bounds will be determined by others in loop
-t63_bounds = [1e-6, 1e-1]
-t36_bounds = [1e-6, 1e-1]
-t37_bounds = [1e-6, 1e-1]
-t73_bounds = [1e-6, 1e-1]
-t68_bounds = [1e-6, 1e-1]
-t86_bounds = [1e-6, 1e-1]
-t89_bounds = [1e-6, 1e-1]
-t98_bounds = [1e-6, 1e-1]
-* t96_bounds will be determined by others in loop
-t69_bounds = [1e-6, 1e-1]
+t24_bounds = [1e-6, 1e-1];
+t42_bounds = [1e-6, 1e-1];
+t25_bounds = [1e-6, 1e-1];
+t52_bounds = [1e-6, 1e-1];
+t56_bounds = [1e-6, 1e-1];
+% * t65_bounds will be determined by others in loop
+t63_bounds = [1e-6, 1e-1];
+t36_bounds = [1e-6, 1e-1];
+t37_bounds = [1e-6, 1e-1];
+t73_bounds = [1e-6, 1e-1];
+t68_bounds = [1e-6, 1e-1];
+t86_bounds = [1e-6, 1e-1];
+t89_bounds = [1e-6, 1e-1];
+t98_bounds = [1e-6, 1e-1];
+% * t96_bounds will be determined by others in loop
+t69_bounds = [1e-6, 1e-1];
 
 % Define bounds of FRET parameters
-A1_bounds = [0.65,1];   % Compact (higest FRET)            %Paramater #6 % HIGH fret State
-A2_bounds = [0.3,0.65]; % Not extended            %Paramater #7 % Med FRET state
-A3_bounds = [0,0.3];    % Extended             %Paramater #8 %Low FRET state
-A4_bounds = [0.3,0.65];  % Not extended
-A5_bounds = [0.3,0.65];  % Not extended
-A6_bounds = [0,0.3]     % Extended
-A7_bounds = [0,0.3]     % Extended
-A8_bounds = [0,0.3]     % Extended
+A1_bounds = [0.65,1];   % Compact       (higest FRET)            %Paramater #6 % HIGH fret State
+A2_bounds = [0.3,0.65]; % Not extended  (Intermediate FRET)      %Paramater #7 % Med FRET state
+A3_bounds = [0,0.3];    % Extended      (lowest FRET)            %Paramater #8 %Low FRET state
+A4_bounds = [0.3,0.65]; % Not extended
+A5_bounds = [0.3,0.65]; % Not extended
+A6_bounds = [0,0.3];    % Extended
+A7_bounds = [0,0.3];    % Extended
+A8_bounds = [0,0.3];    % Extended
 % A9_bounds = [0,0.3]
 
 boundsArray = [t12_bounds; t13_bounds; t21_bounds; t23_bounds; t31_bounds;...
@@ -549,10 +551,10 @@ for construct_idx = 1:NconstructFolderNames
             t73 = population(pop_idx,14);
             t68 = population(pop_idx,15);
             t86 = population(pop_idx,16);
-            t89 = population(pop_idx,17);
-            t98 = population(pop_idx,18);
+%             t89 = population(pop_idx,17);
+%             t98 = population(pop_idx,18);
             % * t96_bounds will be determined by others in loop
-            t69 = population(pop_idx,20);
+%             t69 = population(pop_idx,20);
             
             A1 = population(pop_idx,21);
             A2 = population(pop_idx,22);
@@ -562,7 +564,56 @@ for construct_idx = 1:NconstructFolderNames
             A6 = population(pop_idx,26);
             A7 = population(pop_idx,27);
             A8 = population(pop_idx,28);
-            A9 = population(pop_idx,29);
+%             A9 = population(pop_idx,29);
+
+          % Define rates, kij, from the tij's
+          k12 = 1/t12;
+          k13 = 1/t13;
+          k21 = 1/t21;
+          k23 = 1/t23;
+          K32 = 1/t32;
+          k31 = 1/t31;
+          k24 = 1/t24;
+          k42 = 1/t42;
+          k25 = 1/t25;
+          k52 = 1/t52;
+          k56 = 1/t56;
+          k65 = 1/t65;
+          k63 = 1/t63;
+          k36 = 1/t36;
+          k37 = 1/t37;
+          k73 = 1/t73;
+          k68 = 1/t68;
+          k86 = 1/t86;
+%           k89 = 1/t89;
+%           k98 = 1/t98;
+%           t96 = 1/t96;
+%           t69 = 1/t69;
+
+         % Define K matrix
+         % 8 state model:
+         K = [-(k12+k13),  k21, k31, 0, 0, 0, 0, 0;...
+             k12, -(k21+k23+k24+k25), k32, k42, k52, 0, 0, 0;...
+             k13, k23, -(k31+k32+k37), 0, 0, 0, k73, 0;...
+             0, k24, 0, -k42, 0, 0, 0, 0;...
+             0, k25, 0, 0, -(k52+k56), k65, 0, 0;...
+             0, 0, k36, 0, k56, -(k65+k63+k68), 0, k86;...
+             0, 0, 0, 0, 0, k67, -k76, 0;...
+             0, 0, 0, 0, 0, k68, 0, -k86;]
+         
+%          % 9 state model:
+%          K = [-(k12+k13),  k21, k31, 0, 0, 0, 0, 0, 0;...
+%              k12, -(k21+k23+k24+k25), k32, k42, k52, 0, 0, 0,0 ;...
+%              k13, k23, -(k31+k32+k36), 0, 0, k63, 0, 0, 0;...
+%              0, k24, 0, -k42, 0, 0, 0, 0, 0;...
+%              0, k25, 0, 0, -(k52+k56), k65, 0, 0, 0;...
+%              0, 0, 0, 0, k56, -(k65+k67+k68+k69), k76, k86, k96;...
+%              0, 0, 0, 0, 0, k67, -k76, 0, 0;...
+%              0, 0, 0, 0, 0, k68, 0, -(k86+k89), k98;...
+%              0, 0, 0, 0, 0, k69, 0, k89, -(k96+k98)]
+         
+         
+         
             
           if plotMode == 1
                 %--------------------------------------------------------------------------
@@ -573,7 +624,7 @@ for construct_idx = 1:NconstructFolderNames
                     % (1) Optimization Target #1: 1-D FRET HISTOGRAM  (PART 3: Gen1)
                     %--------------------------------------------------------------------------
                     if fitHistMode == 1
-
+                        Peq = histMaker_Nstate(p, A, sigma_A);
 
 
 

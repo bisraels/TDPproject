@@ -1,6 +1,6 @@
 % function P2C2()
 
-N = 2;
+N = 3;
 
 % Make a symbolic column vector of the discrete probability
 Peq = sym('P%d_eq',[N 1],'positive')  ; %Peq(i) = Pi_eq
