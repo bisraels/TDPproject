@@ -92,7 +92,7 @@ lam = exp(sym('eval',[N 1])*'time');    %lam(i) = exp(evali*time)
 %make a symbolic figure
 p = v*(c.*lam);
 
-k = sym('k',[N N]).'
+k = sym('k%d%d',[N,N]).';
 for i = 1:N
     k(i,i) = 0;
     k(i,i) = -sum(k(:,i));

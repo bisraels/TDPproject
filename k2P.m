@@ -14,7 +14,7 @@
 %          CA
 %__________________________________________________________________________
 
-function [P, V] = k2P(K,time)
+function [P, V, time] = k2P(K,time)
 switch nargin
     case 0
         %                 Simulate a K matrix

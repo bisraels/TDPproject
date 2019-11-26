@@ -1,14 +1,14 @@
 function [k12,k13,k21,k23,k31,A1,A2,A3,k32,time] = paramSim_3state123_cyclical()
-t12_bounds = [1e-6,1000e-6];  %Paramater #1 is high--> med
+t12_bounds = [1e-6,1000e-6];    %Paramater #1 is high--> med
 t13_bounds = [100e-6,10e-3];    %Paramater #2 is high --> low
-t21_bounds = [1e-6,1e-3];%Paramater #3 is med --> high
-t23_bounds = [1e-6,10e-3];%Paramater #4 is med --> low
-t31_bounds = [10e-6,10e-3];  %Paramater #5 is low --> Medium = [1e-3,10e-3];%Paramater #5 %t32 is low --> Medium
+t21_bounds = [1e-6,1e-3];       %Paramater #3 is med --> high
+t23_bounds = [1e-6,10e-3];      %Paramater #4 is med --> low
+t31_bounds = [10e-6,10e-3];     %Paramater #5 is low --> Medium = [1e-3,10e-3];%Paramater #5 %t32 is low --> Medium
 % *t32 wll be determined by the other rates
 
-A1_bounds = [0.65,0.85];%Paramater #6 % HIGH fret State
-A2_bounds = [0.45,0.65];%Paramater #7 % Med FRET state
-A3_bounds = [0.30,0.45];%Paramater #8 %Low FRET state
+A1_bounds = [0.65,0.85];        %Paramater #6 % HIGH fret State
+A2_bounds = [0.45,0.65];        %Paramater #7 % Med FRET state
+A3_bounds = [0.30,0.45];        %Paramater #8 %Low FRET state
 boundsArray = [t12_bounds;t13_bounds;t21_bounds;t23_bounds;t31_bounds;A1_bounds;A2_bounds;A3_bounds];
 
 Nparams = length(boundsArray);
@@ -38,3 +38,4 @@ k32 = k12*k23*k31/(k13*k21);
 
 Npts = 150;
 time = [0:9,logspace(1,log10(3e6),Npts)]/1e6;
+
