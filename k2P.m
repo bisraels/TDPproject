@@ -65,19 +65,19 @@ N = length(K);
 V = Evec(:,ind);        % V is the mode matrix (Each column is an eigenvector)
 
 % Find the inverse of the matrix of eigenvectors
-tic
+% tic
 V_inv = inv(V);
-elapsedTime = toc;
-disp(['Time to find inverse of V = ' num2str(elapsedTime)]);
+% elapsedTime = toc;
+% disp(['Time to find inverse of V = ' num2str(elapsedTime)]);
 
 % Use identity matrix to define the Initial conditions (Boundary conditions)
 InitCond = eye(N);
 
 % Find the matrix of all possible initial conditions
-tic
+% tic
 C  = V \ InitCond; %V_inv * InitCond;
-elapsedTime = toc;
-disp(['Time to find C matrix = ' num2str(elapsedTime)]);
+% elapsedTime = toc;
+% disp(['Time to find C matrix = ' num2str(elapsedTime)]);
 % Format:
 %      c_mat = c1_1, c1_2, ..., c1_n;
 %              c2_1, c2_2, ..., c2_n;
@@ -99,17 +99,18 @@ exp_LamT = diag(exp(Lam * t));
 % disp(['Time to evaluate cP matrix as function of t = ' num2str(elapsedTime)]);
 
 
-tic
+% tic
 %equivalent to P = U * exp(lam*t) * C
 p = vpa(subs(V * exp_LamT * V_inv * InitCond));
 
 %P(j,i) is the probability of going from i --> j in time t
-elapsedTime = toc;
-disp(['Time to evaluate P(j,i) function of t = ' num2str(elapsedTime)]);
+% elapsedTime = toc;
+% disp(['Time to evaluate P(j,i) function of t = ' num2str(elapsedTime)]);
 
 % %Note: To substitute in time, do so like this:
 t = time;
 % t = 0:.1:1;
 % tic
 P = reshape(subs(p(:)),[N N numel(t)]);
+P = double(P);
 % toc

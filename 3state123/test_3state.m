@@ -80,7 +80,7 @@ end
 % k32 = k12*k23*k31/(k13*k21);
 % A1 = .1; A2 = .2; A3 = .3;
 
-load('BestFitResults_fmincon.mat','A1','A2','A3','k12','k13','k21','k23','k32')
+load('BestFitResults_fmincon.mat','A1','A2','A3','k12','k13','k21','k23','k32','k31')
 %--------------------------------------------------------------------------
 % Calculate the Eigenvalues and Eigenvectors of K matrix
 %--------------------------------------------------------------------------
@@ -409,20 +409,20 @@ cP_t2(3,3,:) = p3_3_t2 ;
 %-------------------------------------------------------------------------
 % Iterate over all the PCrmutations of FRET States
 %-------------------------------------------------------------------------
-tic
-C4 = zeros(numel(time),numel(time));
-for i = 1:numel(A)
-    for j = 1:numel(A)
-        for k = 1:numel(A)
-            for l = 1:numel(A)
-                C4term_val =  A(l) *squeeze(cP(l,k,:)) * A(k) * cP_t2(k,j) * A(j) * squeeze(cP(j,i,:))'* A(i) * PCq(i);
-                C4 = C4 + C4term_val;
-            end
-        end
-    end
-end
-disp('    time to calculate C4 using loops and squeeze');
-toc
+% tic
+% C4 = zeros(numel(time),numel(time));
+% for i = 1:numel(A)
+%     for j = 1:numel(A)
+%         for k = 1:numel(A)
+%             for l = 1:numel(A)
+%                 C4term_val =  A(l) *squeeze(cP(l,k,:)) * A(k) * cP_t2(k,j) * A(j) * squeeze(cP(j,i,:))'* A(i) * PCq(i);
+%                 C4 = C4 + C4term_val;
+%             end
+%         end
+%     end
+% end
+% disp('    time to calculate C4 using loops and squeeze');
+% toc
 
 %-------------------------------------------------------------------------
 % Iterate over all the PCrmutations of FRET States (MAtrix Methods)
