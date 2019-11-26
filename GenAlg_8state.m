@@ -55,6 +55,7 @@ close all
 %\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 modelName = '8state';
 protein_str = 'gp32_0p5uM';
+% protein_str = '0p5uMgp32';
 
 % constructFolderNames = {'S4S5'};
 constructFolderNames = {'S1S2'};
@@ -69,7 +70,7 @@ maxGenerations = 1000;
 maxRepeats = 10;
 percentReproduce = 25;          % top 25% combine together (can be mutated)
 percentToKeep = 50;             % Number of population to pass to next gen (can be mutated)
-Nmutations = 1*NmemberInitPop;  % Number of mutations per generation
+Nmutations = 1*NmembersInitPop;  % Number of mutations per generation
 threshold = 0.001;              % Minimal allowable percentage  difference before program quits.
 maxIterations = 1006;           % How is this different than maxGenerations?
 forceMoreIterationsMode = 1;    % Independent iterations
@@ -79,13 +80,13 @@ NumberToExtend = 1;
     % Why? What are these really doing in the GenAlg process?
     
 %-------------------DERIVED PARAMATERS------------------
-Nreproduct = round(NmembersInitPop * percentReproduce/100);  % # individuals who reproduce per generation.
+Nreproduce = round(NmembersInitPop * percentReproduce/100);  % # individuals who reproduce per generation.
 membersToKeep = NmembersInitPop * percentToKeep/100;
 
 %--------------------------------------------------------------------------
 % Declare global variables
 %--------------------------------------------------------------------------
-global normalizeMode verboseMode guessUpdateMode diagnoseMode useAnalyticalAlgorithmsMode plotMode
+global normalizeMode verboseMode guessUpdateMode diagnoseMode plotMode %useAnalyticalAlgorithmsMode 
 global genNum fitHistMode fitC2Mode fitC4Mode
 global targetHistogram weightingFactor_FREThist FRET_bins sigma_A1 sigma_A2 sigma_A3 sigma_A4 sigma_A5 sigma_A6 sigma_A7 sigma_A8 sigma_A9  % Histogram optimization
 global C2_exp_x C2_exp_y weightingFactor_C2  weightC2func yoff
@@ -108,7 +109,7 @@ plot_Gen1_memberGuessesMode = 0; % Figure(1-2-3): Plots Histograms, C2, C4 of Ge
 plot_Gen1ChiSquaredMode = 0;     % Figure(4): Adds a point to the chi-sq vs member plot (plot4) (SLOW); Plot statistics from the first generation (informative)
 
 plot_GenerationalProgressMode = 1; % Figure 4: Gray circles on Fig(4); Plot a generational update with best fit from the current generation
-plot_parameter_histogram_mode = 0; % Figure 5
+plot_paramater_histogram_mode = 0; % Figure 5
 
 plot_model_GenerationalUpdatesMode = 1;       % Figure 6: Makes a model of the system with rates between states EACH GENERATIOON
 plot_GenerationalChiSquaredHistogramMode = 0; % Figure 7: Histogram of chi-squared values
@@ -131,18 +132,19 @@ if sum([fitHistMode,fitC2Mode,fitC4Mode]) == 0
 end
 
 %**************************************************************************
-useAnalyticalAlgorithmsMode = 1;
-if useAnalyticalAlgorithmsMode == 1
-    if verboseMode == 1
-        disp('     ***using ANALYTICAL algorithms');
-    end
-else
-    if verboseMode == 1
-        disp('     ***using NUMERICAL algorithms');
-        disp('           ==> Loading the conditional probabilities as a function of rates');   % Change this to a function of eigenvector components?
-    end
-    load('filename')
-end
+% REMOVE: ONLY HAVE NUMERICAL
+% useAnalyticalAlgorithmsMode = 1;
+% if useAnalyticalAlgorithmsMode == 1
+%     if verboseMode == 1
+%         disp('     ***using ANALYTICAL algorithms');
+%     end
+% else
+%     if verboseMode == 1
+%         disp('     ***using NUMERICAL algorithms');
+%         disp('           ==> Loading the conditional probabilities as a function of rates');   % Change this to a function of eigenvector components?
+%     end
+%     load('filename')
+% end
 
 %**************************************************************************
 ContributionArray = zeros(1,3);
@@ -216,11 +218,13 @@ A8_bounds = [0,0.3];    % Extended
 % A9_bounds = [0,0.3]
 
 boundsArray = [t12_bounds; t13_bounds; t21_bounds; t23_bounds; t31_bounds;...
-    t24_bounds; t42_bounds; t25_bounds; t52_bounds; t56_bounds t63_bounds;...
-    t36_bounds; t37_bounds; t73_bounds; t68_bounds; t86_bounds; t89_bounds;...
-    t98_bounds; t69_bounds;...
+    t24_bounds; t42_bounds; t25_bounds; t52_bounds; t56_bounds; t63_bounds;...
+    t36_bounds; t37_bounds; t73_bounds; t68_bounds; t86_bounds;...
     A1_bounds; A2_bounds; A3_bounds; A4_bounds; A5_bounds;A6_bounds; A7_bounds;...
-    A8_bounds; A9_bounds];
+    A8_bounds;];
+
+% boundsArray entries removed for 8 state (put back  for 9state):
+% t89_bounds; t98_bounds; t69_bounds; A9_bounds;
 
 Nparam = length(boundsArray);
 maxMutationCountsArray = zeros(1, Nparam);
@@ -240,8 +244,8 @@ t25_mutate = Max_mut_factor * t25_bounds(2)/2;
 t52_mutate = Max_mut_factor * t52_bounds(2)/2;
 t56_mutate = Max_mut_factor * t56_bounds(2)/2; 
 % t65  -> detailed balance
-t63_mutate = Max_mut_factor * t67_bounds(2)/2;
-t36_mutate = Max_mut_factor * t76_bounds(2)/2;
+t63_mutate = Max_mut_factor * t63_bounds(2)/2;
+t36_mutate = Max_mut_factor * t36_bounds(2)/2;
 t37_mutate = Max_mut_factor * t37_bounds(2)/2; 
 t73_mutate = Max_mut_factor * t73_bounds(2)/2;
 t68_mutate = Max_mut_factor * t68_bounds(2)/2;
@@ -259,14 +263,14 @@ A5_mutate = (A5_bounds(2) - A5_bounds(1))*0.1;
 A6_mutate = (A6_bounds(2) - A6_bounds(1))*0.1;
 A7_mutate = (A7_bounds(2) - A7_bounds(1))*0.1;
 A8_mutate = (A8_bounds(2) - A8_bounds(1))*0.1;
-A9_mutate = (A9_bounds(2) - A9_bounds(1))*0.1;
+% A9_mutate = (A9_bounds(2) - A9_bounds(1))*0.1;
 
 maxMutationArray = [t12_mutate;t13_mutate;t21_mutate;t23_mutate;t31_mutate;...
     t24_mutate; t42_mutate; t25_mutate; t52_mutate; t56_mutate; ...
     t63_mutate; t36_mutate; t37_mutate; t73_mutate; ...
     t68_mutate; t86_mutate; t89_mutate; t98_mutate; t69_mutate;...
     A1_mutate;A2_mutate;A3_mutate; A4_mutate; A5_mutate; A6_mutate; ...
-    A7_mutate; A8_mutate; A9_mutate];
+    A7_mutate; A8_mutate;];% A9_mutate];
 
 %Start in the single molecule folder (smData_Processed): comp specific
 [computer_terminal_str, terminalID] = computerMode(pwd);
@@ -275,7 +279,7 @@ NconstructFolderNames = numel(constructFolderNames);
 
 for construct_idx = 1:NconstructFolderNames
     constructName = char(constructFolderNames(construct_idx));
-    disp(['     Construct' num2str(construct_idx) '/' num2str(NconstructFolderNames) ': ' constructName];
+    disp(['     Construct' num2str(construct_idx) '/' num2str(NconstructFolderNames) ': ' constructName]);
     
     if exist('constructName', 'var') ~= 1
         error('Not sure what construct to analyze');
@@ -291,6 +295,7 @@ for construct_idx = 1:NconstructFolderNames
     % Set up the figure positions once and done
     %--------------------------------------------------------------------------
     if plotMode == 1
+        clear figPosn
         if useFigurePosnMode == 1
             figPosn = setFigPosn(terminalID);
             if fitHistMode == 1
@@ -534,7 +539,7 @@ for construct_idx = 1:NconstructFolderNames
         genNum = 1;
         tic
         for pop_idx = 1:NmembersInitPop
-            t12 = population(pop_idx,1);  k12 = 1/t12;
+            t12 = population(pop_idx,1);
             t13 = population(pop_idx,2);
             t21 = population(pop_idx,3);
             t23 = population(pop_idx,4);
@@ -565,6 +570,57 @@ for construct_idx = 1:NconstructFolderNames
             A7 = population(pop_idx,27);
             A8 = population(pop_idx,28);
 %             A9 = population(pop_idx,29);
+
+          % Define rates, kij, from the tij's
+          k12 = 1/t12;
+          k13 = 1/t13;
+          k21 = 1/t21;
+          k23 = 1/t23;
+          K32 = 1/t32;
+          k31 = 1/t31;
+          k24 = 1/t24;
+          k42 = 1/t42;
+          k25 = 1/t25;
+          k52 = 1/t52;
+          k56 = 1/t56;
+          k65 = 1/t65;
+          k63 = 1/t63;
+          k36 = 1/t36;
+          k37 = 1/t37;
+          k73 = 1/t73;
+          k68 = 1/t68;
+          k86 = 1/t86;
+%           k89 = 1/t89;
+%           k98 = 1/t98;
+%           t96 = 1/t96;
+%           t69 = 1/t69;
+
+         % Define K matrix
+         % 8 state model:
+         K = [-(k12+k13),  k21, k31, 0, 0, 0, 0, 0;...
+             k12, -(k21+k23+k24+k25), k32, k42, k52, 0, 0, 0;...
+             k13, k23, -(k31+k32+k36+k37), 0, 0, k63, k73, 0;...
+             0, k24, 0, -k42, 0, 0, 0, 0;...
+             0, k25, 0, 0, -(k52+k56), k65, 0, 0;...
+             0, 0, k36, 0, k56, -(k65+k63+k68), 0, k86;...
+             0, 0, k37, 0, 0, 0, -k73, 0;...
+             0, 0, 0, 0, 0, k68, 0, -k86;];
+         
+%          % 9 state model:
+%          K = [-(k12+k13),  k21, k31, 0, 0, 0, 0, 0, 0;...
+%              k12, -(k21+k23+k24+k25), k32, k42, k52, 0, 0, 0, 0;...
+%              k13, k23, -(k31+k32+k36+k37), 0, 0, k63, k73, 0, 0;...
+%              0, k24, 0, -k42, 0, 0, 0, 0, 0;...
+%              0, k25, 0, 0, -(k52+k56), k65, 0, 0, 0;...
+%              0, 0, k36, 0, k56, -(k65+k63+k68+k69), 0, k86, k96;...
+%              0, 0, k37, 0, 0, 0, -k73, 0, 0;...
+%              0, 0, 0, 0, 0, k68, 0, -(k86+k89),k98;...
+%              0, 0, 0, 0, 0, k69, 0, k89, -(k96+k98)];
+%          
+         
+         % Define the conditional probability matrix:
+         syms  t
+         p = k2P(K,t);
             
           if plotMode == 1
                 %--------------------------------------------------------------------------
@@ -575,8 +631,20 @@ for construct_idx = 1:NconstructFolderNames
                     % (1) Optimization Target #1: 1-D FRET HISTOGRAM  (PART 3: Gen1)
                     %--------------------------------------------------------------------------
                     if fitHistMode == 1
-                        Peq = histMaker_Nstate(p, A, sigma_A);
+                        figure(1);
+                        [Peq, histPlot] = histMaker_Nstate(p, A, sigma_A);
+                        
+                        
+                        
+                    end
+                end
+          end
+                        
+                        
 
 
 
+        end % remove after test
+    end% remove after test
+end% remove after test
 
