@@ -28,6 +28,15 @@ toc
 
 
 
+
+
+
+
+
+
+
+
+
 % Rates  for  8 state
 % k12 = 12;
 % k13 = 13;
