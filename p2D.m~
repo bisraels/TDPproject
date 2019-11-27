@@ -19,10 +19,10 @@ tau1 = 1:100;
 tau3 = tau1;
 timeSteps = length(tau1);
 
-dP_tau1 = double(subs(dp_tau1(:)));
+dP_tau1 = subs(dp_tau1(:));
 dP_tau1 = reshape(dP_tau1, [N,N,timeSteps]);
 
-dP_tau3 = double(subs(dp_tau3(:)));
+dP_tau3 = subs(dp_tau3(:));
 dP_tau3 = reshape(dP_tau3, [N,N,timeSteps]);
 
 
@@ -41,7 +41,7 @@ for i = 1:numel(A)
         end
     end
 end
-% D4 = double(D4);
+D4 = double(D4);
 elapsedTime =toc;
 disp(['Takes '  num2str(elapsedTime) ' seconds to calculate D4 for an ' num2str(N) ' state model']);
 
