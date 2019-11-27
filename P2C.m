@@ -106,7 +106,7 @@ disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C4 for an ' num2str(
 if plotMode == 1
     figure(4)
     set(gcf,'Color','w');
-    
+    hold on;
     surf(time,time,C4);
     title_str = ['Four point time correlation function'];
     title(title_str,'FontSize',18);
