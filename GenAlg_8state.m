@@ -72,7 +72,7 @@ percentReproduce = 25;          % top 25% combine together (can be mutated)
 percentToKeep = 50;             % Number of population to pass to next gen (can be mutated)
 Nmutations = 1*NmembersInitPop;  % Number of mutations per generation
 threshold = 0.001;              % Minimal allowable percentage  difference before program quits.
-maxIterations = 1006;           % How is this different than maxGenerations?
+maxIterations = 10; % 1006;           % How is this different than maxGenerations?
 forceMoreIterationsMode = 1;    % Independent iterations
 NumberToExtend = 1;             
 % NOTES: lowering the percent that reproduces but raising the percent to
@@ -91,6 +91,8 @@ global genNum fitHistMode fitC2Mode fitC4Mode
 global targetHistogram weightingFactor_FREThist FRET_bins sigma_A1 sigma_A2 sigma_A3 sigma_A4 sigma_A5 sigma_A6 sigma_A7 sigma_A8 sigma_A9  % Histogram optimization
 global C2_exp_x C2_exp_y weightingFactor_C2  weightC2func yoff
 global C4_tau1range C4_tau2eq0_exp weightingFactor_C4_t0 wC4func zoff
+
+global  K %sigma_A P
 
 %--------------------------------------------------------------------------
 % User Options                                                  (Part 1)
@@ -201,10 +203,10 @@ t37_bounds = [1e-6, 1e-1];
 t73_bounds = [1e-6, 1e-1];
 t68_bounds = [1e-6, 1e-1];
 t86_bounds = [1e-6, 1e-1];
-t89_bounds = [1e-6, 1e-1];
-t98_bounds = [1e-6, 1e-1];
-% * t96_bounds will be determined by others in loop
-t69_bounds = [1e-6, 1e-1];
+% t89_bounds = [1e-6, 1e-1];
+% t98_bounds = [1e-6, 1e-1];
+% % * t96_bounds will be determined by others in loop
+% t69_bounds = [1e-6, 1e-1];
 
 % Define bounds of FRET parameters
 A1_bounds = [0.65,1];   % Compact       (higest FRET)            %Paramater #6 % HIGH fret State
@@ -250,10 +252,10 @@ t37_mutate = Max_mut_factor * t37_bounds(2)/2;
 t73_mutate = Max_mut_factor * t73_bounds(2)/2;
 t68_mutate = Max_mut_factor * t68_bounds(2)/2;
 t86_mutate = Max_mut_factor * t86_bounds(2)/2; 
-t89_mutate = Max_mut_factor * t89_bounds(2)/2;
-t98_mutate = Max_mut_factor * t98_bounds(2)/2;
-% * t96 -> detailed balance
-t69_mutate = Max_mut_factor * t69_bounds(2)/2; 
+% t89_mutate = Max_mut_factor * t89_bounds(2)/2;
+% t98_mutate = Max_mut_factor * t98_bounds(2)/2;
+% % * t96 -> detailed balance
+% t69_mutate = Max_mut_factor * t69_bounds(2)/2; 
 
 A1_mutate = (A1_bounds(2) - A1_bounds(1))*0.1;%0.05;
 A2_mutate = (A2_bounds(2) - A2_bounds(1))*0.1;%0.05;0.05;
@@ -268,9 +270,9 @@ A8_mutate = (A8_bounds(2) - A8_bounds(1))*0.1;
 maxMutationArray = [t12_mutate;t13_mutate;t21_mutate;t23_mutate;t31_mutate;...
     t24_mutate; t42_mutate; t25_mutate; t52_mutate; t56_mutate; ...
     t63_mutate; t36_mutate; t37_mutate; t73_mutate; ...
-    t68_mutate; t86_mutate; t89_mutate; t98_mutate; t69_mutate;...
+    t68_mutate; t86_mutate; ...
     A1_mutate;A2_mutate;A3_mutate; A4_mutate; A5_mutate; A6_mutate; ...
-    A7_mutate; A8_mutate;];% A9_mutate];
+    A7_mutate; A8_mutate;];% A9_mutate];  t89_mutate; t98_mutate; t69_mutate;
 
 %Start in the single molecule folder (smData_Processed): comp specific
 [computer_terminal_str, terminalID] = computerMode(pwd);
@@ -391,6 +393,8 @@ for construct_idx = 1:NconstructFolderNames
             10 sample_description];
         title(title_str,'fontsize',14);
         
+        hold on;
+        
         lgd = legend('show');
         lgd.Location = 'northwest';
         lgd.FontSize = 12;
@@ -401,15 +405,19 @@ for construct_idx = 1:NconstructFolderNames
     %--------------------------------------------------------------------------
     % (2) Optimization Target #2: 2-point TCF (C2)           (20 uSec and on)  (PART 2: Load the target data)
     %--------------------------------------------------------------------------
+    time  =  time_sim;
     if fitC2Mode == 1
-        load(C2_FilePath,'time','yData','y','yoff');
+%         load(C2_FilePath,'time','yData','y','yoff');
+        load(C2_FilePath,'tau_Sec_array','C2_array','yoff');
         fitC2Data_mode = 1; % If 0 you will fit to the histogram fit
         if fitC2Data_mode == 1
-            C2_exp_x = time;
-            C2_exp_y = yData;
+            C2_exp_x = tau_Sec_array;
+            C2_time = C2_exp_x;
+            C2_exp_y = C2_array;
         elseif fitC2Data_mode == 0
-            C2_exp_x = time;
-            C2_exp_y = y;
+            C2_exp_x = tau_Sec_array;
+            C2_time = C2_exp_x;
+%             C2_exp_y = y;
         end
         if normalizeMode == 1
             C2_exp_y = C2_exp_y./C2_exp_y(1);
@@ -442,13 +450,14 @@ for construct_idx = 1:NconstructFolderNames
         %         C4_tau1range = tau1arrayUsec*1e-6;
         %         C4_tau3range = tau3arrayUsec*1e-6';
         
-        load(C4_FilePath,'C4','tau1arraySec','tau3arraySec','tau2ValSec');
-        C4_tau2eq0_exp = C4;
+        load(C4_FilePath,'fourptTCF','tau1arraySec','tau3arraySec','tau2ValSec');
+        C4_tau2eq0_exp = fourptTCF;  % was  called C4 before
         C4_tau1range = tau1arraySec;
         C4_tau3range = tau3arraySec';
+        C4_time = tau1arraySec;
         tau2 = tau2ValSec;
         
-        load(C2_FilePath,'time','yData','y','yoff');
+        load(C2_FilePath,'yoff'); 
         zoff = yoff*yoff;
         if normalizeMode == 1
             C4_tau2eq0_exp = C4_tau2eq0_exp./C4_tau2eq0_exp(1,1);
@@ -549,8 +558,8 @@ for construct_idx = 1:NconstructFolderNames
             t25 = population(pop_idx,8);
             t52 = population(pop_idx,9);
             t56 = population(pop_idx,10);
-            % * t65_bounds will be determined by others in loop
-            t63 = population(pop_idx,11);
+            t65 = population(pop_idx,11);
+            % * t63_bounds will be determined by others in loop
             t36 = population(pop_idx,12);
             t37 = population(pop_idx,13);
             t73 = population(pop_idx,14);
@@ -560,15 +569,20 @@ for construct_idx = 1:NconstructFolderNames
 %             t98 = population(pop_idx,18);
             % * t96_bounds will be determined by others in loop
 %             t69 = population(pop_idx,20);
-            
-            A1 = population(pop_idx,21);
-            A2 = population(pop_idx,22);
-            A3 = population(pop_idx,23);
-            A4 = population(pop_idx,24);
-            A5 = population(pop_idx,25);
-            A6 = population(pop_idx,26);
-            A7 = population(pop_idx,27);
-            A8 = population(pop_idx,28);
+
+%             % Loop conditions
+%             t32 = (t12 * t23 * t31)/(t13 * t21);
+%             t63 = (t23 * t36 * t65* t52)/(t32 * t25 * t56);
+%            
+                                            % Need these indexes for 9 state
+            A1 = population(pop_idx,17);        %21);
+            A2 = population(pop_idx,18);        %22);
+            A3 = population(pop_idx,19);        %23);
+            A4 = population(pop_idx,20);        %24);
+            A5 = population(pop_idx,21);        %25);
+            A6 = population(pop_idx,22);        %26);
+            A7 = population(pop_idx,23);        %27);
+            A8 = population(pop_idx,24);        %28);
 %             A9 = population(pop_idx,29);
 
           % Define rates, kij, from the tij's
@@ -576,7 +590,7 @@ for construct_idx = 1:NconstructFolderNames
           k13 = 1/t13;
           k21 = 1/t21;
           k23 = 1/t23;
-          K32 = 1/t32;
+%           k32 = 1/t32;
           k31 = 1/t31;
           k24 = 1/t24;
           k42 = 1/t42;
@@ -584,16 +598,25 @@ for construct_idx = 1:NconstructFolderNames
           k52 = 1/t52;
           k56 = 1/t56;
           k65 = 1/t65;
-          k63 = 1/t63;
+%           k63 = 1/t63;
           k36 = 1/t36;
           k37 = 1/t37;
           k73 = 1/t73;
           k68 = 1/t68;
           k86 = 1/t86;
-%           k89 = 1/t89;
-%           k98 = 1/t98;
-%           t96 = 1/t96;
-%           t69 = 1/t69;
+          %           k89 = 1/t89;
+          %           k98 = 1/t98;
+          %           t96 = 1/t96;
+          %           t69 = 1/t69;
+          
+          % Loop conditions
+          k32 = (k12 * k23 * k31)/(k13 * k21);
+          k63 = (k23 * k36 * k65* k52)/(k32 * k25 * k56);
+          t32 = 1/k32;
+          t63 = 1/k63;
+
+         A = [A1;A2;A3;A4;A5;A6;A7;A8];
+         rates = [k12,k13,k21,k23,k32,k31,k24,k42,k25,k52,k56,k65,k63,k36,k37,k73,k68,k86];
 
          % Define K matrix
          % 8 state model:
@@ -619,9 +642,11 @@ for construct_idx = 1:NconstructFolderNames
 %          
          
          % Define the conditional probability matrix:
-         syms  t
-         p = k2P(K,t);
-            
+         %          syms  t
+         %          p = k2P(K,t);
+         time =  time_sim;
+         [P, ~, p, time] = k2P(K,time);
+         
           if plotMode == 1
                 %--------------------------------------------------------------------------
                 % gen1: Plot the array of initial guesses             (PART 3: Gen1)
@@ -632,19 +657,206 @@ for construct_idx = 1:NconstructFolderNames
                     %--------------------------------------------------------------------------
                     if fitHistMode == 1
                         figure(1);
-                        [Peq, histPlot] = histMaker_Nstate(p, A, sigma_A);
-                        
-                        
-                        
+                        [Peq, histPlot,~] = histMaker_Nstate(P, A, sigma_A); 
                     end
+                    %---------------------------------------------------------------------------------
+                    % (2) Optimization Target #2: 2-point TCF (C2)  (20 uSec and on)  (PART 3: GEN1)
+                    %---------------------------------------------------------------------------------
+                    if fitC2Mode == 1
+                        [time, C2, ~] = P2C(P, K, time);
+                    end
+                    %-----------------------------------------------------------------------------
+                    % (3) Optimization Target #3: 4-point TCF (C4) (20 uSec and on) (PART 3: GEN1)
+                    %------------------------------------------------------------------------------
+                    if fitC4Mode == 1
+                        [time,~,C4] = P2C(P, K, time);
+                    end
+                end % End of plotting guesses for gen1
+          end % end of plot mode
+          %--------------------------------------------------------------------------
+          % Asses the chisquared of the guess                 (PART 3: Gen1)
+          %--------------------------------------------------------------------------
+          [chisquared,chisquared_array] = chiSqCalc(rates, A, P, sigma_A, C2_time, C4_time);
+          
+          pop_chisquared_array(pop_idx) = chisquared;
+          
+        end%End of "pop_idx: Loop
+        if verboseMode == 1
+            disp('     Part2 : Done simulating the first generation. Selecting the best guess to plot.');
+        end
+        elapsedTime = toc;
+        if clockMode == 1
+            disp(['     It took ' num2str(elapsedTime) ' seconds to compute the '...
+                'RMS of ' num2str(NmembersInitPop) ' guesses.(' num2str(elapsedTime/NmembersInitPop) ' sec/guess)']);
+        end
+        
+        %------------------------------------------------------------------------------
+        % (4) Plot the chisquared value of each member of the population (PART 3: Gen1)
+        %-------------------------------------------------------------------------------
+        if plotMode == 1
+            if plot_Gen1ChiSquaredMode == 1
+                figure(4);
+                  
+                set(gcf,'Color','w');
+                set(gca,'yscale','log');
+                for pop_idx = 1:length(pop_chisquared_array)
+                    semilogy(pop_idx,pop_chisquared_array(pop_idx),'--gs',...
+                        'LineWidth',2,...
+                        'MarkerSize',10,...
+                        'MarkerEdgeColor','b',...
+                        'MarkerFaceColor',[0.5,0.5,0.5]);
+                    hold on;
                 end
-          end
-                        
-                        
+                hold on;
+                axis tight;
+                xlim([1,inf]);
+                
+                xlabel('Member # (Gen1)','FontSize',14);
+                ylabel('RMS Fitness (\chi^2)','FontSize',14);
+                title('\chi^2 of Gen 1','FontSize',14)
+                drawnow();
+            end
+        end
+                
+        %-------------------------------------------------------------------------------
+        % (7) Make a histogram of the chisquared values of each member   (PART 3: Gen1)
+        %--------------------------------------------------------------------------------
+        if plotMode == 1
+            if plot_GenerationalChiSquaredHistogramMode == 1
+                figure(7)
+                set(gcf,'Name','Chi-squared values of gen1 guesses');
+                
+                initialHist = histogram(pop_chisquared_array);
+                xlabel('\chi^2 Value');
+                ylabel('Frequency');
+                title('Distribution of Gen1 guesses chi-squared');
+            end
+        end
+        
+        %--------------------------------------------------------------------------
+        % Sort Generation 1 as a function of chisquare (PART 3: Gen1)
+        %--------------------------------------------------------------------------
+        % Sort from Lowest rms to the highest rms (ascending order)
+        
+        [pop_chisquare_sorted,index_arr] = sort(pop_chisquared_array);%First in array have the lowest chisquare value
+        
+        population = population(index_arr,:);
+        
+        guess(genNum,1:8) = population(1,:); % Current best guess
+        
+        Best_chisquared = pop_chisquare_sorted(1);
+        guess(genNum,9) = Best_chisquared; % Current best guess' fit value
+        
+        genNum_array = genNum;
+        chisquared_array = Best_chisquared;
+                
+        % Display best guess to screen
+        
+        t12 = guess(genNum,1);
+        t13 = guess(genNum,2);
+        t21 = guess(genNum,3);
+        t23 = guess(genNum,4);
+        t31 = guess(genNum,5);
+        % * t32 will be determined by others in loop
+        t24 = guess(genNum,6);
+        t42 = guess(genNum,7);
+        t25 = guess(genNum,8);
+        t52 = guess(genNum,9);
+        t56 = guess(genNum,10);
+        t65 = guess(genNum,11);
+        % * t63 will be determined by others in loop
+        t36 = guess(genNum,12);
+        t37 = guess(genNum,13);
+        t73 = guess(genNum,14);
+        t68 = guess(genNum,15);
+        t86 = guess(genNum,16);
+        
+        % Loop condition
+        t32 = (t12 * t23 * t31)/(t13 * t21);
+        t63 = (t23 * t36 * t65* t52)/(t32 * t25 * t56);
+        
+        A1 = guess(genNum,17);        %21);
+        A2 = guess(genNum,18);        %22);
+        A3 = guess(genNum,19);        %23);
+        A4 = guess(genNum,20);        %24);
+        A5 = guess(genNum,21);        %25);
+        A6 = guess(genNum,22);        %26);
+        A7 = guess(genNum,23);        %27);
+        A8 = guess(genNum,24);
+        
+        chisquared = guess(genNum,25);
+        
+        % Redefine rates, kij, from the tij's
+          k12 = 1/t12;
+          k13 = 1/t13;
+          k21 = 1/t21;
+          k23 = 1/t23;
+          k32 = 1/t32;
+          k31 = 1/t31;
+          k24 = 1/t24;
+          k42 = 1/t42;
+          k25 = 1/t25;
+          k52 = 1/t52;
+          k56 = 1/t56;
+          k65 = 1/t65;
+          k63 = 1/t63;
+          k36 = 1/t36;
+          k37 = 1/t37;
+          k73 = 1/t73;
+          k68 = 1/t68;
+          k86 = 1/t86;
+%           k89 = 1/t89;
+%           k98 = 1/t98;
+%           t96 = 1/t96;
+%           t69 = 1/t69;
 
+% Reset loop conditions
+          k32 = (k12 * k23 * k31)/(k13 * k21);
+          k63 = (k23 * k36 * k65* k52)/(k32 * k25 * k56);
+          t32 = 1/k32;
+          t63 = 1/k63;
+          
+        A = [A1;A2;A3;A4;A5;A6;A7;A8];
+        rates = [k12,k13,k21,k23,k32,k31,k24,k42,k25,k52,k56,k65,k63,k36,k37,k73,k68,k86];
 
+%         if verboseMode == 1  % FIX this for 8 states later (not essential for now)
+%             fprintf(['Best fit from initial generation was member #%d:\n t12 = %f, t13 = %f, t21 = %f, t23 = %f, t31 = %f, t32 = %f'...
+%                 '\n A1 = %f, A2 = %f, A3 = %f, Best_chisquared = %f\r\n'],...
+%                 index_arr(1),t12,t13,t21,t23,t31,t32,A1,A2,A3,Best_chisquared);
+%         end
+        if verboseMode == 1
+        disp('the best guess K  for gen1 is')
+        disp(K)
+        disp('the best guess P for gen1 is')
+        [P, ~, ~, ~] = k2P(K,time);
+        disp(P)
+        end
+%         %--------------------------------------------------------------------------
+%         % (1) Make a histogram which corresponds to the best guess (PART 3: Gen1)
+%         %--------------------------------------------------------------------------
+%         if plotMode == 1
+%             %--------------------------------------------------------------------------
+%             % (1) Optimization Target #1: 1-D FRET HISTOGRAM  (PART 3: Gen1)
+%             %--------------------------------------------------------------------------
+%             if fitHistMode == 1
+%                 figure(1)
+%                 hold on;
+                
+%                 
 
         end % remove after test
     end% remove after test
-end% remove after test
+% end% remove after test
+
+
+
+
+
+
+
+
+
+
+
+
 

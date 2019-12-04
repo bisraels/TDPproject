@@ -1,8 +1,8 @@
 function [time, C2, C4] = P2C(P, K, time)
 
-
+global plotMode fitC2Mode fitC4Mode
 % User Options
-plotMode = 1;
+% plotMode = 1;
 
 %Give a K matrix
 %     8state
@@ -24,8 +24,9 @@ plotMode = 1;
 %Create the matrix of conditional probabilities
 % P = k2P(K,time);
 
-[N,~,timesteps] = size(P);
-
+%[N,~,timesteps] = size(P);
+[N,~,~] = size(P);
+timesteps = length(time);
 % Make a column vector of the discrete probability
 Peq = diag(P(:,:,end));
 
@@ -38,7 +39,7 @@ A = A - Amean;
 %--------------------------------------------------------------------------
 % Calculate 2 point TCF (Sums using loops)
 %--------------------------------------------------------------------------
-
+if fitC2Mode == 1 
 if exist('C2','var')
     clear('C2');
 end
@@ -73,6 +74,7 @@ if plotMode == 1
     
     drawnow();
 end
+end
 %--------------------------------------------------------------------------
 % Calculate 2 point TCF (Matrix)
 %--------------------------------------------------------------------------
@@ -85,6 +87,8 @@ end
 %--------------------------------------------------------------------------
 % Calculate 4 point TCF
 %--------------------------------------------------------------------------
+if fitC4Mode == 1
+
 [P_tau2eq0] = k2P(K,0);
 C4 = zeros(timesteps,timesteps);
 tic
@@ -104,7 +108,7 @@ elapsedTime =toc;
 disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C4 for an ' num2str(N) ' state model']);
 
 if plotMode == 1
-    figure(4)
+    figure(3)
     set(gcf,'Color','w');
     hold on;
     surf(time,time,C4);
@@ -120,4 +124,5 @@ if plotMode == 1
     axis tight;
     
     drawnow();
+end
 end

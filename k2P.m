@@ -17,7 +17,7 @@
 function [P, V, p, time] = k2P(K,time)
 switch nargin
     case 0
-        N = 8;
+        N = 2;
         %                 Simulate a K matrix
         switch N
             case 2
