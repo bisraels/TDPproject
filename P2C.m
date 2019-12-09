@@ -56,24 +56,28 @@ for i = 1:numel(A)
 end
 elapsedTime =toc;
 disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C2 for an ' num2str(N) ' state model']);
-
-if plotMode == 1
-    figure(2)
-    set(gcf,'Color','w');
-    
-    plot(time,C2);
-    title_str = ['Two point time correlation function'];
-    title(title_str,'FontSize',18);
-    xlabel('\tau (sec)','fontsize',16);
-    ylabel('C^{(2)}(\tau)','fontsize',16);
-    set(gca,'yscale','linear');
-    set(gca,'xscale','log');
-    set(gca,'FontSize',14);
-    grid on
-    axis tight;
-    
-    drawnow();
-end
+% 
+% if plotMode == 1
+%     figure(2)
+%     set(gcf,'Color','w');
+%     
+%     if exist('C2_plot','var')  == 1
+%         delete(C2_plot)
+%     end
+%     
+%     C2_plot = plot(time,C2);
+%     title_str = ['Two point time correlation function'];
+%     title(title_str,'FontSize',18);
+%     xlabel('\tau (sec)','fontsize',16);
+%     ylabel('C^{(2)}(\tau)','fontsize',16);
+%     set(gca,'yscale','linear');
+%     set(gca,'xscale','log');
+%     set(gca,'FontSize',14);
+%     grid on
+%     axis tight;
+%     
+%     drawnow();
+% end
 end
 %--------------------------------------------------------------------------
 % Calculate 2 point TCF (Matrix)
@@ -107,22 +111,27 @@ end
 elapsedTime =toc;
 disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C4 for an ' num2str(N) ' state model']);
 
-if plotMode == 1
-    figure(3)
-    set(gcf,'Color','w');
-    hold on;
-    surf(time,time,C4);
-    title_str = ['Four point time correlation function'];
-    title(title_str,'FontSize',18);
-    xlabel('\tau_1 (sec)','fontsize',16);
-    ylabel('\tau_3 (sec)','fontsize',16);
-    zlabel('C^{(4)}(\tau)','fontsize',16);
-    set(gca,'yscale','log');
-    set(gca,'xscale','log');
-    set(gca,'FontSize',14);
-    grid on
-    axis tight;
-    
-    drawnow();
-end
+% if plotMode == 1
+%     figure(3)
+%     
+%     if exist('histPlot','var')  == 1
+%         delete(C4_plot)
+%     end
+%     
+%     set(gcf,'Color','w');
+%     hold on;
+%     C4_plot = surf(time,time,C4);
+%     title_str = ['Four point time correlation function'];
+%     title(title_str,'FontSize',18);
+%     xlabel('\tau_1 (sec)','fontsize',16);
+%     ylabel('\tau_3 (sec)','fontsize',16);
+%     zlabel('C^{(4)}(\tau)','fontsize',16);
+%     set(gca,'yscale','log');
+%     set(gca,'xscale','log');
+%     set(gca,'FontSize',14);
+%     grid on
+%     axis tight;
+%     
+%     drawnow();
+% end
 end

@@ -58,8 +58,8 @@ elseif strcmp(terminalID(1:10), claire(1:10)) == 1
     fig_2_posn = [507;439;468;366];
     fig_3_posn = [976;438;465;367];
     fig_4_posn = [1;1;521;363];
-    fig_5_posn = [915;1;526;363];
-    fig_6_posn = [1121; 51; 560; 420;];
+    fig_5_posn = [1121; 51; 560; 420;];
+    fig_6_posn = [915;1;526;363];
     fig_7_posn = [559; 31; 560; 420;];
     figPosn = [fig_1_posn, fig_2_posn, fig_3_posn, fig_4_posn, fig_5_posn, fig_6_posn, fig_7_posn];
     
