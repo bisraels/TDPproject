@@ -1,4 +1,4 @@
-function [chisquared,chisquared_array] = chiSqCalc(rates, A, sigma_A, time)
+function [chisquared,chisquared_array] = chiSqCalc(rates, A, P, sigma_A, C2_time,C4_time)
 
 global normalizeMode diagnoseMode
 global targetHistogram weightingFactor_FREThist FRET_bins
@@ -9,7 +9,7 @@ global sigma_A1 sigma_A2 sigma_A3 sigma_A4 sigma_A5 sigma_A6 sigma_A7 sigma_A8 %
 global yoff zoff
 global showProgressOnFit_mode
 
-global P K
+global  K % P
 %Initialize an array to hold the chi squared values
 chisquared_array = zeros(3,1);
 
@@ -20,7 +20,7 @@ chisquared_array = zeros(3,1);
 %------------------------------------------------------------------
 if fitHistMode == 1
     [Peq,~,hist_sim] = histMaker_Nstate(P, A, sigma_A);
-    chisquared_array(1) = sum((reshape(hist_sim,100,1)-targetHistogram).^2);
+    chisquared_array(1) = sum((reshape(hist_sim,100,1)-targetHistogram).^2)*weightingFactor_FREThist;
 
     if showProgressOnFit_mode == 1
         % Update figure with guesses to the fit
@@ -39,13 +39,15 @@ end
 % (2) Optimization Target #2: Get a single value for the entire 2-point TCF: rms_array(1)
 %-----------------------------------------------------------------------------------------
 if fitC2Mode == 1
-    [time, C2, ~] = P2C(P, K, time);
-    C2_sim = C2 + yoff;
+    time = C2_time;
+    [P_c2, ~, ~, time] = k2P(K,time);
+    [time, C2_sim, ~] = P2C(P_c2, K, time);
+    C2_sim = C2_sim + yoff;
     if normalizeMode == 1
         C2_sim = C2_sim./C2_sim(1);
         end
-    chisquared_array(2) = sum(((C2_sim - C2_exp_y).*weightC2func).^2)*weightingFactor_C2;
-
+    chisquared_array(2) = sum(((reshape(C2_sim,length(C2_sim),1) - C2_exp_y).*weightC2func).^2)*weightingFactor_C2;
+    time = time_sim;
     if showProgressOnFit_mode == 1
         % Update figure with guesses to the fit
         figure(2);
@@ -64,13 +66,15 @@ end
 %--------------------------------------------------------------------------
 if fitC4Mode == 1
     tau2 = 0;
-    [time, ~, C4] = P2C(P, K, time);
-    C4_tau2eq0_sim = C4 + zoff;
+    time = C4_time;
+    [P_c4, ~, ~, time] = k2P(K,time);
+    [time, ~, C4_sim] = P2C(P_c4, K, time);
+    C4_tau2eq0_sim = C4_sim + zoff;
     if normalizeMode == 1
         C4_tau2eq0_sim = C4_tau2eq0_sim./C4_tau2eq0_sim(1,1);
     end
     chisquared_array(3) = mean(mean(((C4_tau2eq0_sim - C4_tau2eq0_exp).^2).*wC4func))*weightingFactor_C4_t0;
-    
+    time = time_sim;
     if showProgressOnFit_mode == 1
         % Update figure with guesses to the fit
         figure(3);
@@ -88,6 +92,13 @@ end
 %--------------------------------------------------------------------------
 % Sum all of the indivual root-mean-squares to get an overall rms
 %--------------------------------------------------------------------------
+
+if genNum == 1
+chisquared_perGen = [];
+chisquared = sum(chisquared_array);
+chisquared_perGen =  [chisquared_perGen; chisquared]
+
+else
 chisquared = sum(chisquared_array);
 
 

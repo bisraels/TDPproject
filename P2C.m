@@ -56,6 +56,9 @@ for i = 1:numel(A)
 end
 elapsedTime =toc;
 disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C2 for an ' num2str(N) ' state model']);
+
+else
+    C2 = 0;
 % 
 % if plotMode == 1
 %     figure(2)
@@ -78,6 +81,7 @@ disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C2 for an ' num2str(
 %     
 %     drawnow();
 % end
+
 end
 %--------------------------------------------------------------------------
 % Calculate 2 point TCF (Matrix)
@@ -110,7 +114,8 @@ for i = 1:numel(A)
 end
 elapsedTime =toc;
 disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C4 for an ' num2str(N) ' state model']);
-
+else
+    C4 = 0;
 % if plotMode == 1
 %     figure(3)
 %     

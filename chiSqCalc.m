@@ -1,4 +1,4 @@
-function [chisquared,chisquared_array] = chiSqCalc(rates, A, P, sigma_A, C2_time,C4_time)
+function [chisquared,chisquared_array, chisquared_perGen] = chiSqCalc(rates, A, P, sigma_A, C2_time,C4_time)
 
 global normalizeMode diagnoseMode
 global targetHistogram weightingFactor_FREThist FRET_bins
@@ -6,7 +6,7 @@ global C2_exp_x C2_exp_y weightingFactor_C2 weightC2func
 global C4_tau1range C4_tau2eq0_exp weightingFactor_C4_t0 wC4func
 global fitHistMode fitC2Mode fitC4Mode
 global sigma_A1 sigma_A2 sigma_A3 sigma_A4 sigma_A5 sigma_A6 sigma_A7 sigma_A8 %sigma_A9
-global yoff zoff
+global yoff zoff genNum
 global showProgressOnFit_mode
 
 global  K % P
@@ -20,7 +20,7 @@ chisquared_array = zeros(3,1);
 %------------------------------------------------------------------
 if fitHistMode == 1
     [Peq,~,hist_sim] = histMaker_Nstate(P, A, sigma_A);
-    chisquared_array(1) = sum((reshape(hist_sim,100,1)-targetHistogram).^2);
+    chisquared_array(1) = sum((reshape(hist_sim,100,1)-targetHistogram).^2)*weightingFactor_FREThist;
 
     if showProgressOnFit_mode == 1
         % Update figure with guesses to the fit
@@ -68,8 +68,8 @@ if fitC4Mode == 1
     tau2 = 0;
     time = C4_time;
     [P_c4, ~, ~, time] = k2P(K,time);
-    [time, ~, C4] = P2C(P_c4, K, time);
-    C4_tau2eq0_sim = C4 + zoff;
+    [time, ~, C4_sim] = P2C(P_c4, K, time);
+    C4_tau2eq0_sim = C4_sim + zoff;
     if normalizeMode == 1
         C4_tau2eq0_sim = C4_tau2eq0_sim./C4_tau2eq0_sim(1,1);
     end
@@ -94,7 +94,25 @@ end
 %--------------------------------------------------------------------------
 chisquared = sum(chisquared_array);
 
+if genNum  == 1
+    chisquared_perGen  = [];
+    chisquared_perGen(genNum) = chisquared;
+else
+    chisquared_perGen(genNum) = chisquared;
+end
 
+% if genNum == 1
+% chisquared_perGen = [];
+% chisquared = sum(chisquared_array);
+% chisquared_perGen =  [chisquared_perGen; chisquared];
+% 
+% else
+% chisquared = sum(chisquared_array);
+% chisquared_perGen =  [chisquared_perGen; chisquared];
+% end
+
+% disp('size of chisquared_array')
+% disp(size(chisquared_array))
 %------------------------------------------------------------------
 % Display relative contributions
 %------------------------------------------------------------------

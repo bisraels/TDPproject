@@ -2030,7 +2030,7 @@ for construct_idx = 1:NconstructFolderNames
             
             foutName = [outputFolderName filesep() 'fitInputData.mat'];
             if fitHistMode == 1
-                save(foutName,'histogram_FilePath','FRET_bins','targetHistogram', 'histPlot')
+                save(foutName,'histogram_FilePath','FRET_bins','targetHistogram')
             end
             if fitC2Mode == 1
                 if exist(foutName,'file') == 2
