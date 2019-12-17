@@ -1,7 +1,11 @@
 function [time, C2, C4] = P2C(P, K, time, A)
+% FUNCTION: Computes the Correlation functions from the Conditional
+% Probabilities
 %MODIFICATIONS
 % 20191216 BI Adding the FRET values as an input
 % 20191217 BI Making sure Amean is calculated to be a number not a vector
+%--------------------------------------------------------------------------
+
 % global plotMode
 global fitC2Mode fitC4Mode
 clockMode = 0;
