@@ -39,49 +39,49 @@ A = A - Amean;
 %--------------------------------------------------------------------------
 % Calculate 2 point TCF (Sums using loops)
 %--------------------------------------------------------------------------
-if fitC2Mode == 1 
-if exist('C2','var')
-    clear('C2');
-end
-% syms C2;
-% C2 = [];
-tic
-C2 = zeros(1,timesteps);
-for i = 1:numel(A)
-    for j = 1:numel(A)
+if fitC2Mode == 1
+    if exist('C2','var')
+        clear('C2');
+    end
+    % syms C2;
+    % C2 = [];
+    tic
+    C2 = zeros(1,timesteps);
+    for i = 1:numel(A)
+        for j = 1:numel(A)
             C2temp = A(j)*reshape(P(j,i,:),[1 timesteps])*A(i)*Peq(i);
             C2 =  C2 + C2temp;
-
+            
+        end
     end
-end
-elapsedTime =toc;
-disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C2 for an ' num2str(N) ' state model']);
-
+    elapsedTime =toc;
+    disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C2 for an ' num2str(N) ' state model']);
+    
 else
     C2 = 0;
-% 
-% if plotMode == 1
-%     figure(2)
-%     set(gcf,'Color','w');
-%     
-%     if exist('C2_plot','var')  == 1
-%         delete(C2_plot)
-%     end
-%     
-%     C2_plot = plot(time,C2);
-%     title_str = ['Two point time correlation function'];
-%     title(title_str,'FontSize',18);
-%     xlabel('\tau (sec)','fontsize',16);
-%     ylabel('C^{(2)}(\tau)','fontsize',16);
-%     set(gca,'yscale','linear');
-%     set(gca,'xscale','log');
-%     set(gca,'FontSize',14);
-%     grid on
-%     axis tight;
-%     
-%     drawnow();
-% end
-
+    %
+    % if plotMode == 1
+    %     figure(2)
+    %     set(gcf,'Color','w');
+    %
+    %     if exist('C2_plot','var')  == 1
+    %         delete(C2_plot)
+    %     end
+    %
+    %     C2_plot = plot(time,C2);
+    %     title_str = ['Two point time correlation function'];
+    %     title(title_str,'FontSize',18);
+    %     xlabel('\tau (sec)','fontsize',16);
+    %     ylabel('C^{(2)}(\tau)','fontsize',16);
+    %     set(gca,'yscale','linear');
+    %     set(gca,'xscale','log');
+    %     set(gca,'FontSize',14);
+    %     grid on
+    %     axis tight;
+    %
+    %     drawnow();
+    % end
+    
 end
 %--------------------------------------------------------------------------
 % Calculate 2 point TCF (Matrix)
@@ -96,47 +96,47 @@ end
 % Calculate 4 point TCF
 %--------------------------------------------------------------------------
 if fitC4Mode == 1
-
-[P_tau2eq0] = k2P(K,0);
-C4 = zeros(timesteps,timesteps);
-tic
-for i = 1:numel(A)
-    for j = 1:numel(A)
-        for k = 1:numel(A)
-            for l = 1:numel(A)
-                
-                C4temp = A(l)*reshape(P(l,k,:),[1 timesteps])'*A(k)*P_tau2eq0(k,j)*A(j)*reshape(P(j,i,:),[1 timesteps])*A(i)*Peq(i);
-                C4 =  C4 + C4temp;
-                
+    
+    [P_tau2eq0] = k2P(K,0);
+    C4 = zeros(timesteps,timesteps);
+    tic
+    for i = 1:numel(A)
+        for j = 1:numel(A)
+            for k = 1:numel(A)
+                for l = 1:numel(A)
+                    
+                    C4temp = A(l)*reshape(P(l,k,:),[1 timesteps])'*A(k)*P_tau2eq0(k,j)*A(j)*reshape(P(j,i,:),[1 timesteps])*A(i)*Peq(i);
+                    C4 =  C4 + C4temp;
+                    
+                end
             end
         end
     end
-end
-elapsedTime =toc;
-disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C4 for an ' num2str(N) ' state model']);
+    elapsedTime =toc;
+    disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C4 for an ' num2str(N) ' state model']);
 else
     C4 = 0;
-% if plotMode == 1
-%     figure(3)
-%     
-%     if exist('histPlot','var')  == 1
-%         delete(C4_plot)
-%     end
-%     
-%     set(gcf,'Color','w');
-%     hold on;
-%     C4_plot = surf(time,time,C4);
-%     title_str = ['Four point time correlation function'];
-%     title(title_str,'FontSize',18);
-%     xlabel('\tau_1 (sec)','fontsize',16);
-%     ylabel('\tau_3 (sec)','fontsize',16);
-%     zlabel('C^{(4)}(\tau)','fontsize',16);
-%     set(gca,'yscale','log');
-%     set(gca,'xscale','log');
-%     set(gca,'FontSize',14);
-%     grid on
-%     axis tight;
-%     
-%     drawnow();
-% end
+    % if plotMode == 1
+    %     figure(3)
+    %
+    %     if exist('histPlot','var')  == 1
+    %         delete(C4_plot)
+    %     end
+    %
+    %     set(gcf,'Color','w');
+    %     hold on;
+    %     C4_plot = surf(time,time,C4);
+    %     title_str = ['Four point time correlation function'];
+    %     title(title_str,'FontSize',18);
+    %     xlabel('\tau_1 (sec)','fontsize',16);
+    %     ylabel('\tau_3 (sec)','fontsize',16);
+    %     zlabel('C^{(4)}(\tau)','fontsize',16);
+    %     set(gca,'yscale','log');
+    %     set(gca,'xscale','log');
+    %     set(gca,'FontSize',14);
+    %     grid on
+    %     axis tight;
+    %
+    %     drawnow();
+    % end
 end
