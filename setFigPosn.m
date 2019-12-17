@@ -27,23 +27,24 @@ if strcmp(terminalID(1:10), baimi(1:10)) == 1           % Work Desktop
     figPosn = [fig_1_posn; fig_2_posn; fig_3_posn; fig_4_posn; fig_5_posn; fig_6_posn; fig_7_posn];
     
 elseif strcmp(terminalID(1:10), bisraels(1:10)) == 1    % Macbook pro
-%     fig_1_posn = [1 535 560 420];
-%     fig_2_posn = [561 535 560 420];
-%     fig_3_posn = [1121 535 560 420];
-%     fig_4_posn = [1 41 560 420];
-%     fig_5_posn = [562 41 842 420];
-%     fig_6_posn = [1121 51 560 420];
-%     fig_7_posn = [559 31 560 420];
+    fig_1_posn = [1 535 560 420];
+    fig_2_posn = [561 535 560 420];
+    fig_3_posn = [1121 535 560 420];
+    fig_4_posn = [1 41 560 420];
+    fig_5_posn = [562 41 842 420];
+    fig_6_posn = [1121 51 560 420];
+    fig_7_posn = [559 31 560 420];
     
-    fig_1_posn = [1; 535; 560; 420];
-    fig_2_posn = [561; 535; 560; 420];
-    fig_3_posn = [1121; 535; 560; 420];
-    fig_4_posn = [1; 41; 560; 420];
-    fig_5_posn = [562; 41; 842; 420];
-    fig_6_posn = [1121; 51; 560; 420];
-    fig_7_posn = [559; 31; 560; 420];
-    figPosn = [fig_1_posn; fig_2_posn; fig_3_posn; fig_4_posn; fig_5_posn; fig_6_posn; fig_7_posn];
-
+%     fig_1_posn = [1; 535; 560; 420];
+%     fig_2_posn = [561; 535; 560; 420];
+%     fig_3_posn = [1121; 535; 560; 420];
+%     fig_4_posn = [1; 41; 560; 420];
+%     fig_5_posn = [562; 41; 842; 420];
+%     fig_6_posn = [1121; 51; 560; 420];
+%     fig_7_posn = [559; 31; 560; 420];
+%     figPosn = [fig_1_posn; fig_2_posn; fig_3_posn; fig_4_posn; fig_5_posn; fig_6_posn; fig_7_posn];
+ figPosn = [fig_1_posn', fig_2_posn', fig_3_posn', fig_4_posn', fig_5_posn', fig_6_posn', fig_7_posn'];
+    
 elseif strcmp(terminalID(1:10), claire(1:10)) == 1
     %     fig_1_posn = [1 535 560 420];
     %     fig_2_posn = [561 535 560 420];
