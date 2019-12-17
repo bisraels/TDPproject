@@ -1,41 +1,57 @@
-function [time, C2, C4] = P2C(P, K, time)
-
-global plotMode fitC2Mode fitC4Mode
+function [time, C2, C4] = P2C(P, K, time, A)
+%MODIFICATIONS
+% 20191216  BI  Adding the FRET values as an input
+% global plotMode 
+global fitC2Mode fitC4Mode
+clockMode = 0;
 % User Options
 % plotMode = 1;
 
-%Give a K matrix
-%     8state
-%         K = [...
-%             -(12 + 13), 21, 31, 0, 0, 0, 0, 0;...
-%             12, -(21 + 23 + 24 + 25), (12*23*31/(13*21)), 42, 52, 0, 0, 0;...
-%             13, 23, -(31 + ((12*23*31/(13*21)))), 0, 0, 0, 0, 0;...
-%             0, 24, 0, -42, 0, 0, 0, 0;...
-%             0, 25, 0, 0, -(52 + 56), 65, 0, 0;...
-%             0, 0, 0, 0, 56, -(65 + 67 + 68), 76, 86;...
-%             0, 0, 0, 0, 0, 67, -(76+78), 87;...
-%             0, 0, 0, 0, 0, 68, 78, -(86 + 87);...
-%             ];
+switch nargin
+    case 0
+        %Give a K matrix
+        %     8state
+        K = [...
+            -(12 + 13), 21, 31, 0, 0, 0, 0, 0;...
+            12, -(21 + 23 + 24 + 25), (12*23*31/(13*21)), 42, 52, 0, 0, 0;...
+            13, 23, -(31 + ((12*23*31/(13*21)))), 0, 0, 0, 0, 0;...
+            0, 24, 0, -42, 0, 0, 0, 0;...
+            0, 25, 0, 0, -(52 + 56), 65, 0, 0;...
+            0, 0, 0, 0, 56, -(65 + 67 + 68), 76, 86;...
+            0, 0, 0, 0, 0, 67, -(76+78), 87;...
+            0, 0, 0, 0, 0, 68, 78, -(86 + 87);...
+            ];
+        %Create the matrix of conditional probabilities
+%         [P, V, p, time] = k2P();
+ Npts = 150;
+        time = [0:9,logspace(1,log10(3e6),Npts)]/1e6;
+        
+        [P, ~, ~, time] = k2P(K,time);
+        
+        [N,~,~] = size(P);
+        A = linspace(.1,.9,N);
+end
 
 %Make a time array
 % Npts = 150;
 % time = [0:9,logspace(1,log10(3e6),Npts)]/1e6;
 
-%Create the matrix of conditional probabilities
+
 % P = k2P(K,time);
 
 %[N,~,timesteps] = size(P);
 [N,~,~] = size(P);
 timesteps = length(time);
-% Make a column vector of the discrete probability
+% Make a row vector of the discrete probability
 Peq = diag(P(:,:,end));
 
 %Make a  row vector of the FRET Values
-A = linspace(.1,.9,N);
+% A = linspace(.1,.9,N);
 
 %Subtract off the mean of A
-Amean = A*Peq;
+Amean = sum(A.*Peq);
 A = A - Amean;
+
 %--------------------------------------------------------------------------
 % Calculate 2 point TCF (Sums using loops)
 %--------------------------------------------------------------------------
@@ -45,7 +61,9 @@ if fitC2Mode == 1
     end
     % syms C2;
     % C2 = [];
-    tic
+    if clockMode == 1
+        tic
+    end
     C2 = zeros(1,timesteps);
     for i = 1:numel(A)
         for j = 1:numel(A)
@@ -54,9 +72,10 @@ if fitC2Mode == 1
             
         end
     end
-    elapsedTime =toc;
-    disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C2 for an ' num2str(N) ' state model']);
-    
+    if clockMode == 1
+        elapsedTime =toc;
+        disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C2 for an ' num2str(N) ' state model']);
+    end
 else
     C2 = 0;
     %
@@ -99,7 +118,9 @@ if fitC4Mode == 1
     
     [P_tau2eq0] = k2P(K,0);
     C4 = zeros(timesteps,timesteps);
-    tic
+    if clockMode == 1
+        tic
+    end
     for i = 1:numel(A)
         for j = 1:numel(A)
             for k = 1:numel(A)
@@ -112,8 +133,10 @@ if fitC4Mode == 1
             end
         end
     end
-    elapsedTime =toc;
-    disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C4 for an ' num2str(N) ' state model']);
+    if clockMode == 1
+        elapsedTime =toc;
+        disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C4 for an ' num2str(N) ' state model']);
+    end
 else
     C4 = 0;
     % if plotMode == 1
