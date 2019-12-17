@@ -1,7 +1,9 @@
-function [computer_terminal_str, terminalID] = computerMode(pwd)
+function [computer_terminal_str, terminalID] = computerMode()
+switch nargin
+    case 0
+        wd = pwd;
+end
 
-
-wd = pwd;
 
 % verboseMode = 1;
 
