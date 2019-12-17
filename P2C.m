@@ -1,7 +1,8 @@
 function [time, C2, C4] = P2C(P, K, time, A)
 %MODIFICATIONS
-% 20191216  BI  Adding the FRET values as an input
-% global plotMode 
+% 20191216 BI Adding the FRET values as an input
+% 20191217 BI Making sure Amean is calculated to be a number not a vector
+% global plotMode
 global fitC2Mode fitC4Mode
 clockMode = 0;
 % User Options
@@ -22,14 +23,19 @@ switch nargin
             0, 0, 0, 0, 0, 68, 78, -(86 + 87);...
             ];
         %Create the matrix of conditional probabilities
-%         [P, V, p, time] = k2P();
- Npts = 150;
+        %         [P, V, p, time] = k2P();
+        Npts = 150;
         time = [0:9,logspace(1,log10(3e6),Npts)]/1e6;
         
         [P, ~, ~, time] = k2P(K,time);
         
         [N,~,~] = size(P);
         A = linspace(.1,.9,N);
+        
+        clockMode = 1;
+        fitC2Mode = 1;
+        fitC4Mode = 1;
+        plotMode = 1;
 end
 
 %Make a time array
@@ -43,7 +49,8 @@ end
 [N,~,~] = size(P);
 timesteps = length(time);
 % Make a row vector of the discrete probability
-Peq = diag(P(:,:,end));
+% x = diag(A) returns a column vector of the main diagonal elements of A.
+Peq = diag(P(:,:,end))';
 
 %Make a  row vector of the FRET Values
 % A = linspace(.1,.9,N);
@@ -78,30 +85,30 @@ if fitC2Mode == 1
     end
 else
     C2 = 0;
-    %
-    % if plotMode == 1
-    %     figure(2)
-    %     set(gcf,'Color','w');
-    %
-    %     if exist('C2_plot','var')  == 1
-    %         delete(C2_plot)
-    %     end
-    %
-    %     C2_plot = plot(time,C2);
-    %     title_str = ['Two point time correlation function'];
-    %     title(title_str,'FontSize',18);
-    %     xlabel('\tau (sec)','fontsize',16);
-    %     ylabel('C^{(2)}(\tau)','fontsize',16);
-    %     set(gca,'yscale','linear');
-    %     set(gca,'xscale','log');
-    %     set(gca,'FontSize',14);
-    %     grid on
-    %     axis tight;
-    %
-    %     drawnow();
-    % end
-    
 end
+if plotMode == 1
+    figure(2)
+    set(gcf,'Color','w');
+    
+    if exist('C2_plot','var')  == 1
+        delete(C2_plot)
+    end
+    
+    C2_plot = plot(time,C2);
+    title_str = ['Two point time correlation function'];
+    title(title_str,'FontSize',18);
+    xlabel('\tau (sec)','fontsize',16);
+    ylabel('C^{(2)}(\tau)','fontsize',16);
+    set(gca,'yscale','linear');
+    set(gca,'xscale','log');
+    set(gca,'FontSize',14);
+    grid on
+    axis tight;
+    
+    drawnow();
+end
+
+
 %--------------------------------------------------------------------------
 % Calculate 2 point TCF (Matrix)
 %--------------------------------------------------------------------------
@@ -139,27 +146,27 @@ if fitC4Mode == 1
     end
 else
     C4 = 0;
-    % if plotMode == 1
-    %     figure(3)
-    %
-    %     if exist('histPlot','var')  == 1
-    %         delete(C4_plot)
-    %     end
-    %
-    %     set(gcf,'Color','w');
-    %     hold on;
-    %     C4_plot = surf(time,time,C4);
-    %     title_str = ['Four point time correlation function'];
-    %     title(title_str,'FontSize',18);
-    %     xlabel('\tau_1 (sec)','fontsize',16);
-    %     ylabel('\tau_3 (sec)','fontsize',16);
-    %     zlabel('C^{(4)}(\tau)','fontsize',16);
-    %     set(gca,'yscale','log');
-    %     set(gca,'xscale','log');
-    %     set(gca,'FontSize',14);
-    %     grid on
-    %     axis tight;
-    %
-    %     drawnow();
-    % end
+end
+if plotMode == 1
+    figure(3)
+    
+    if exist('histPlot','var')  == 1
+        delete(C4_plot)
+    end
+    
+    set(gcf,'Color','w');
+    hold on;
+    C4_plot = surf(time,time,C4);
+    title_str = ['Four point time correlation function'];
+    title(title_str,'FontSize',18);
+    xlabel('\tau_1 (sec)','fontsize',16);
+    ylabel('\tau_3 (sec)','fontsize',16);
+    zlabel('C^{(4)}(\tau)','fontsize',16);
+    set(gca,'yscale','log');
+    set(gca,'xscale','log');
+    set(gca,'FontSize',14);
+    grid on
+    axis tight;
+    
+    drawnow();
 end
