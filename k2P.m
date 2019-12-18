@@ -76,7 +76,10 @@ if clockMode == 1
     disp(['     time to Calculate the eigenvalues/eigenvectors of K = ' num2str(elapsedTime) ' seconds']);
     % % (8state: < 1 ms)
 end
+
+%--------------------------------------------------------------------------
 % Find the inverse of the matrix of eigenvectors
+%--------------------------------------------------------------------------
 if clockMode == 1
     tic
 end
@@ -87,10 +90,14 @@ if clockMode == 1
     % % (8state: < 0 µs)
 end
 
+%--------------------------------------------------------------------------
 % Use identity matrix to define the Initial conditions (Boundary conditions)
+%--------------------------------------------------------------------------
 InitCond = eye(N);
 
+%--------------------------------------------------------------------------
 % Find the matrix of all possible initial conditions
+%--------------------------------------------------------------------------
 % tic
 % C  = V \ InitCond; %V_inv * InitCond;
 % elapsedTime = toc;
@@ -115,7 +122,9 @@ exp_LamT = diag(exp(Lam * t));
 % elapsedTime = toc;
 % disp(['Time to evaluate cP matrix as function of t = ' num2str(elapsedTime)]);
 
-
+%--------------------------------------------------------------------------
+% Subs in the value fors
+%--------------------------------------------------------------------------
 if clockMode == 1
     tic
 end
@@ -130,6 +139,9 @@ end
 
 % %Note: To substitute in time, do so like this:
 % t = 0:.1:1;
+%--------------------------------------------------------------------------
+% Substiture the time array for t
+%--------------------------------------------------------------------------
 if clockMode == 1
     tic
 end
@@ -141,6 +153,9 @@ if clockMode == 1
     % % (8state: ~ 1.9 seconds) *** Long operation
 end
 
+%--------------------------------------------------------------------------
+% Reshape P to a NxN matrix
+%--------------------------------------------------------------------------
 if clockMode == 1
     tic
 end
@@ -150,6 +165,9 @@ if clockMode == 1
     disp(['     time to reshape P = ' num2str(elapsedTime) ' seconds']);
 end
 
+%--------------------------------------------------------------------------
+% Make P a double
+%--------------------------------------------------------------------------
 if clockMode == 1
     tic
 end

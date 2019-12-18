@@ -10,7 +10,7 @@ function [time, C2, C4] = P2C(P, K, time, A)
 global fitC2Mode fitC4Mode
 clockMode = 0;
 % User Options
-% plotMode = 1;
+plotMode = 0;
 
 switch nargin
     case 0
