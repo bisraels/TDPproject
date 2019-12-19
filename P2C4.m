@@ -1,4 +1,4 @@
-function [C2,time] = P2C2(P,A,time)
+function [C4,time] = P2C4(K,P,A,time,tau2)
 clockMode = 0;
 plotMode = 0;
 switch nargin
@@ -28,7 +28,7 @@ Ams = A - Amean;
 if clockMode == 1
     tic
 end
-C2 = zeros(1,timesteps);
+C4 = zeros(timesteps,timesteps);
 for i = 1:numel(Ams)
     for j = 1:numel(Ams)
         C2temp = Ams(j)*reshape(P(j,i,:),[1 timesteps])*Ams(i)*Peq(i);

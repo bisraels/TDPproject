@@ -1,4 +1,4 @@
-function [K,A,time,rates,boundsArray] = paramSim_8state()
+function [K,A,time,rates] = paramSim_8state()
 %  Need to set bounds for each time constant
 % Set DNA-only states from data fitting of 3state model - 3p15mer
 t12_bounds = [65e-6,85e-6];        %Paramater #1 is high--> med
