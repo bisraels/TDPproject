@@ -11,7 +11,7 @@
 %           P(j,i,t) is the probability of going from i -> j in time t
 %
 % MODLOG:  BI 20191112 Inverse done with '\' not inv() (faster)
-%          CA
+%          BI Switching to K2P to better match the notation of the paper
 %__________________________________________________________________________
 
 %P is the numerical NxNxt matrix of conditional probabilities
