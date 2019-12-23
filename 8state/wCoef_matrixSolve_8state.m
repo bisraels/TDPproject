@@ -47,7 +47,7 @@ disp(['Time to find c matrix = ' num2str(elapsedTime)]);
 % Select by COLUMNS for each equation.
 save('wcoef_matSolve_8state_cMatrix.mat','c_mat')
 
-
+return
 
 %% Check results with arbitrary matrix
 
