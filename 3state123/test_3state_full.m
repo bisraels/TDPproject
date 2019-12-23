@@ -2,12 +2,17 @@
 % User Options
 %--------------------------------------------------------------------------
 
-clockMode = 1;
+clockMode = 0;
 plotMode = 1;
-verboseMode = 1;
+verboseMode = 0;
 
-plotCondProbMode = 1;
+plot_C2_mode = 1;
+plot_C4_mode = 1;
+plotCondProbMode = 0;
+plot_model_mode = 0;
 
+%Use the fit to the data to get the paramaters
+plot_data_fit_mode = 0;
 %--------------------------------------------------------------------------
 % Build the symbolic conditional probabilities
 %--------------------------------------------------------------------------
@@ -74,14 +79,26 @@ end
 %--------------------------------------------------------------------------
 % Pick random values for the rate constants and FRET states
 %--------------------------------------------------------------------------
-[k12,k13,k21,k23,k31,A1,A2,A3,k32,~] = paramSim_3state123_cyclical();
 
 
 % k12 = 12; k13 = 13; k21 = 21; k31 = 31; k23 = 23;
 % k32 = k12*k23*k31/(k13*k21);
 % A1 = .1; A2 = .2; A3 = .3;
 
-% load('BestFitResults_fmincon.mat','A1','A2','A3','k12','k13','k21','k23','k32','k31')
+if plot_data_fit_mode == 1
+load('BestFitResults_fmincon.mat','A1','A2','A3','k12','k13','k21','k23','k32','k31')
+disp('Using the best fit values from the data');
+else
+    %Simulate possible K matrix within GA tolerances
+ [k12,k13,k21,k23,k31,A1,A2,A3,k32,~] = paramSim_3state123_cyclical();
+disp('Siumating the paramaters');
+
+ %Use a simple system to create the K matrix
+   % k12 = 12; k13 = 13; k21 = 21; k31 = 31; k23 = 23;
+% k32 = k12*k23*k31/(k13*k21);
+% A1 = .1; A2 = .2; A3 = .3;
+
+end
 %--------------------------------------------------------------------------
 % Calculate the Eigenvalues and Eigenvectors of K matrix
 %--------------------------------------------------------------------------
@@ -316,41 +333,14 @@ PCq = [P1_eq,P2_eq,P3_eq];
 % cP(2,3,:) = p2_3;
 % cP(3,3,:) = p3_3;
 
-% tic
-% C2_sim2 = zeros(size(time));
-% for i = 1:numel(A)
-%     for j = 1:numel(A)
-%         C2_sim2_temp = A(j) * squeeze(cP(j,i,:)) * A(i) * PCq(i);
-%
-%         %         C2_sim1_temp = A(j) * reshape(cP(j,i,:),numel(cP)) * A(i) * PCq(i);
-%         C2_sim2 = C2_sim2 + C2_sim2_temp;
-%     end
-% end
-% disp('     Time to calculate C2 using loops and squeeze...');
-% toc
-
-% % Calculate C2_sim (METHOD 3)
-% tic
-% C2_sim3 = zeros(size(time));
-% for i = 1:numel(A)
-%     for j = 1:numel(A)
-%         C2_sim3_temp = A(j) * squeeze(P(j,i,:)) * A(i) * PCq(i);
-%         %         C2_sim1_temp = A(j) * reshape(cP(j,i,:),numel(cP)) * A(i) * PCq(i);
-%         C2_sim3 = C2_sim3 + C2_sim3_temp;
-%     end
-% end
-% disp('     Time to calculate C2 using loops and squeeze (method 3)...');
-% toc
-
 % Calculate C2_sim (METHOD 4)
 tic
 Npts = numel(time);
-C2_sim3 = zeros(size(time));
+C2_sim = zeros(size(time));
 for i = 1:numel(A)
     for j = 1:numel(A)
-        C2_sim3_temp = A(j) * reshape(P(j,i,:),[1,Npts]) * A(i) * PCq(i);
-        %         C2_sim1_temp = A(j) * reshape(cP(j,i,:),numel(cP)) * A(i) * PCq(i);
-        C2_sim3 = C2_sim3 + C2_sim3_temp;
+        C2_temp = A(j) * reshape(P(j,i,:),[1,Npts]) * A(i) * PCq(i);
+        C2_sim = C2_sim + C2_temp;
     end
 end
 disp('     Time to calculate C2 using loops and reshape (method 4)...');
@@ -358,7 +348,7 @@ toc
 %--------------------------------------------------------------------------
 %  Plot two point TCF
 %--------------------------------------------------------------------------
-if plotMode == 1
+if plot_C2_mode == 1
     figure(2)
     %     clf;
     set(gcf,'Color','w');
@@ -368,7 +358,7 @@ if plotMode == 1
     %     TCF2pt = plot(time,C2_sim,'LineWidth',3,'DisplayName','C2 one line');
     hold on;
     %     TCF2pt2 = plot(time,C2_sim2,'r--','LineWidth',3,'DisplayName','C2 loops');
-    TCF2pt3 = plot(time,C2_sim3,'LineWidth',3,'DisplayName','C2 loops matrix');
+    TCF2pt3 = plot(time,C2_sim,'LineWidth',3,'DisplayName','C2 loops matrix');
     
     title('Two point TCF','FontSize',18)
     xlabel('Time','FontSize',14);
@@ -408,7 +398,7 @@ cP_t2(2,3,:) = p2_3_t2 ;
 cP_t2(3,3,:) = p3_3_t2 ;
 
 %-------------------------------------------------------------------------
-% Iterate over all the PCrmutations of FRET States
+% Iterate over all the Perrmutations of FRET States
 %-------------------------------------------------------------------------
 % tic
 % C4 = zeros(numel(time),numel(time));
@@ -437,31 +427,16 @@ Pline_tau2 = double(subs(p_line));
 P_tau2 = reshape(Pline_tau2, [N N numel(time)]);
 time = time_holder;
 
-tic
-C4_sim2 = zeros(numel(time),numel(time));
-for i = 1:numel(A)
-    for j = 1:numel(A)
-        for k = 1:numel(A)
-            for l = 1:numel(A)
-                C4term_val =  A(l) *squeeze(P(l,k,:)) * A(k) * P_tau2(k,j) * A(j) * squeeze(P(j,i,:))'* A(i) * PCq(i);
-                C4_sim2 = C4_sim2 + C4term_val;
-            end
-        end
-    end
-end
-disp('    time to calculate C4 using loops and squeeze (Matrix Method)');
-toc
-
 
 tic
 Npts = numel(time);
-C4_sim3 = zeros(numel(time),numel(time));
+C4_sim = zeros(numel(time),numel(time));
 for i = 1:numel(A)
     for j = 1:numel(A)
         for k = 1:numel(A)
             for l = 1:numel(A)
                 C4term_val =  A(l) *reshape(P(l,k,:),[1,Npts])' * A(k) *  P_tau2(k,j) * A(j) * reshape(P(j,i,:),[1,numel(time)])* A(i) * PCq(i);
-                C4_sim3 = C4_sim3 + C4term_val;
+                C4_sim = C4_sim + C4term_val;
             end
         end
     end
@@ -472,14 +447,10 @@ toc
 %-------------------------------------------------------------------------
 % Plot the 4 point TCF
 %-------------------------------------------------------------------------
-if plotMode == 1
+if plot_C4_mode == 1
     figure(4);
-    clf;
-    surf(time, time, C4,'DisplayName','Conditional Prob');
-    hold on
-    
-    mesh(time,time,C4_sim2,'DisplayName','loops/squeeze');
-    mesh(time,time,C4_sim3,'DisplayName','loops reshape');
+  hold on
+    mesh(time,time,C4_sim,'DisplayName','C4_sim');
     
     legend();
     title('Four-point TCF: C^{(4)}','FontSize',18)
@@ -498,9 +469,10 @@ if plotMode == 1
     hold on;
 end
 %-------------------------------------------------------------------------
-% Plot the Model
+% Plot the Model (Figure 6)
 %-------------------------------------------------------------------------
 
+if plot_model_mode == 1
 t12 = 1/k12;
 t13 = 1/k13;
 t21 = 1/k21;
@@ -553,11 +525,11 @@ t31_loc = [state1_loc(1)+(state3_loc(1)- state1_loc(1))/2,state1_loc(2)+(state3_
 t31_msg = ['t_{31} = ' num2str(t31) 10 't_{13} = ' num2str(t13)];
 text(t31_loc(1),t31_loc(2),t31_msg,'FontSize',14);
 
-%Plot the chi-squared value
-text(state3_loc(1),state1_loc(2),['\chi^2 = ' num2str(chisquared)],'FontSize',14);
 
 %Plot a title with the information in it
-[sample_description, save_prefix] = sample_descriptionGetter();
-title_str = ['3state Cyclical: ' sample_description];
+% [sample_description, save_prefix] = sample_descriptionGetter();
+% title_str = ['3state Cyclical: ' sample_description];
+title_str = ['3state Cyclical'];
 text(state3_loc(1),state1_loc(2)+0.15,title_str,'fontsize',16);
 ylim([0,1.1]);
+end

@@ -216,12 +216,14 @@ if plotMode == 1
     sigma_A2 = 0.1;
     sigma_A3 = 0.1;
     
+    % Final fit histogram
     FRET_bins = linspace(0,1,100);
     hist_sim = P1EQ*exp(-((FRET_bins-A1)/sigma_A1).^2) + P2EQ*exp(-((FRET_bins-A2)/sigma_A2).^2) + P3EQ*exp(-((FRET_bins-A3)/sigma_A3).^2);
     denom_hist_sim= sum(hist_sim);
     
     hist_sim = hist_sim./denom_hist_sim;
     
+    % One line for the final fit
     plot(FRET_bins,hist_sim,'r-','LineWidth',2,'DisplayName','Final Fit');
     xlabel('FRET Efficiency','FontSize',14);
     ylabel('Frequency','FontSize',14);
@@ -229,6 +231,7 @@ if plotMode == 1
     
     
     hold on;
+    % Histogram for each population individually
     plot(FRET_bins,P1EQ*exp(-((FRET_bins-A1)/sigma_A1).^2)./denom_hist_sim,'c--','LineWidth',1,'DisplayName','P1_{eq}');
     plot(FRET_bins,P2EQ*exp(-((FRET_bins-A2)/sigma_A2).^2)./denom_hist_sim,'m--','LineWidth',1,'DisplayName','P2_{eq}');
     plot(FRET_bins,P3EQ*exp(-((FRET_bins-A3)/sigma_A3).^2)./denom_hist_sim,'g--','LineWidth',1,'DisplayName','P3_{eq}');

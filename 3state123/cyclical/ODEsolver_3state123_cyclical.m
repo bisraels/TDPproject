@@ -84,10 +84,9 @@ end
 % Define the DE we want to solve
 eqn = diff(P(t),t)== K * P(t);
 %OUTPUT: eqn =
-%  diff(P1(t), t) == k21*P2(t) - k12*P1(t)
+%  diff(P1(t), t) == k21*P2(t) - P1(t)*(k12 + k13) + k31*P3(t)
 %  diff(P2(t), t) == k12*P1(t) - P2(t)*(k21 + k23) + k32*P3(t)
-%  diff(P3(t), t) == k23*P2(t) - k32*P3(t)
-
+%  diff(P3(t), t) == k13*P1(t) - P3(t)*(k31 + k32) + k23*P2(t)
 % Solve the equations and give an output
 %Pij(t) is prob from i--> j, assuming you start in state i: Pi(t=0)=100%=1
 % Condition 1: P(t) = [P1(t) = 1, P2(t) = 0, P3(t) = 0]

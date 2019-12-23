@@ -4,10 +4,12 @@
 
 clockMode = 1;
 plotMode = 1;
-verboseMode = 1;
+verboseMode = 0;
 
 plotCondProbMode = 1;
-
+plot_histMode = 1;
+plot_C2Mode = 1;
+plot_C4Mode = 1;
 %--------------------------------------------------------------------------
 % Build the symbolic conditional probabilities
 %--------------------------------------------------------------------------
@@ -60,6 +62,7 @@ if verboseMode == 1
     disp(pline);
 end
 
+
 % pline =
 %  c1_1*v1_1*exp(lam1*time) + c2_1*v2_1*exp(lam2*time) + c3_1*v3_1*exp(lam3*time)
 %  c1_1*v1_2*exp(lam1*time) + c2_1*v2_2*exp(lam2*time) + c3_1*v3_2*exp(lam3*time)
@@ -76,12 +79,11 @@ end
 %--------------------------------------------------------------------------
 [k12,k13,k21,k23,k31,A1,A2,A3,k32,~] = paramSim_3state123_cyclical();
 
-
 % k12 = 12; k13 = 13; k21 = 21; k31 = 31; k23 = 23;
 % k32 = k12*k23*k31/(k13*k21);
 % A1 = .1; A2 = .2; A3 = .3;
 
-% load('BestFitResults_fmincon.mat','A1','A2','A3','k12','k13','k21','k23','k32','k31')
+% load('BestFitResults_fmincon.mat','A1','A2','A3','k12','k13','k21','k23','k31','k32')
 %--------------------------------------------------------------------------
 % Calculate the Eigenvalues and Eigenvectors of K matrix
 %--------------------------------------------------------------------------
@@ -156,12 +158,8 @@ eqSum = sum(PCq);
 disp(['The sum of equilibrium probabilities is ' num2str(eqSum)]);
 
 A = [A1,A2,A3];
-Amean = sum(A.*PCq);
 
-% Subtract mean values
-A1 = A1 - Amean;
-A2 = A2 - Amean;
-A3 = A3 - Amean;
+
 
 time = time_sim();
 %Set the conditional probabilities using the full expressions
@@ -215,20 +213,71 @@ if verboseMode == 1
 end
 
 %Make a matrix of conditional probabilites as a funtion of time
-p = V*(C.*LamVec);
+p_t_sym = V*(C.*LamVec);
 
 %transform the NxN matrix into a (N*N)x1 matrix
-p_line = p(:);
+p_t_sym_line = p_t_sym(:);
 
 %Define a time
 time = time_sim();
 
 %Replace pline_sym with the time
-Pline = double(subs(p_line));
+Pline = double(subs(p_t_sym_line));
 
 %Recast 9xnumel(time) matrix back into original size (NxNxnumel(t))
 P = reshape(Pline, [N N numel(time)]);
 
+
+if plot_histMode == 1
+    figure(5);
+    clf
+    
+    FRET_bins = [0:.01:1];
+    sigma_A1 = 0.15;
+    sigma_A2 = 0.1;
+    sigma_A3 = 0.1;
+    
+    
+    Peq = [P(1,1,end), P(2,2,end), P(3,3,end)];
+    p1_eq = Peq(1);
+    p2_eq = Peq(2);
+    p3_eq = Peq(3);
+    
+    hist_sim = p1_eq*exp(-((FRET_bins-A1)/sigma_A1).^2) + p2_eq*exp(-((FRET_bins-A2)/sigma_A2).^2) + p3_eq*exp(-((FRET_bins-A3)/sigma_A3).^2);
+    denom_hist_sim = sum(hist_sim);
+    hist_sim = hist_sim./sum(hist_sim);
+    hold on;
+    
+    fitHistPlot = plot(FRET_bins,hist_sim,'DisplayName','Cumulative Fit');
+    fitHistPlot.LineStyle = '-';
+    %         fitHistPlot.Color = 'red';
+    fitHistPlot.LineWidth = 2;
+    
+    state1_HistPlot = plot(FRET_bins,p1_eq*exp(-((FRET_bins-A1)/sigma_A1).^2)./denom_hist_sim,...
+        'k--','LineWidth',1,'DisplayName',['p1_{eq} =' num2str(p1_eq)]);
+    state2_HistPlot = plot(FRET_bins,p2_eq*exp(-((FRET_bins-A2)/sigma_A2).^2)./denom_hist_sim,...
+        'b--','LineWidth',1,'DisplayName',['p2_{eq} =' num2str(p2_eq)]);
+    state3_HistPlot = plot(FRET_bins,p3_eq*exp(-((FRET_bins-A3)/sigma_A3).^2)./denom_hist_sim,...
+        'r--','LineWidth',1,'DisplayName',['p3_{eq} =' num2str(p3_eq)]);
+   
+    
+    
+        xlabel('FRET Efficiency','FontSize',14);
+        ylabel('Frequency','FontSize',14);
+        
+        [sample_description, ~] = sample_descriptionGetter();
+        title_str = ['Experimental vs Simulated Histograms' ...
+            10 sample_description];
+        title(title_str,'fontsize',14);
+        
+        lgd = legend('show');
+        lgd.Location = 'northwest';
+        lgd.FontSize = 14;
+        drawnow();
+        hold on;
+        whitebg;
+        set(gca,'FontSize',14);
+end
 
 %%
 %-------------------------------------------------------------------------
@@ -263,32 +312,36 @@ if plotCondProbMode == 1
         timeUB = 1e-2;
         %Begin in state 1 -block
         plot(time,p1_1,'color',state_1_color,'LineWidth',3,'LineStyle','-','DisplayName','P_{{\color{black}C}}\rightarrow_{C}');
-        text(timeUB,p1_1(end)+0.05,'P_C^{Eq}','FontSize',18);
+        text(timeUB*.8,p1_1(end)+0.05,'P_C^{Eq}','FontSize',18);
         plot(time,p2_1,'color',state_1_color,'LineWidth',3,'LineStyle',':','DisplayName','P_{C}\rightarrow_{I}');
-        plot(time,p3_1,'color',state_1_color,'LineWidth',3,'LineStyle','--','DisplayName','P_{C}\rightarrow_{E}')
+        plot(time,p3_1,'color',state_1_color,'LineWidth',3,'LineStyle','--','DisplayName','P_{C}\rightarrow_{FE}')
         
-        %Begin in state-2
-        plot(time,p1_2,'color',state_2_color,'LineWidth',3,'LineStyle','-','DisplayName','P_{I}\rightarrow_{C}');
-        plot(time,p2_2,'color',state_2_color,'LineWidth',3,'LineStyle',':','DisplayName','P_{I}\rightarrow_{I}');
-        text(timeUB,p2_2(end)+0.05,'P_I^{Eq}','FontSize',18);
-        plot(time,p3_2,'color',state_2_color,'LineWidth',3,'LineStyle','--','DisplayName','P_{I}\rightarrow_{E}');
-        
-        %Begin in state-3
-        plot(time,p1_3,'color',state_3_color,'LineWidth',3,'LineStyle','-','DisplayName','P_{FE}\rightarrow_{C}');
-        plot(time,p2_3,'color',state_3_color,'LineWidth',3,'LineStyle',':','DisplayName','P_{FE}\rightarrow_{I}');
-        plot(time,p3_3,'color',state_3_color,'LineWidth',3,'LineStyle','--','DisplayName','P_{FE}\rightarrow_{E}');
-        text(timeUB,p3_3(end)+0.05,'P_{FE}^{Eq}','FontSize',18);
-        
-        
-        lgd = legend;
+          lgd = legend;
         lgd.FontSize = 14;
         lgd.Location = 'bestoutside';
         xlim([-inf,timeUB]);
         set(gca,'FontSize',14);
         
+        
+        %Begin in state-2
+        plot(time,p1_2,'color',state_2_color,'LineWidth',3,'LineStyle','-','DisplayName','P_{I}\rightarrow_{C}');
+        plot(time,p2_2,'color',state_2_color,'LineWidth',3,'LineStyle',':','DisplayName','P_{I}\rightarrow_{I}');
+        text(timeUB*.8,p2_2(end)+0.05,'P_I^{Eq}','FontSize',18);
+        plot(time,p3_2,'color',state_2_color,'LineWidth',3,'LineStyle','--','DisplayName','P_{I}\rightarrow_{FE}');
+        
+        
+        %Begin in state-3
+        plot(time,p1_3,'color',state_3_color,'LineWidth',3,'LineStyle','-','DisplayName','P_{FE}\rightarrow_{C}');
+        plot(time,p2_3,'color',state_3_color,'LineWidth',3,'LineStyle',':','DisplayName','P_{FE}\rightarrow_{I}');
+        plot(time,p3_3,'color',state_3_color,'LineWidth',3,'LineStyle','--','DisplayName','P_{FE}\rightarrow_{FE}');
+        text(timeUB*.8,p3_3(end)+0.05,'P_{FE}^{Eq}','FontSize',18);
+        
+        
+      
     end
 end
 %%
+if plot_C2Mode == 1
 %--------------------------------------------------------------------------
 % Calculate the Two-point TCF
 %--------------------------------------------------------------------------
@@ -303,7 +356,13 @@ end
 % Calculate C2_sim (METHOD 2)
 %mean has already been subtracted
 A = [A1,A2,A3];
-PCq = [P1_eq,P2_eq,P3_eq];
+Amean = sum(A.*PCq);
+% Subtract mean values
+A1 = A1 - Amean;
+A2 = A2 - Amean;
+A3 = A3 - Amean;
+
+Peq = [P1_eq,P2_eq,P3_eq];
 %
 % cP = zeros(numel(A),numel(A),length(time));
 % cP(1,1,:) = p1_1;
@@ -360,7 +419,7 @@ toc
 %--------------------------------------------------------------------------
 if plotMode == 1
     figure(2)
-    %     clf;
+    clf;
     set(gcf,'Color','w');
     set(gcf,'Name','C2');
     %subplot(1,3,1)
@@ -368,7 +427,7 @@ if plotMode == 1
     %     TCF2pt = plot(time,C2_sim,'LineWidth',3,'DisplayName','C2 one line');
     hold on;
     %     TCF2pt2 = plot(time,C2_sim2,'r--','LineWidth',3,'DisplayName','C2 loops');
-    TCF2pt3 = plot(time,C2_sim3,'LineWidth',3,'DisplayName','C2 loops matrix');
+    TCF2pt3 = plot(time,C2_sim3,'b-','LineWidth',3,'DisplayName','C2 loops matrix');
     
     title('Two point TCF','FontSize',18)
     xlabel('Time','FontSize',14);
@@ -378,12 +437,12 @@ if plotMode == 1
     ax.XScale = 'log';
     
 end
-
+end
 
 %--------------------------------------------------------------------------
 % Calculate 4 point TCF
 %--------------------------------------------------------------------------
-
+if plot_C4Mode == 1
 % Calculate the NxN conditional Probabilities for tau2
 tau2 = 0;
 p1_1_t2 = P1_eq + c2_1*v2_1*exp(eval2*tau2) + c3_1*v3_1*exp(eval3*tau2);
@@ -408,7 +467,7 @@ cP_t2(2,3,:) = p2_3_t2 ;
 cP_t2(3,3,:) = p3_3_t2 ;
 
 %-------------------------------------------------------------------------
-% Iterate over all the PCrmutations of FRET States
+% Iterate over all the Permutations of FRET States
 %-------------------------------------------------------------------------
 % tic
 % C4 = zeros(numel(time),numel(time));
@@ -431,27 +490,28 @@ cP_t2(3,3,:) = p3_3_t2 ;
 %Define a time
 time_holder = time;
 time = 0;
+
 %Replace pline_sym with the time
-Pline_tau2 = double(subs(p_line));
+Pline_tau2 = double(subs(p_t_sym_line));
 %Recast back into original size
 P_tau2 = reshape(Pline_tau2, [N N numel(time)]);
 time = time_holder;
-
-tic
-C4_sim2 = zeros(numel(time),numel(time));
-for i = 1:numel(A)
-    for j = 1:numel(A)
-        for k = 1:numel(A)
-            for l = 1:numel(A)
-                C4term_val =  A(l) *squeeze(P(l,k,:)) * A(k) * P_tau2(k,j) * A(j) * squeeze(P(j,i,:))'* A(i) * PCq(i);
-                C4_sim2 = C4_sim2 + C4term_val;
-            end
-        end
-    end
-end
-disp('    time to calculate C4 using loops and squeeze (Matrix Method)');
-toc
-
+% 
+% tic
+% C4_sim2 = zeros(numel(time),numel(time));
+% for i = 1:numel(A)
+%     for j = 1:numel(A)
+%         for k = 1:numel(A)
+%             for l = 1:numel(A)
+%                 C4term_val =  A(l) *squeeze(P(l,k,:)) * A(k) * P_tau2(k,j) * A(j) * squeeze(P(j,i,:))'* A(i) * PCq(i);
+%                 C4_sim2 = C4_sim2 + C4term_val;
+%             end
+%         end
+%     end
+% end
+% disp('    time to calculate C4 using loops and squeeze (Matrix Method)');
+% toc
+% 
 
 tic
 Npts = numel(time);
@@ -473,12 +533,13 @@ toc
 % Plot the 4 point TCF
 %-------------------------------------------------------------------------
 if plotMode == 1
+    
     figure(4);
     clf;
-    surf(time, time, C4,'DisplayName','Conditional Prob');
+%     surf(time, time, C4,'DisplayName','Conditional Prob');
     hold on
     
-    mesh(time,time,C4_sim2,'DisplayName','loops/squeeze');
+%     mesh(time,time,C4_sim2,'DisplayName','loops/squeeze');
     mesh(time,time,C4_sim3,'DisplayName','loops reshape');
     
     legend();
@@ -497,67 +558,4 @@ if plotMode == 1
     drawnow();
     hold on;
 end
-%-------------------------------------------------------------------------
-% Plot the Model
-%-------------------------------------------------------------------------
-
-t12 = 1/k12;
-t13 = 1/k13;
-t21 = 1/k21;
-t23 = 1/k23;
-t31 = 1/k31;
-t32 = 1/k32;
-
-figure(6);
-clf;
-set(gcf,'Name','Model: 3state123 cyclical');
-
-set(gcf,'Color','w');
-
-set(gcf,'Name','Model final Results');
-set(gcf,'Color',[1 1 1]);
-hold on;
-xlim([0 1.1]);
-ylim([0 1]);
-
-%Designate spots for the states
-state1_loc = [0.5 1];
-state2_loc = [1 0];
-state3_loc = [0 0];
-
-%Plot the state symbols
-text(state1_loc(1)-0.04,state1_loc(2)+0.05,'1','FontSize',24)
-text(state2_loc(1),state2_loc(2),'2','FontSize',24);
-text(state3_loc(1)-0.05,state3_loc(2),'3','FontSize',24);
-
-%Plot the FRET values
-text(state1_loc(1),state1_loc(2) + 0.05,['=' num2str(A1,'%.3f')],'FontSize',16)
-text(state2_loc(1)+ 0.05,state2_loc(2),['=' num2str(A2,'%.3f')],'FontSize',16);
-text(state3_loc(1),state3_loc(2),['=' num2str(A3,'%.3f')],'FontSize',16);
-
-%Plot Lines Between states
-line([state1_loc(1) state2_loc(1)],[state1_loc(2) state2_loc(2)],'Color','k','LineStyle','-');
-line([state2_loc(1) state3_loc(1)],[state2_loc(2) state3_loc(2)],'Color','k','LineStyle','-');
-line([state3_loc(1) state1_loc(1)],[state3_loc(2) state1_loc(2)],'Color','k','LineStyle','-');
-
-%Plot the inverse of the rates
-t12_loc = [state1_loc(1)+(state2_loc(1)- state1_loc(1))/2,state1_loc(2)+(state2_loc(2)- state1_loc(2))/2];
-t12_msg = ['t_{12} = ' num2str(t12) 10 't_{21} = ' num2str(t21)];
-text(t12_loc(1),t12_loc(2),t12_msg,'FontSize',14);
-
-t23_loc = [state3_loc(1)+(state2_loc(1)- state3_loc(1))/2,state3_loc(2)+(state2_loc(2)- state3_loc(2))/2];
-t23_msg = ['t_{23} = ' num2str(t23) 10 't_{32} = ' num2str(t32)];
-text(t23_loc(1),t23_loc(2),t23_msg,'FontSize',14);
-
-t31_loc = [state1_loc(1)+(state3_loc(1)- state1_loc(1))/2,state1_loc(2)+(state3_loc(2)- state1_loc(2))/2];
-t31_msg = ['t_{31} = ' num2str(t31) 10 't_{13} = ' num2str(t13)];
-text(t31_loc(1),t31_loc(2),t31_msg,'FontSize',14);
-
-%Plot the chi-squared value
-text(state3_loc(1),state1_loc(2),['\chi^2 = ' num2str(chisquared)],'FontSize',14);
-
-%Plot a title with the information in it
-[sample_description, save_prefix] = sample_descriptionGetter();
-title_str = ['3state Cyclical: ' sample_description];
-text(state3_loc(1),state1_loc(2)+0.15,title_str,'fontsize',16);
-ylim([0,1.1]);
+end

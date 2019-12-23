@@ -63,8 +63,8 @@ K = [-25,  21,     31,         0,     0,       0,       0;...   %1
     0,     25,  0,              0,    -108,    65,      0;...   %5
     0,     0,   0,              0,      56,  -(65+67),  76;...  %6
     0,     0,   0,              0,       0,     67,     -(76);] %7
-
-
+A = [.1:.1:.7];
+N = length(K);
 %--------------------------------------------------------------------------
 % Calculate the Eigenvalues and Eigenvectors of K matrix
 %--------------------------------------------------------------------------
@@ -156,7 +156,8 @@ v7_6 = evec7(6);
 v7_7 = evec7(7);
 
 %Load the algebraic solution to the expansion coefficients
-load('wcoef_7state_c1_1.mat')
+% load('wcoef_7state_c1_1.mat')
+load('wcoef_7state_cn_m_Mathematica.mat');
 
 %Substitute the symbolic eigenvector components for their number in double
 tic
@@ -167,7 +168,7 @@ if clockMode == 1
     task_str = ['substitute in the eigenvectors for 1/49 expansion coefficients'];
     disp(['Took ' num2str(elapsedTime) ' seconds to ' task_str]);
 end
-return
+
 
 C1_2 = double(subs(c1_2));
 C1_3 = double(subs(c1_3));
@@ -186,6 +187,7 @@ C2_7 = double(subs(c2_7));
 
 C3_1 = double(subs(c3_1));
 C3_2 = double(subs(c3_2));
+C3_3 = double(subs(c3_3));
 C3_4 = double(subs(c3_4));
 C3_5 = double(subs(c3_5));
 C3_6 = double(subs(c3_6));
@@ -205,7 +207,7 @@ C5_3 = double(subs(c5_3));
 C5_4 = double(subs(c5_4));
 C5_5 = double(subs(c5_5));
 C5_6 = double(subs(c5_6));
-C5_7 = double(subs(C5_7));
+C5_7 = double(subs(c5_7));
 
 C6_1 = double(subs(c6_1));
 C6_2 = double(subs(c6_2));
@@ -236,17 +238,21 @@ end
 %-------------------------------------------------------------------------
 
 %Make a matrix C of expansion coefficient components
-C =[C1_1, C1_2, C1_3, C1_4, C1_5, C1_6;...
-   C2_1, C2_2, C2_3, C2_4, C2_5, C2_6;...
-   C3_1, C3_2, C3_3, C3_4, C3_5, C3_6;...
-   C4_1, C4_2, C4_3, C4_4, C4_5, C4_6;...
-   C5_1, C5_2, C5_3, C5_4, C5_5, C5_6;...
-   C6_1, C6_2, C6_3, C6_4, C6_5, C6_6];
+% There is no simpler way to do this as far as we know
+C =[...
+   C1_1, C1_2, C1_3, C1_4, C1_5, C1_6, C1_7;...
+   C2_1, C2_2, C2_3, C2_4, C2_5, C2_6, C2_7;...
+   C3_1, C3_2, C3_3, C3_4, C3_5, C3_6, C3_7;...
+   C4_1, C4_2, C4_3, C4_4, C4_5, C4_6, C4_7;...
+   C5_1, C5_2, C5_3, C5_4, C5_5, C5_6, C5_7;...
+   C6_1, C6_2, C6_3, C6_4, C6_5, C6_6, C6_7;...
+   C7_1, C7_2, C7_3, C7_4, C7_5, C7_6, C7_7;...
+   ];
 disp(C)
 
+%make a modal matrix`
 V = VecSorted;
 
-N = 6;
 clear('time');
 
 lam = exp(sym('eval',[1,N])*'time');
@@ -256,7 +262,10 @@ Lam3 =  subs(lam(3));
 Lam4 =  subs(lam(4));
 Lam5 =  subs(lam(5));
 Lam6 =  subs(lam(6));
-LamVec = [Lam1;Lam2;Lam3;Lam4;Lam5;Lam6];
+Lam7 =  subs(lam(7));
+
+%Make a column vector of lambda
+LamVec = [Lam1,Lam2,Lam3,Lam4,Lam5,Lam6,Lam7]';
 
 %Make a matrix of conditional probabilites as a funtion of time
 p_notime_sym = V*(C.*LamVec);
@@ -273,6 +282,9 @@ Pline = double(subs(p_notime_sym_line));
 %Recast 9xnumel(time) matrix back into original size (NxNxnumel(t))
 P = reshape(Pline, [N N numel(time)]);
 
+if abs(trace(P(:,:,end)) - 1) < 1e-9
+   Peq = P(:,1,end);
+end
 %--------------------------------------------------------------------------
 % Calculate C2 using the 3x3xnumel(time) sized conditional probability
 % Matrix P where P(j,i,:) is the prob of going from i->j in time t
@@ -313,6 +325,13 @@ end
 %--------------------------------------------------------------------------
 % Calculate 4 point TCF
 %--------------------------------------------------------------------------
+time_holder = time;
+time = 0;
+%Replace pline_sym with the time
+Pline_tau2 = double(subs(p_notime_sym_line));
+%Recast back into original size
+P_tau2 = reshape(Pline_tau2, [N N numel(time)]);
+time = time_holder;
 
 tic
 Npts = numel(time);
