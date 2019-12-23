@@ -6,6 +6,7 @@ switch nargin
         
         [K,A,time,~] = paramSim_8state();
         P = K2P(K);
+        tau2 = 0;
         
 end
 %[N,~,timesteps] = size(P);
@@ -23,58 +24,53 @@ Amean = sum(A.*Peq);
 Ams = A - Amean;
 
 %--------------------------------------------------------------------------
-% Calculate 2 point TCF (Sums using loops)
+% Calculate 4point TCF (Sums using loops)
 %--------------------------------------------------------------------------
 if clockMode == 1
     tic
 end
+[P_tau2eq0] = k2P(K,tau2);
+if clockMode == 1
+    elapsedTime = toc;
+    disp(['Time to calculate calculate Pji(t=0) for an ' num2str(N) ' state model: ' num2str(elapsedTime) ]);
+end
 C4 = zeros(timesteps,timesteps);
-for i = 1:numel(Ams)
-    for j = 1:numel(Ams)
-        C2temp = Ams(j)*reshape(P(j,i,:),[1 timesteps])*Ams(i)*Peq(i);
-        C2 =  C2 + C2temp;
+if clockMode == 1
+    tic
+end
+for i = 1:numel(A)
+    for j = 1:numel(A)
+        for k = 1:numel(A)
+            for l = 1:numel(A)
+                C4temp = A(l)*reshape(P(l,k,:),[1 timesteps])'*A(k)*P_tau2eq0(k,j)*A(j)*reshape(P(j,i,:),[1 timesteps])*A(i)*Peq(i);
+                C4 =  C4 + C4temp;
+            end
+        end
     end
 end
 if clockMode == 1
-    elapsedTime =toc;
-    disp(['Takes '  num2str(elapsedTime) ' seconds to calculate C2 for an ' num2str(N) ' state model']);
+    elapsedTime = toc;
+    disp(['Time to calculate calculate C4 for an ' num2str(N) ' state model: ' num2str(elapsedTime) ]);
 end
+
 if plotMode == 1
-    figure(2)
+    
+    
+    figure(3);
     set(gcf,'Color','w');
+    set(gcf,'Name','4-point Time Correlation Function');
     
-    if exist('C2_plot','var')  == 1
-        delete(C2_plot)
-    end
-    
-    C2_plot = plot(time,C2);
-    title_str = ['Two point time correlation function'];
-    title(title_str,'FontSize',18);
-    xlabel('\tau (sec)','fontsize',16);
-    ylabel('C^{(2)}(\tau)','fontsize',16);
-    set(gca,'yscale','linear');
+    surf(time,time,C4);
+    shading interp;
+    title_str = ['4-point TCF: \tau_2 = ' num2str(tau2)];
+    title(title_str,'FontSize',12);
+    xlabel('\tau_1 (sec)','fontsize',12);
+    zlabel('C^{(4)}(\tau_1,\tau_2,\tau_3)','fontsize',12);
+    set(gca,'yscale','log');
     set(gca,'xscale','log');
     set(gca,'FontSize',14);
     grid on
     axis tight;
-    
-    drawnow();
 end
 
-%--------------------------------------------------------------------------
-% Calculate 2 point TCF (with matrix)
-%--------------------------------------------------------------------------
-%%
-% A = linspace(0,1,N);
-% Amat = A.*eye(N);
-% Amat3D = ones(N,N,length(time));
-% Peq2D = ones(N,length(time));
-% for i = 1:length(time)
-%     Amat3D(:,:,i) = Amat;
-%     Peq2D(:,i) = Peq;
-% end
-% % C2test = sum(Amat*P*Amat*Peq);
-% C2test = sum(Amat3D*P*Amat3D*Peq2D);
-%
-%
 
