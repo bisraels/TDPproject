@@ -11,13 +11,17 @@
 %           P(j,i,t) is the probability of going from i -> j in time t
 %
 % MODLOG:  BI 20191112 Inverse done with '\' not inv() (faster)
-%          CA
+%          BI Switching to K2P to better match the notation of the paper
 %__________________________________________________________________________
 
+%P is the numerical NxNxt matrix of conditional probabilities
+%V is the mode matrix
+%p i the NxN matrix of conditional probabilities in terms of 't'ss
 function [P, V, p, time] = k2P(K,time)
+clockMode = 0;
 switch nargin
     case 0
-        N = 2;
+        N = 8;
         %                 Simulate a K matrix
         switch N
             case 2
@@ -54,29 +58,48 @@ switch nargin
     case 1 %If you give it 1 arguement , assume the gp32 = 0.
         time = 0;
 end
+
 % Determine the number of states in the system
 N = length(K);
-
 %--------------------------------------------------------------------------
 % Calculate the Eigenvalues and Eigenvectors of K matrix
 %--------------------------------------------------------------------------
+if clockMode == 1
+    tic
+end
 [Evec, Lam_unsorted] = eig(K);
-
 [Lam,ind] = sort(diag(Lam_unsorted),'descend'); %Lam is numerical eigenvalue
-V = Evec(:,ind);        % V is the mode matrix (Each column is an eigenvector)
+V = Evec(:,ind);
+% V is the mode matrix (Each column is an eigenvector)
+if clockMode == 1
+    elapsedTime = toc;
+    disp(['     time to Calculate the eigenvalues/eigenvectors of K = ' num2str(elapsedTime) ' seconds']);
+    % % (8state: < 1 ms)
+end
 
+%--------------------------------------------------------------------------
 % Find the inverse of the matrix of eigenvectors
-% tic
+%--------------------------------------------------------------------------
+if clockMode == 1
+    tic
+end
 V_inv = inv(V);
-% elapsedTime = toc;
-% disp(['Time to find inverse of V = ' num2str(elapsedTime)]);
+if clockMode == 1
+    elapsedTime = toc;
+    disp(['     Time to find inverse of V = ' num2str(elapsedTime) ' seconds']);
+    % % (8state: < 0 µs)
+end
 
+%--------------------------------------------------------------------------
 % Use identity matrix to define the Initial conditions (Boundary conditions)
+%--------------------------------------------------------------------------
 InitCond = eye(N);
 
+%--------------------------------------------------------------------------
 % Find the matrix of all possible initial conditions
+%--------------------------------------------------------------------------
 % tic
-C  = V \ InitCond; %V_inv * InitCond;
+% C  = V \ InitCond; %V_inv * InitCond;
 % elapsedTime = toc;
 % disp(['Time to find C matrix = ' num2str(elapsedTime)]);
 % Format:
@@ -99,19 +122,57 @@ exp_LamT = diag(exp(Lam * t));
 % elapsedTime = toc;
 % disp(['Time to evaluate cP matrix as function of t = ' num2str(elapsedTime)]);
 
-
-% tic
+%--------------------------------------------------------------------------
+% Subs in the value fors
+%--------------------------------------------------------------------------
+if clockMode == 1
+    tic
+end
 %equivalent to P = U * exp(lam*t) * C
 p = vpa(subs(V * exp_LamT * V_inv * InitCond));
-
 %P(j,i) is the probability of going from i --> j in time t
-% elapsedTime = toc;
-% disp(['Time to evaluate P(j,i) function of t = ' num2str(elapsedTime)]);
+if clockMode == 1
+    elapsedTime = toc;
+    disp(['     Time to evaluate P(j,i) function of t usins vpa(subs(expression)) = ' num2str(elapsedTime) ' seconds']);
+    % % (8state: ~0.2 seconds)
+end
 
 % %Note: To substitute in time, do so like this:
-t = time;
 % t = 0:.1:1;
-% tic
-P = reshape(subs(p(:)),[N N numel(t)]);
+%--------------------------------------------------------------------------
+% Substiture the time array for t
+%--------------------------------------------------------------------------
+if clockMode == 1
+    tic
+end
+t = time;
+P = subs(p(:));
+if clockMode == 1
+    elapsedTime = toc;
+    disp(['     time to subs in values for time = ' num2str(elapsedTime) ' seconds']);
+    % % (8state: ~ 1.9 seconds) *** Long operation
+end
+
+%--------------------------------------------------------------------------
+% Reshape P to a NxN matrix
+%--------------------------------------------------------------------------
+if clockMode == 1
+    tic
+end
+P = reshape(P,[N N numel(t)]);
+if clockMode == 1
+    elapsedTime = toc;
+    disp(['     time to reshape P = ' num2str(elapsedTime) ' seconds']);
+end
+
+%--------------------------------------------------------------------------
+% Make P a double
+%--------------------------------------------------------------------------
+if clockMode == 1
+    tic
+end
 P = double(P);
-% toc
+if clockMode == 1
+    elapsedTime = toc;
+    disp(['     time to cast P as a double = ' num2str(elapsedTime) ' seconds']);
+end

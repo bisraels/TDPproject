@@ -41,7 +41,7 @@ end
 if fitC2Mode == 1
     time = C2_time;
     [P_c2, ~, ~, time] = k2P(K,time);
-    [time, C2_sim, ~] = P2C(P_c2, K, time);
+    [time, C2_sim, ~] = P2C(P_c2, K, time, A);
     C2_sim = C2_sim + yoff;
     if normalizeMode == 1
         C2_sim = C2_sim./C2_sim(1);
@@ -68,13 +68,13 @@ if fitC4Mode == 1
     tau2 = 0;
     time = C4_time;
     [P_c4, ~, ~, time] = k2P(K,time);
-    [time, ~, C4_sim] = P2C(P_c4, K, time);
+    [time, ~, C4_sim] = P2C(P_c4, K, time, A);
     C4_tau2eq0_sim = C4_sim + zoff;
     if normalizeMode == 1
         C4_tau2eq0_sim = C4_tau2eq0_sim./C4_tau2eq0_sim(1,1);
     end
     chisquared_array(3) = mean(mean(((C4_tau2eq0_sim - C4_tau2eq0_exp).^2).*wC4func))*weightingFactor_C4_t0;
-    time = time_sim;
+%     time = time_sim;
     if showProgressOnFit_mode == 1
         % Update figure with guesses to the fit
         figure(3);
