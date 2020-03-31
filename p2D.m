@@ -4,12 +4,12 @@ syms t tau1 tau3
 time =  time_sim;
 [P, ~, p, time] = k2P(K,time);
 
-N  = length(K);
+NumStates  = length(K);
 
 % Make a column vector of the discrete probability
 Peq = diag(P(:,:,end));
 %Make a  row vector of the FRET Values
-A = linspace(.1,.9,N);
+A = linspace(.1,.9,NumStates);
 
 %Subtract off the mean of A
 Amean = A*Peq;
@@ -33,10 +33,10 @@ tau3 = tau1;
 timeSteps = length(tau1);
 
 dP_tau1 = double(subs(dp_tau1(:)));
-dP_tau1 = reshape(dP_tau1, [N,N,timeSteps]);
+dP_tau1 = reshape(dP_tau1, [NumStates,NumStates,timeSteps]);
 
 dP_tau3 = double(subs(dp_tau3(:)));
-dP_tau3 = reshape(dP_tau3, [N,N,timeSteps]);
+dP_tau3 = reshape(dP_tau3, [NumStates,NumStates,timeSteps]);
 
 
 tic
@@ -49,7 +49,7 @@ for i = 1:numel(A)
     end
 end
 elapsedTime =toc;
-disp(['Takes '  num2str(elapsedTime) ' seconds to calculate D2 for an ' num2str(N) ' state model']);
+disp(['Takes '  num2str(elapsedTime) ' seconds to calculate D2 for an ' num2str(NumStates) ' state model']);
 
 if plotMode == 1
     figure(2)
@@ -88,7 +88,7 @@ for i = 1:numel(A)
 end
 % D4 = double(D4);
 elapsedTime =toc;
-disp(['Takes '  num2str(elapsedTime) ' seconds to calculate D4 for an ' num2str(N) ' state model']);
+disp(['Takes '  num2str(elapsedTime) ' seconds to calculate D4 for an ' num2str(NumStates) ' state model']);
 
 if plotMode == 1
     figure(4)
