@@ -18,39 +18,40 @@
 
 
 % function [Peq, histPlot] = histMaker_Nstate(p, A, sigma_A)
-% global genNum plotMode verboseMode
+function [Peq, denom_hist_sim, hist_sim, Peq_names] = histMaker_Nstate(P, p, A, sigma_A)
+global genNum plotMode verboseMode
 %--------------------------------------------------------------------------
 % PARAMETERS TO GET THE FUNCTION WORKING:
 % switch nargin
-%     case 0
-plotMode = 1;
-verboseMode = 1;
-FRET_bins = 1:100;
-% A = sym('A',[N,1]);
-A = [0.1; 0.2; 0.3; 0.4; 0.5; 0.6; 0.7]; % example to get working
-syms t
-
-K = [-25,  21,     31,         0,     0,       0,       0;...   %1
-    12,    -93,    2852/91,    42,    52,      0,       0;...   %2
-    13,    23,  -(31+2852/91), 0,     0,       0,       0;...   %3
-    0,     24,  0,             -42,   0,       0,       0;...   %4
-    0,     25,  0,              0,    -108,    65,      0;...   %5
-    0,     0,   0,              0,      56,  -(65+67),  76;...  %6
-    0,     0,   0,              0,       0,     67,     -(76)]; %7
-p = k2P(K,t);
-sigma_A1 = 0.15;
-sigma_A2 = 0.1;
-sigma_A3 = 0.1;
-sigma_A4 = 0.1;
-sigma_A5 = 0.1;
-sigma_A6 = 0.1;
-sigma_A7 = 0.1;
-sigma_A = [sigma_A1; sigma_A2; sigma_A3; sigma_A4; sigma_A5; sigma_A6; sigma_A7];
-
-clf;
-genNum = 1;
+% %     case 0
+% plotMode = 1;
+% verboseMode = 1;
+% FRET_bins = 1:100;
+% % A = sym('A',[N,1]);
+% A = [0.1; 0.2; 0.3; 0.4; 0.5; 0.6; 0.7]; % example to get working
+% syms t
+% 
+% K = [-25,  21,     31,         0,     0,       0,       0;...   %1
+%     12,    -93,    2852/91,    42,    52,      0,       0;...   %2
+%     13,    23,  -(31+2852/91), 0,     0,       0,       0;...   %3
+%     0,     24,  0,             -42,   0,       0,       0;...   %4
+%     0,     25,  0,              0,    -108,    65,      0;...   %5
+%     0,     0,   0,              0,      56,  -(65+67),  76;...  %6
+%     0,     0,   0,              0,       0,     67,     -(76)]; %7
+% p = k2P(K,t);
+% sigma_A1 = 0.15;
+% sigma_A2 = 0.1;
+% sigma_A3 = 0.1;
+% sigma_A4 = 0.1;
+% sigma_A5 = 0.1;
+% sigma_A6 = 0.1;
+% sigma_A7 = 0.1;
+% sigma_A = [sigma_A1; sigma_A2; sigma_A3; sigma_A4; sigma_A5; sigma_A6; sigma_A7];
+% 
+% clf;
+% genNum = 1;
 % end
-%--------------------------------------------------------------------------
+% %--------------------------------------------------------------------------
 %%
 
 long_time = 3000000;
@@ -70,7 +71,7 @@ if verboseMode == 1
     end
 end
 
-N = length(K);  % Number of states
+N = length(p);  % Number of states
 
 
 % Need a list of Peq names for the legend of these histograms!

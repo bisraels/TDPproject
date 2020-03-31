@@ -1,4 +1,4 @@
-function [computer_terminal_str, terminalID] = computerMode()
+function [computer_terminal_str, terminalID, DropboxLocationPrefix] = computerMode()
 wd = pwd;
 
 % verboseMode = 1;
@@ -28,6 +28,7 @@ end
 
 computer_terminal_str = ['computer_' user '_mode'];  % Define the output
 
+DropboxLocationPrefix = [terminalID 'Dropbox/MarcusLab'];
 
 % if verboseMode == 1 
 %         disp(strcat('Turning on: ',computer_terminal_str));

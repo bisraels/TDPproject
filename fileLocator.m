@@ -30,7 +30,7 @@ elseif contains(terminalID,'/Users/')   % Mac computer
 %         disp('      Entering Mac mode...')
 %     end
     % PART 1: Find the folder for the GenAlg you are running
-    GenAlgFilesLocationPrefix =  [terminalID '/Dropbox/MarcusLab/Data/smData_Processed/' constructName '/' protein_str '/ChosenMolecules/genAlgFiles/' modelName];
+    GenAlgFilesLocationPrefix =  [terminalID 'Dropbox/MarcusLab/Data/smData_Processed/' constructName '/' protein_str '/ChosenMolecules/genAlgFiles/' modelName];
     
     % PART 2: Load the target data
     genAlgDataLocationPrefix =  [terminalID 'Dropbox/MarcusLab/Data/smData_Processed/' constructName '/' protein_str '/ChosenMolecules/genAlgFiles/TargetData'];
